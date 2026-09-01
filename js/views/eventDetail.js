@@ -44,7 +44,6 @@ export function eventDetailView(slug) {
       </a>
 
       ${pageHeader({
-        kicker: `Event ${event.number} of 10`,
         title: event.name,
         lead: event.tagline
       })}

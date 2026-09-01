@@ -960,6 +960,74 @@
   color: var(--color-text-muted);
 }
 
+/* --- Games tab: category card (full-bleed colour section) ----------------
+   Each category on the Games list (js/views/games.js) is one bordered/
+   rounded `.game-category-card`, wrapping the `.section`/`.section--spaced`
+   layout classes rather than replacing them (so the roomier Games-tab
+   section rhythm is unchanged) with the same header-band-over-body-band
+   language as the Tonight tab's `.tonight-card` (see that comment above)
+   and `.fact-list`: a dark head (category name + kicker, reversed white
+   text) directly above a lighter body band holding that category's
+   `.game-list`. `--accent`/`--success`/`--warn` cycle across the three
+   non-neutral colour families tokens.css defines (games.js's
+   categoryColor()), so consecutive categories are never the same colour;
+   `overflow: hidden` on the card clips both bands to its rounded corners so
+   neither band needs its own radius. */
+
+.game-category-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+.game-category-card__head {
+  padding: var(--space-3) var(--space-4);
+}
+
+.game-category-card__name {
+  margin: 0;
+  font-size: var(--fs-500);
+  line-height: var(--lh-tight);
+}
+
+.game-category-card__kicker {
+  margin: var(--space-1) 0 0;
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.game-category-card__body {
+  padding: var(--space-4);
+}
+
+.game-category-card--accent .game-category-card__head {
+  background: var(--color-accent-strong);
+  color: var(--color-accent-on);
+}
+.game-category-card--accent .game-category-card__body {
+  background: var(--color-accent-tint);
+}
+
+.game-category-card--success .game-category-card__head {
+  background: var(--color-success);
+  color: var(--color-success-on);
+}
+.game-category-card--success .game-category-card__body {
+  background: var(--color-success-tint);
+}
+
+.game-category-card--warn .game-category-card__head {
+  background: var(--color-warn-border);
+  color: var(--color-white);
+}
+.game-category-card--warn .game-category-card__body {
+  background: var(--color-warn-surface);
+}
+
 /* --- Games list: link + one-sentence summary ------------------------------
    Each game on the Games list (js/views/games.js) links to its own detail
    page (js/views/gameDetail.js) instead of inlining its full instructions —
@@ -968,7 +1036,18 @@
    Events list's old per-event card shape; the Events list moved to the
    `.event-group`/`.event-row` compact-row pattern above as part of the
    Events/Games redesign's row-shape pass, and this list was NOT asked to
-   follow — see STYLEGUIDE.md's "Games list link + Game Detail page". */
+   follow — see STYLEGUIDE.md's "Games list link + Game Detail page".
+
+   The card's own name is a full-bleed black strip (`.game-list__strip`) —
+   white text reversed out of `--color-heading`, the app's darkest/most-
+   black token (see tokens.css's neutral ramp; this project never hard-codes
+   a raw hex, so `--color-heading` stands in for literal black) — directly
+   above a lighter `.game-list__body` band holding the gear pill, summary
+   and "Pairs with" note. Same header-band-over-body-band shape as
+   `.game-category-card` above, just monochrome instead of category-
+   coloured, so an individual game reads as clearly as its own item even
+   inside an already-coloured category card. `overflow: hidden` on the link
+   itself clips both bands to its rounded corners. */
 
 .game-list {
   list-style: none;
@@ -979,29 +1058,39 @@
 .game-list__link {
   display: block;
   min-height: var(--tap-min);
-  padding: var(--space-4);
   background: var(--color-surface);
   border: 1px solid var(--color-border-interactive);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-1);
+  overflow: hidden;
   text-decoration: none;
 }
 
 .game-list__link:hover {
-  background: var(--color-accent-tint);
   box-shadow: var(--shadow-2);
 }
 
 .game-list__link:hover .game-list__name {
-  color: var(--color-accent-strong);
+  text-decoration: underline;
+}
+
+.game-list__strip {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-heading);
 }
 
 .game-list__name {
   display: block;
-  color: var(--color-accent);
+  color: var(--color-white);
   font-size: var(--fs-400);
   font-weight: var(--fw-semibold);
   line-height: var(--lh-snug);
+}
+
+.game-list__body {
+  display: block;
+  padding: var(--space-3) var(--space-4);
 }
 
 .game-list__summary {
@@ -1039,6 +1128,13 @@
   color: var(--color-accent-strong);
   font-size: var(--fs-100);
   font-weight: var(--fw-bold);
+}
+
+/* First thing inside `.game-list__body`, the gear pill needs no top margin
+   of its own — the body's own padding already separates it from the black
+   name strip above. */
+.game-list__body > .gear-pill:first-child {
+  margin-top: 0;
 }
 
 /* --- Resource cards (Watch & Learn) -------------------------------------- */

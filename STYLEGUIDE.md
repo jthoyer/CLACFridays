@@ -629,33 +629,51 @@ app's global `:focus-visible` ring (`css/base.css`) — a real keyboard Tab
 onto the event-name link renders the same 3px solid `--color-accent` ring,
 2px offset, every other focusable control in the app uses.
 
+### Games tab: category card (`.game-category-card`)
+Each category on the Games list (`js/views/games.js`) is wrapped in a
+`.game-category-card` — the same full-bleed-colour-section language as the
+Tonight tab's `.tonight-card` (see below) and `.fact-list`: a dark header
+band (`.game-category-card__head`, category name + kicker, reversed white
+text) directly over a lighter body band (`.game-category-card__body`,
+tinted fill) holding that category's `.game-list`. Colour cycles across the
+three non-neutral palette families tokens.css defines — accent purple,
+success green, warn amber — via `.game-category-card--accent/--success/
+--warn`, assigned round-robin by `categoryColor()` in `games.js` so
+consecutive categories are never the same colour. `.game-category-card`
+wraps `.section`/`.section--spaced` (it doesn't replace them), so the
+existing `--space-7` section rhythm below is unaffected; `overflow: hidden`
+on the card clips both bands to its rounded corners.
+
 ### Games list link + Game Detail page (`js/views/games.js`, `js/views/gameDetail.js`)
 The Games list no longer inlines each game's full instructions or its
-technique video. Each game is now a disclosure-style link — an
-accent-coloured name ending in a trailing `→` (`.game-list__name`, same
-reading-as-a-link pattern as `.event-row__name`'s trailing `→`) plus its
-one-sentence `summary` beneath it (`.game-list__summary`, muted text), then
-a `pairsWithNote()` (`js/ui.js`) "Pairs with `<Event>`" line
-(`.game-list__pairs`, muted caption) — plain text, not a link, since it sits
-inside the same `<a>` as the rest of the card and an `<a>` cannot legally
-contain another interactive element. This exists because a category can
-bundle games for more than one event (e.g. "Jump Games" covers both Long
-Jump and High Jump — see `content.js`), so the category name alone doesn't
-say which specific event a given game goes with; `pairsWithNote()` resolves
-the game's own item-level `eventSlugs` via `getEvent()` instead, so it can
-never drift from the events list. A game with no linked event (Freeze Tag)
-renders no note at all — deliberate, same distinction
-`assertContentLinkage()` already draws elsewhere — not an empty "Pairs
-with" line. The whole card links to `#/games/<slug>`. Card shape
-(`.game-list__link`: bordered,
-`--shadow-1`, hover → `--color-accent-tint` + `--shadow-2`) was originally
-built to mirror the Events list's per-event card shape for visual
-consistency between the two tabs' list pages. The Events list has since
-moved to the `.event-group`/`.event-row` compact-row pattern (bordered
-*group*, hairline-divided rows) as part of the Events/Games redesign's
-row-shape pass; the Games list was **not** asked to follow and still uses
-its original per-game bordered-card shape — the two lists' shapes are
-allowed to diverge here, not a sign of drift.
+technique video. Each game is now a disclosure-style link whose own name
+renders as a full-bleed black strip — white text reversed out of
+`--color-heading` (`.game-list__strip`/`.game-list__name`; `--color-heading`
+is this app's darkest token and stands in for literal black, since the
+project never hard-codes a raw hex — see tokens.css) — directly above a
+lighter `.game-list__body` band holding the gear pill, one-sentence
+`summary` (`.game-list__summary`, muted text) and a `pairsWithNote()`
+(`js/ui.js`) "Pairs with `<Event>`" line (`.game-list__pairs`, muted
+caption) — plain text, not a link, since it sits inside the same `<a>` as
+the rest of the card and an `<a>` cannot legally contain another
+interactive element. This exists because a category can bundle games for
+more than one event (e.g. "Jump Games" covers both Long Jump and High Jump
+— see `content.js`), so the category name alone doesn't say which specific
+event a given game goes with; `pairsWithNote()` resolves the game's own
+item-level `eventSlugs` via `getEvent()` instead, so it can never drift
+from the events list. A game with no linked event (Freeze Tag) renders no
+note at all — deliberate, same distinction `assertContentLinkage()` already
+draws elsewhere — not an empty "Pairs with" line. The whole card links to
+`#/games/<slug>`. Card shape (`.game-list__link`: bordered, `--shadow-1`,
+`overflow: hidden` to clip the black strip to the card's rounded corners,
+hover → `--shadow-2` + underline on the name) was originally built to
+mirror the Events list's per-event card shape for visual consistency
+between the two tabs' list pages. The Events list has since moved to the
+`.event-group`/`.event-row` compact-row pattern (bordered *group*,
+hairline-divided rows) as part of the Events/Games redesign's row-shape
+pass; the Games list was **not** asked to follow and still uses its own
+per-game bordered-card shape — the two lists' shapes are allowed to
+diverge here, not a sign of drift.
 
 Each game's own detail page (`gameDetailView()`) renders: a back-link to
 `#/games`; its category name as a small kicker (`pageHeader`'s `kicker`);
