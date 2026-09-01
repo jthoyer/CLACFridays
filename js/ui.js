@@ -378,21 +378,27 @@ export function modeSwitch(mode) {
  * is the minimum ARIA that does the job — the same control choice already
  * established by modeSwitch() above (STYLEGUIDE rule 8).
  *
- * The accessible name (`aria-label`) is byte-identical in both states: it
- * names the event but never itself flips to a word like "Off", which read
- * next to aria-pressed="false" would be a double negative ("Off, not
- * pressed"). The on/off state is instead carried by aria-pressed PLUS at
- * least two visual signals that are not colour — a glyph (+ / ✓), a border
- * style (dashed / solid) and font weight all differ between states here.
- * Colour is never the only signal (SC 1.4.1).
+ * State-first redesign (Option A): the toggle is now a labelled pill sitting
+ * inline in the card's body row next to the tagline, not a floating
+ * icon-only circle over the card's corner — pairing the visible "Add"/
+ * "Added" text with the card-level `.event-card--selected` treatment
+ * (events.js) is what lets a selected card read as selected at a glance,
+ * rather than only from a small badge easy to miss on a fast scan. See
+ * STYLEGUIDE.md's "Per-card Tonight toggle" section for the full rationale
+ * and the history of this control's shape.
  *
- * Icon-only circle (Events-list compact-row redesign): the visible "Add"/"On"
- * text label was dropped, but the two required non-colour signals (SC 1.4.1)
- * are unchanged — border style still flips dashed -> solid and the glyph
- * still flips + -> ✓ — and `aria-pressed` plus the constant `aria-label`
- * above are untouched, so the accessible name/state read by a screen reader
- * is identical to before this restyle. See STYLEGUIDE.md's "Per-card Tonight
- * toggle" section for the full accessibility rationale.
+ * **Accessible name contains the visible label (SC 2.5.3 Label in Name).**
+ * The visible label is just "Add"/"Added"; `aria-label` leads with that same
+ * word ("Add to tonight" / "Added to tonight") before naming the event, so a
+ * voice-control user saying "click added" still matches. The full
+ * `aria-label` differs between states (unlike the old icon-only circle's
+ * constant label) specifically so it can lead with the visible word; the
+ * event name is still present in both, and `aria-pressed` remains the
+ * canonical state carrier either way.
+ *
+ * **Two non-colour state signals (SC 1.4.1) unchanged:** the glyph flips
+ * `+` -> `✓` and the border flips dashed -> solid, on top of the fill/text
+ * colour and label-word change.
  *
  * MUST be rendered as a SIBLING of the event card's <a>, never nested inside
  * it — a <button> cannot be a descendant of <a>; the browser silently
@@ -408,6 +414,7 @@ export function modeSwitch(mode) {
  */
 export function tonightToggleButton(event, pressed) {
   const id = `tonight-toggle-${esc(event.slug)}`;
+  const label = pressed ? 'Added' : 'Add';
   return `
     <button
       type="button"
@@ -417,8 +424,9 @@ export function tonightToggleButton(event, pressed) {
       data-slug="${esc(event.slug)}"
       data-event-name="${esc(event.name)}"
       aria-pressed="${pressed}"
-      aria-label="Tonight: ${esc(event.name)}">
+      aria-label="${label} to tonight — ${esc(event.name)}">
       <span class="tonight-toggle__glyph" aria-hidden="true">${pressed ? '✓' : '+'}</span>
+      <span class="tonight-toggle__label">${label}</span>
     </button>`;
 }
 

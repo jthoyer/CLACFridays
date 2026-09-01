@@ -276,26 +276,40 @@ so **no font-size step-down is needed** — the narrow-viewport media query
 margin rather than a fix for an actual overflow. If a 5th tab is ever added,
 re-measure before assuming the same holds.
 
-### Event card (`.event-cards` / `.event-card`)
-Each event renders as its own bordered/rounded `.event-card` (`border`,
-`--radius-lg`, `--shadow-1`, `overflow: hidden`) — the same header-band-over-
-body-band shape as a Games-list card (`.game-list__link`), so an event and a
-game read as the same kind of thing across tabs. The name reverses white out
-of `--color-heading` in a full-bleed `.event-card__strip`, with a trailing
-`→` appended directly inside the name text (see `js/views/events.js`),
-directly above a lighter `.event-card__body` band holding the tagline in a
-smaller muted line. There is no numeral badge — the name alone identifies
-the event. The per-card Tonight toggle floats over the strip's top-right
-corner. The old `.event-card__meta` "2 videos"/"1 article" summary line is
-not rendered in this list — `resourceSummary()` and the underlying resource
-data are unchanged and still render on the Event Detail page
+### Event card (`.event-cards` / `.event-card`) — state-first redesign ("Option A")
+Each event renders as its own bordered/rounded `.event-card` (`2px border`,
+`--radius-lg`, `--shadow-1`, `overflow: hidden`) — the same header-band shape
+as a Games-list card (`.game-list__link`), so an event and a game still read
+as the same kind of thing across tabs. The name reverses white out of
+`--color-heading` in a full-bleed `.event-card__strip`, with a trailing `→`
+appended directly inside the name text (see `js/views/events.js`). Below
+that, `.event-card__body` is a row holding the tagline and the per-card
+Tonight toggle side by side, rather than the toggle floating over the strip's
+corner. There is no numeral badge — the name alone identifies the event. The
+old `.event-card__meta` "2 videos"/"1 article" summary line is not rendered
+in this list — `resourceSummary()` and the underlying resource data are
+unchanged and still render on the Event Detail page
 (`js/views/eventDetail.js`).
 
-Tapping anywhere in a card (other than the toggle) opens the event's detail
-page: `.event-card__link` (the `<a>`) fills the card except for the toggle's
-own tap area, which sits as a sibling `<button>` positioned over the card (a
-`<button>` cannot be a descendant of `<a>`). `.event-card__link` keeps
-`min-height: var(--tap-min)`.
+**Whole-card selected state.** When the event is in tonight's selection,
+`js/views/events.js` adds `.event-card--selected`, which tints the border to
+`--color-success` and washes `.event-card__body` in `--color-success-tint`
+(the tagline text switches to `--color-success` on that tint — the same
+already-measured 5.82:1 pairing used elsewhere in this app, not a new
+contrast claim). The point is that a coach scanning the list can tell what's
+already added from the card's silhouette alone, not only from the toggle —
+the toggle's own label/glyph/border signals (below) are unchanged and still
+carry the state on their own, so colour is never the only signal (SC 1.4.1)
+even before the card-level tint is considered.
+
+Tapping the name strip opens the event's detail page; tapping the toggle
+pill in the body row adds/removes it from tonight — two separate, clearly
+separated tap targets instead of one large card-wide link with a toggle
+floating on top of a corner of it. `.event-card__link` (the `<a>`) now wraps
+only the name strip, not the whole card: the strip's own padding keeps its
+rendered height comfortably over `--tap-min` (44px) without an explicit
+`min-height` rule. The toggle sits in `.event-card__body`, a sibling of
+`.event-card__link` — a `<button>` still cannot be a descendant of `<a>`.
 
 ### Events tab: grouped by discipline (`eventCategories` in `content.js`)
 The Events list is no longer one flat list of 10 rows — it's four
@@ -341,12 +355,16 @@ by `modeSwitch()` on this same page. It is **not** a descendant of the card's
 reparents it out, which breaks in exactly the browser-dependent way you'd
 expect), so the `<li>` renders the link and the toggle as siblings.
 
-**Constant accessible name.** The button's `aria-label` identifies the event
-(e.g. `"Tonight: Hurdles"`) and is **byte-identical in both states** — it
-never flips to "Off". A name that changed to "Off" while
-`aria-pressed="false"` would read as a double negative ("Off, not pressed").
-The on/off state is carried by `aria-pressed` plus the visible signal below,
-not by the name.
+**Accessible name leads with the visible label (SC 2.5.3 Label in Name).**
+Unlike the previous icon-only circle (whose `aria-label` was constant across
+states), this pill has a visible text label — "Add" / "Added" — so the
+`aria-label` now differs by state too: `"Add to tonight — Hurdles"` /
+`"Added to tonight — Hurdles"`. It leads with the same word shown on screen
+so a voice-control user saying "click added" still matches the accessible
+name; the event name stays present in both so the control is still
+unambiguous when several cards are on screen. `aria-pressed` remains the
+canonical carrier of on/off state — the label-word difference is a Label in
+Name requirement, not a substitute for it.
 
 **Two non-colour state signals (SC 1.4.1).** Pressed state changes: (1) the
 border style, dashed → solid, and (2) the glyph, `+` → `✓`, and additionally
@@ -374,31 +392,33 @@ list, `#mode-switch-tonight` on the Events page; (3) `#page-title`. Options 1
 and 2 do not scroll the page — this is a state-only re-render, not a
 navigation (see "Two render paths" below).
 
-Visually: a 44×44 (`--tap-min`) icon-only **circle**, not a pill with a
-visible label — `2px dashed --color-border-interactive` showing a `+` glyph
-when off; `2px solid --color-success` + solid `--color-success` fill + bold
-white (`--color-success-on`) `✓` glyph when on. The active fill changed from
-the accent-purple tint (`--color-accent-tint` + `--color-accent-strong` text)
-to a solid green fill as part of the Events/Games redesign, so "on" reads as
-a positive confirmation distinct from the app's link/brand colour — solid
-rather than tinted specifically so the white glyph has enough contrast
-(6.60:1 white / 6.24:1 canvas, see "Success" under Colour above), which a
-light tint background couldn't guarantee at the same weight.
+Visually: a labelled **pill** (`min-height: var(--tap-min)`, horizontal
+padding instead of a fixed square) — `2px dashed --color-border-interactive`
+showing a `+` glyph and "Add" when off; `2px solid --color-success` + solid
+`--color-success` fill + bold white (`--color-success-on`) `✓` glyph and
+"Added" when on. The active fill stays a solid green fill (unchanged from
+the earlier icon-only-circle redesign, itself a change from an
+accent-purple tint), so "on" reads as a positive confirmation distinct from
+the app's link/brand colour — solid rather than tinted specifically so the
+white glyph/label has enough contrast (6.60:1 white / 6.24:1 canvas, see
+"Success" under Colour above), which a light tint background couldn't
+guarantee at the same weight.
 
-The visible "Add"/"On" text label present in the pill shape was **dropped**
-as part of the row-shape redesign (matching the design mockup's icon-only
-toggle), but the two non-colour state signals SC 1.4.1 requires are
-unchanged: (1) border style, dashed → solid, and (2) the glyph, `+` → `✓`.
-`aria-pressed` and the constant `aria-label="Tonight: <event name>"` (which
-already carries the accessible name/state to screen readers) are untouched —
-dropping the *visible* text does not touch the *accessible* name, which was
-never that visible text to begin with. Font-weight is no longer one of the
-two required signals (a circle this small has no room for a bold/regular
-distinction to read clearly), so the border-style + glyph pair alone carries
-the non-colour requirement, same as it always could. This toggle is only
-used on the Events list (`tonightToggleButton()` has exactly one call site,
-`js/views/events.js`); no other view shares this exact control, so this
-shape change has no effect anywhere else in the app.
+**History of this control's shape:** it started as a pill with a visible
+label, was simplified to an icon-only circle (dropping the visible text but
+keeping both non-colour signals — border style and glyph — plus a constant
+`aria-label`), and has now moved back to a labelled pill as part of the
+state-first card redesign ("Option A"): pairing the visible "Add"/"Added"
+word with `.event-card--selected`'s whole-card tint (see "Event card" above)
+is what makes a selected card legible at a glance, which the icon-only
+circle's small corner badge did not reliably achieve on a fast scan. The two
+non-colour state signals SC 1.4.1 requires are unchanged across every one of
+these shapes: (1) border style, dashed → solid, and (2) the glyph, `+` → `✓`;
+the label word (Add → Added) and the `aria-label` change (see above) are
+additional signals on top of those two, not a replacement for them. This
+toggle is only used on the Events list (`tonightToggleButton()` has exactly
+one call site, `js/views/events.js`); no other view shares this exact
+control, so this shape change has no effect anywhere else in the app.
 
 ### Event Detail "Add to tonight" CTA (`tonightCtaButton()` in `ui.js`)
 A full-width primary button on the Event Detail page, placed after "Watch &
