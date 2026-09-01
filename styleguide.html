@@ -659,7 +659,7 @@
           <p class="sg-tile__note">
             Two real events rendered with the same
             <code>.tonight-card</code> markup the Tonight tab uses, each
-            with its own linked games rendered as a "Games tonight (N)"
+            with its own linked games rendered as a "Games tonight"
             section of bordered game cards. An event with zero linked
             games would render no games section at all instead of an
             empty one (AC16) — every current event has at least one, so
@@ -1255,7 +1255,7 @@
             .join('');
           const gamesSection = linked.length
             ? `
-                <p class="tonight-card__section-head tonight-card__section-head--games">Games tonight (${linked.length})</p>
+                <p class="tonight-card__section-head tonight-card__section-head--games">Games tonight</p>
                 <div class="tonight-card__section-body tonight-card__section-body--games">
                   <ul class="tonight-card__game-list">${gameCards}</ul>
                 </div>`

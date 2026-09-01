@@ -137,8 +137,8 @@ function renderSummary() {
   // AC14–AC18: each selected event gets its own bordered card — a dark
   // name-link header strip (no numeral), a tagline subhead, a "Key rule"
   // section, then — only when the event has at least one linked game
-  // (js/content.js) — a "Games
-  // tonight (N)" section. An event with zero linked games renders with no
+  // (js/content.js) — a "Games tonight" section. An event with zero linked
+  // games renders with no
   // games section at all — deliberate, not forgotten (see
   // assertContentLinkage()'s comments on this same distinction) —
   // gamesSection is the empty string, not an empty section or a "no game"
@@ -173,7 +173,7 @@ function renderSummary() {
 
       const gamesSection = linkedGames.length
         ? `
-            <p class="tonight-card__section-head tonight-card__section-head--games">Games tonight (${linkedGames.length})</p>
+            <p class="tonight-card__section-head tonight-card__section-head--games">Games tonight</p>
             <div class="tonight-card__section-body tonight-card__section-body--games">
               <ul class="tonight-card__game-list">${gameCards}</ul>
             </div>`

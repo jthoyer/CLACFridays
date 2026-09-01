@@ -32,12 +32,22 @@ body {
 }
 
 /*
-  The <h1> and <main> receive focus programmatically on route change. Keyboard
-  users get the ring (the browser sets :focus-visible for keyboard-initiated
+  <main> receives focus programmatically on route change. Keyboard users get
+  the ring (the browser sets :focus-visible for keyboard-initiated
   navigation); pointer users don't get a ring they didn't ask for.
 */
-#view:focus:not(:focus-visible),
-#page-title:focus:not(:focus-visible) {
+#view:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/*
+  The <h1> also receives focus programmatically on route change (so screen
+  readers land on it), but never shows a visible ring — even for keyboard
+  navigation. Unlike #view, whose ring is a useful "you're now in the new
+  page's content" cue, a ring drawn around the page title reads as a boxed-in
+  heading rather than a focus cue, so it's suppressed unconditionally.
+*/
+#page-title:focus {
   outline: none;
 }
 

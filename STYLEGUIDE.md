@@ -572,7 +572,7 @@ declares its own radius.
   `slug`, third cell — "Key U10 Rule") rather than duplicated.
   `assertContentLinkage()` guarantees one row per event slug across all 10
   events, so every selected event has a match.
-- **"Games tonight (N)" section** — rendered only when at least one game's
+- **"Games tonight" section** — rendered only when at least one game's
   **item-level** `eventSlugs` includes this event (`gamesForEvent()`,
   unchanged); an event with zero linked games renders **no** games section
   at all — deliberate, not forgotten (same "deliberately-unlinked-vs-
@@ -581,7 +581,7 @@ declares its own radius.
   section or a placeholder. (Every one of the 10 events currently has at
   least one linked game, so this branch has no live example today; it stays
   because `content.js` doesn't guarantee that will always be true.) When
-  present: a `GAMES TONIGHT (N)` head band
+  present: a `GAMES TONIGHT` head band
   (`.tonight-card__section-head--games`: `--color-success` fill,
   `--color-success-on` white text, 6.60:1) over a body band
   (`.tonight-card__section-body--games`: `--color-success-tint` fill)
