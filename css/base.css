@@ -41,14 +41,25 @@ body {
 }
 
 /*
-  The <h1> also receives focus programmatically on route change (so screen
-  readers land on it), but never shows a visible ring — even for keyboard
-  navigation. Unlike #view, whose ring is a useful "you're now in the new
-  page's content" cue, a ring drawn around the page title reads as a boxed-in
-  heading rather than a focus cue, so it's suppressed unconditionally.
+  The <h1> also receives focus programmatically on route change — router.js
+  is what actually moves focus on every normal navigation (#view above only
+  gets it from the skip link, a separate, rarely-used path) — so this is the
+  one focus cue keyboard/AT users get after switching tabs, and it must stay
+  visible for that reason (WCAG 2.4.7 Focus Visible). But the default
+  all-sides outline box drawn around a heading reads as the heading being
+  "boxed in", not focused, especially on a two-line title — a caret-style
+  underline still says "focus is here" without looking like packaging. Never
+  suppressed for :focus-visible; :focus alone (a plain pointer tap, which the
+  browser itself doesn't flag as focus-visible) gets no ring at all, same
+  restraint as every other :focus-visible-gated control in this file.
 */
 #page-title:focus {
   outline: none;
+}
+
+#page-title:focus-visible {
+  outline: none;
+  box-shadow: inset 0 calc(-1 * var(--focus-ring-width)) 0 0 var(--color-focus);
 }
 
 /* --- Skip link ----------------------------------------------------------- */
