@@ -428,7 +428,16 @@ side).
 
 ### Fact list (`factList`)
 `<dl>` of label/value rows. Used for Quick Facts and the age-group rules — the
-same helper for both, so they cannot diverge.
+same helper for both, so they cannot diverge. Same full-bleed colour-section
+language as the Tonight tab's `.tonight-card` (see that section above): each
+fact is its own dark header band (`.fact-list__label`: `--color-accent-strong`
+fill, `--color-accent-on` white text, 10.70:1) directly over a lighter body
+band (`.fact-list__value`: `--color-accent-tint` fill, `--color-accent-strong`
+text, 9.21:1) holding the value, both full-bleed edge to edge with
+`.fact-list`'s own `overflow: hidden` clipping them to the list's rounded
+corners. Unlike the Tonight card (rule vs. games), every fact reuses the same
+one colour — a fact list has no second category to distinguish, so the
+recurring dark band alone is what announces each new fact.
 
 ### Responsive table (`responsiveTable`)
 Renders a real `<table>`. Below 40em each row restacks as a card and each cell
