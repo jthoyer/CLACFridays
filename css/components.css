@@ -479,88 +479,83 @@
   text-decoration: underline;
 }
 
-/* --- Event list (compact-row redesign) ------------------------------------
-   Each discipline category renders ONE bordered/rounded `.event-group`
-   container (not one bordered card per event) holding single-line
-   `.event-row`s, each divided from the next by a 1px hairline. */
+/* --- Event list (card redesign) --------------------------------------------
+   Each event renders as its own bordered/rounded `.event-card` — same
+   header-band-over-body-band language as `.game-list__link` (js/views/
+   games.js): the name reverses white out of `--color-heading` in a full-
+   bleed `.event-card__strip`, directly above a lighter `.event-card__body`
+   band holding the tagline. `overflow: hidden` on the card's own link clips
+   both bands to its rounded corners. No numeral badge — the name alone
+   identifies the event. */
 
-.event-group {
+.event-cards {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* The <li> wraps the card's <a> and the toggle <button> as SIBLINGS — a
+   <button> cannot be a descendant of <a> (the browser silently reparents it
+   out). See js/views/events.js and ui.js's tonightToggleButton(). The toggle
+   floats over the card's top-right corner (positioned against this <li>)
+   rather than sitting beside the card in a flex row. */
+.event-card {
+  position: relative;
+}
+
+.event-card__link {
+  display: block;
+  min-height: var(--tap-min);
   background: var(--color-surface);
   border: 1px solid var(--color-border-interactive);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-1);
   overflow: hidden;
-}
-
-/* The <li> wraps the row's <a> and the toggle <button> as SIBLINGS — a
-   <button> cannot be a descendant of <a> (the browser silently reparents it
-   out). See js/views/events.js and ui.js's tonightToggleButton(). Tapping
-   anywhere in the row (other than the toggle) opens the event's detail page
-   via the <a>, which fills the row except for the toggle's own tap area. */
-.event-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-}
-
-.event-row + .event-row {
-  border-top: 1px solid var(--color-border-subtle);
-}
-
-.event-row__link {
-  display: flex;
-  align-items: center;
-  flex: 1 1 auto;
-  min-width: 0;
-  /* Comfortably above the 44px tap-target floor even though the row itself
-     has no visible card border any more. */
-  min-height: var(--tap-min);
-  gap: var(--space-3);
-  color: var(--color-text);
   text-decoration: none;
+  color: var(--color-text);
 }
 
-.event-row__num {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-numeral-sm);
-  height: var(--size-numeral-sm);
-  border-radius: var(--radius-pill);
-  background: var(--color-accent-tint);
-  color: var(--color-accent-strong);
-  font-size: var(--fs-200);
-  font-weight: var(--fw-bold);
+.event-card__link:hover {
+  box-shadow: var(--shadow-2);
 }
 
-.event-row__body {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-/* Styled as a link — the trailing → is appended to the name text itself
-   (see js/views/events.js), same reading pattern as .game-list__name. */
-.event-row__name {
-  font-size: var(--fs-400);
-  font-weight: var(--fw-semibold);
-  line-height: var(--lh-snug);
-  color: var(--color-accent);
-}
-
-.event-row:hover .event-row__name {
+.event-card__link:hover .event-card__name {
   text-decoration: underline;
 }
 
-.event-row__tag {
-  margin-top: 2px;
+.event-card__strip {
+  display: block;
+  /* Extra right-hand padding keeps the name clear of the floating Tonight
+     toggle. */
+  padding: var(--space-3) calc(var(--tap-min) + var(--space-4)) var(--space-3) var(--space-4);
+  background: var(--color-heading);
+}
+
+.event-card__name {
+  display: block;
+  color: var(--color-white);
+  font-size: var(--fs-400);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.event-card__body {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+}
+
+.event-card__tag {
+  display: block;
   font-size: var(--fs-200);
   color: var(--color-text-muted);
+}
+
+.event-card > .tonight-toggle {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-4);
 }
 
 /*
@@ -762,25 +757,27 @@
 }
 
 /* --- Tonight tab: event card (event + key rule + game tonight) -----------
-   Each selected event is one bordered/rounded `.tonight-card` — same
-   card language as `.event-group`/`.event-row` (Events tab) and
-   `.game-list__link` (Games tab): --color-surface fill, --color-border-
-   interactive hairline, --radius-lg corners, --shadow-1. A header row
-   (numeral + name link + tagline, reusing `.event-row__num`/`__body`/
-   `__name`/`__tag` verbatim from the Events tab so the two tabs' event
-   identity never drifts) is followed by two full-bleed colour sections,
-   "Key rule" and "Games tonight" (the second omitted entirely when the
-   event has no linked games — AC16). Each section is a dark header band
-   (`--color-accent-strong` / `--color-success`, reversed white text)
-   directly above a lighter body band in the same colour family
-   (`--color-accent-tint` / `--color-success-tint`): the colour itself
-   carries the section boundary, so "Games tonight" needs only one
-   "(N)"-counted head instead of a caption repeated per game. The games
-   themselves render as individually bordered/shadowed white cards
-   (`.tonight-card__game`) inside that body band, each with its equipment
-   tag inline next to the title rather than on its own line below the
-   summary. `.tonight-card`'s own `overflow: hidden` clips both bands to
-   the card's rounded corners, so neither needs its own radius. */
+   Each selected event is one bordered/rounded `.tonight-card` — same card
+   language as `.event-card` (Events tab) and `.game-list__link` (Games
+   tab): --color-surface fill, --color-border-interactive hairline,
+   --radius-lg corners, --shadow-1. The name reverses white out of
+   `--color-heading` in a full-bleed `.tonight-card__head` strip — same
+   header-band treatment as `.event-card__strip`/`.game-list__strip`, so all
+   three tabs read the event/game name the same way — with the tagline
+   directly below it in a lighter `.tonight-card__subhead` band, followed by
+   two more full-bleed colour sections, "Key rule" and "Games tonight" (the
+   second omitted entirely when the event has no linked games — AC16). Each
+   of those sections is a dark header band (`--color-accent-strong` /
+   `--color-success`, reversed white text) directly above a lighter body
+   band in the same colour family (`--color-accent-tint` /
+   `--color-success-tint`): the colour itself carries the section boundary,
+   so "Games tonight" needs only one "(N)"-counted head instead of a caption
+   repeated per game. The games themselves render as individually
+   bordered/shadowed white cards (`.tonight-card__game`) inside that body
+   band, each with its equipment tag inline next to the title rather than on
+   its own line below the summary. `.tonight-card`'s own `overflow: hidden`
+   clips every band to the card's rounded corners, so none needs its own
+   radius. No numeral badge — the name alone identifies the event. */
 
 .tonight-groups {
   list-style: none;
@@ -797,10 +794,8 @@
 }
 
 .tonight-card__head {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
+  background: var(--color-heading);
 }
 
 .tonight-card__title {
@@ -809,15 +804,27 @@
   line-height: var(--lh-snug);
 }
 
-/* `.event-row__name` (reused verbatim from the Events tab) already sets the
-   accent colour/weight; as a standalone link here (not nested inside the
-   full-row `.event-row__link` wrapper that supplies the Events tab's tap
-   target) it needs its own tap-target treatment — same min-height/inline-
-   flex fix `.event-row__link` uses, just applied directly to the link. */
-.tonight-card__title .event-row__name {
+.tonight-card__name {
   display: inline-flex;
   align-items: center;
   min-height: var(--tap-min);
+  color: var(--color-white);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+}
+
+.tonight-card__head:hover .tonight-card__name {
+  text-decoration: underline;
+}
+
+.tonight-card__subhead {
+  padding: var(--space-2) var(--space-4) var(--space-3);
+}
+
+.tonight-card__tag {
+  margin: 0;
+  font-size: var(--fs-200);
+  color: var(--color-text-muted);
 }
 
 .tonight-card__section-head {
@@ -881,9 +888,9 @@
   gap: var(--space-2);
 }
 
-/* Same accent link treatment as `.event-row__name`/`.game-list__name`
-   (trailing → baked into the link text), sized for its own >=44px tap
-   target since it sits inline within a sentence rather than filling a row. */
+/* Same accent link treatment as `.game-list__name` (trailing → baked into
+   the link text), sized for its own >=44px tap target since it sits inline
+   within a sentence rather than filling a row. */
 .tonight-card__game-link {
   display: inline-flex;
   align-items: center;
@@ -1038,11 +1045,9 @@
    Each game on the Games list (js/views/games.js) links to its own detail
    page (js/views/gameDetail.js) instead of inlining its full instructions —
    a bordered-card-plus-chevron pattern of its own (this list has no
-   per-card toggle to make room for). This used to intentionally mirror the
-   Events list's old per-event card shape; the Events list moved to the
-   `.event-group`/`.event-row` compact-row pattern above as part of the
-   Events/Games redesign's row-shape pass, and this list was NOT asked to
-   follow — see STYLEGUIDE.md's "Games list link + Game Detail page".
+   per-card toggle to make room for). The Events list's `.event-card` now
+   shares this same header-strip-over-body card shape (see above) — see
+   STYLEGUIDE.md's "Games list link + Game Detail page".
 
    The card's own name is a full-bleed black strip (`.game-list__strip`) —
    white text reversed out of `--color-heading`, the app's darkest/most-

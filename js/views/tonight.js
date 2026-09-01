@@ -134,9 +134,10 @@ function renderSummary() {
     );
   }
 
-  // AC14–AC18: each selected event gets its own bordered card — a header
-  // (numeral + name link + tagline), a "Key rule" section, then — only when
-  // the event has at least one linked game (js/content.js) — a "Games
+  // AC14–AC18: each selected event gets its own bordered card — a dark
+  // name-link header strip (no numeral), a tagline subhead, a "Key rule"
+  // section, then — only when the event has at least one linked game
+  // (js/content.js) — a "Games
   // tonight (N)" section. An event with zero linked games renders with no
   // games section at all — deliberate, not forgotten (see
   // assertContentLinkage()'s comments on this same distinction) —
@@ -182,15 +183,14 @@ function renderSummary() {
         <li class="tonight-group">
           <article class="tonight-card">
             <div class="tonight-card__head">
-              <span class="event-row__num" aria-hidden="true">${e.number}</span>
-              <div class="event-row__body">
-                <h3 class="tonight-card__title">
-                  <a class="event-row__name" href="#/events/${esc(e.slug)}">${esc(
-                    e.name
-                  )} →</a>
-                </h3>
-                <p class="event-row__tag">${esc(e.tagline)}</p>
-              </div>
+              <h3 class="tonight-card__title">
+                <a class="tonight-card__name" href="#/events/${esc(e.slug)}">${esc(
+                  e.name
+                )} →</a>
+              </h3>
+            </div>
+            <div class="tonight-card__subhead">
+              <p class="tonight-card__tag">${esc(e.tagline)}</p>
             </div>
             <p class="tonight-card__section-head tonight-card__section-head--rule">Key rule</p>
             <div class="tonight-card__section-body tonight-card__section-body--rule">

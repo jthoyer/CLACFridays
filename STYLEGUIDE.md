@@ -276,28 +276,26 @@ so **no font-size step-down is needed** — the narrow-viewport media query
 margin rather than a fix for an actual overflow. If a 5th tab is ever added,
 re-measure before assuming the same holds.
 
-### Event row (`.event-group` / `.event-row`)
-Each discipline category renders as ONE bordered/rounded `.event-group`
-container (`border`, `--radius-lg`, `--shadow-1`, `overflow: hidden`) holding
-a list of single-line `.event-row`s, each divided from the next by a 1px
-`--color-border-subtle` hairline — not each event as its own separate
-bordered card (that was the pre-redesign shape; see the design mockup this
-was matched against). Each row: a `--size-numeral-sm` (28px) circular numeral
-badge, then a body column with the event name styled as a link
-(`--color-accent`, with a trailing `→` appended directly inside the name text
-— see `js/views/events.js`) and the tagline underneath in a smaller muted
-line, then the per-card Tonight toggle (below) at the row's end. The old
-`.event-card__meta` "2 videos"/"1 article" summary line is no longer rendered
-in this list — dropped from the row design only; `resourceSummary()` and the
-underlying resource data are unchanged and still render on the Event Detail
-page (`js/views/eventDetail.js`).
+### Event card (`.event-cards` / `.event-card`)
+Each event renders as its own bordered/rounded `.event-card` (`border`,
+`--radius-lg`, `--shadow-1`, `overflow: hidden`) — the same header-band-over-
+body-band shape as a Games-list card (`.game-list__link`), so an event and a
+game read as the same kind of thing across tabs. The name reverses white out
+of `--color-heading` in a full-bleed `.event-card__strip`, with a trailing
+`→` appended directly inside the name text (see `js/views/events.js`),
+directly above a lighter `.event-card__body` band holding the tagline in a
+smaller muted line. There is no numeral badge — the name alone identifies
+the event. The per-card Tonight toggle floats over the strip's top-right
+corner. The old `.event-card__meta` "2 videos"/"1 article" summary line is
+not rendered in this list — `resourceSummary()` and the underlying resource
+data are unchanged and still render on the Event Detail page
+(`js/views/eventDetail.js`).
 
-Tapping anywhere in a row (other than the toggle) opens the event's detail
-page: `.event-row__link` (the `<a>`) fills the row except for the toggle's
-own tap area, exactly as the old `.event-card` link did — this is a visual
-restyle of the same click target, not new navigation wiring.
-`.event-row__link` keeps `min-height: var(--tap-min)` even though the row no
-longer has its own visible card border.
+Tapping anywhere in a card (other than the toggle) opens the event's detail
+page: `.event-card__link` (the `<a>`) fills the card except for the toggle's
+own tap area, which sits as a sibling `<button>` positioned over the card (a
+`<button>` cannot be a descendant of `<a>`). `.event-card__link` keeps
+`min-height: var(--tap-min)`.
 
 ### Events tab: grouped by discipline (`eventCategories` in `content.js`)
 The Events list is no longer one flat list of 10 rows — it's four
@@ -545,23 +543,24 @@ from `content.js`'s `tonightCopy` object, same rule as every other view.
 ### Tonight tab: event card (event + key rule + games tonight)
 Each selected event renders as one bordered/rounded `.tonight-card`
 (`css/components.css`) built by `js/views/tonight.js`'s `renderSummary()` —
-the same card language as `.event-group`/`.event-row` (Events tab) and
-`.game-list__link` (Games tab): `--color-surface` fill,
-`--color-border-interactive` hairline, `--radius-lg` corners, `--shadow-1`.
-Below the header, the card is two full-bleed **colour sections** — "Key
-rule" and "Games tonight" — rather than a stack of hairline-divided rows:
-each is a dark header band naming the section in reversed (white) type
-directly above a lighter body band in the same colour family, so the
-section boundary is carried by the colour change itself, edge to edge, not
-by a line. `.tonight-card`'s own `overflow: hidden` clips both bands to the
-card's rounded corners, so neither band declares its own radius.
+the same card language as `.event-card` (Events tab) and `.game-list__link`
+(Games tab): `--color-surface` fill, `--color-border-interactive` hairline,
+`--radius-lg` corners, `--shadow-1`. Below the header, the card is three
+more full-bleed **colour sections** — a tagline subhead, "Key rule" and
+"Games tonight" — rather than a stack of hairline-divided rows: each is a
+dark or tinted band, so the section boundary is carried by the colour
+change itself, edge to edge, not by a line. `.tonight-card`'s own
+`overflow: hidden` clips every band to the card's rounded corners, so none
+declares its own radius.
 
-- **Header** (`.tonight-card__head`) — the event's numeral badge and name
-  link plus tagline, reusing `.event-row__num` / `.event-row__body` /
-  `.event-row__name` / `.event-row__tag` **verbatim** from the Events tab
-  (not a scoped copy) so an event's identity can never read differently
-  between the two tabs. The name link carries the same trailing "→" baked
-  into its text as `.event-row__name` does on the Events tab.
+- **Header** (`.tonight-card__head`) — the event's name link reversed white
+  out of `--color-heading`, the same full-bleed name-strip treatment as
+  `.event-card__strip` (Events tab) and `.game-list__strip` (Games tab), so
+  an event's identity reads the same across all three tabs. There is no
+  numeral badge. The name link carries the same trailing "→" baked into its
+  text as `.event-card__name` does on the Events tab. The tagline sits
+  directly below in a lighter `.tonight-card__subhead` band
+  (`.tonight-card__tag`).
 - **"Key rule" section** — a `KEY RULE` head band
   (`.tonight-card__section-head--rule`: `--color-accent-strong` fill,
   `--color-accent-on` white text, 10.70:1) over a body band
@@ -592,7 +591,7 @@ card's rounded corners, so neither band declares its own radius.
   caption repeated per item to read as separate from one another. Each
   card's head row (`.tonight-card__game-head`) puts the game's name link
   (`.tonight-card__game-link`, same accent-link-with-trailing-arrow
-  treatment as `.event-row__name`, linking to its own `#/games/<slug>`
+  treatment as `.game-list__name`, linking to its own `#/games/<slug>`
   detail route) and its equipment tag (`.tonight-card__game-tag`, same
   `--color-accent-tint`/`--color-accent-strong` pairing the old `.gear-pill`
   uses elsewhere, just inline instead of on its own line) on one row, with
@@ -618,12 +617,12 @@ introduce.
 
 Both the event-name link and each game-name link get their own `>= 44px`
 (`--tap-min`) tap-target height even though they sit inline within a
-sentence/row rather than filling one — `.tonight-card__title
-.event-row__name` and `.tonight-card__game-link` both apply `display:
-inline-flex; align-items: center; min-height: var(--tap-min)`, the same fix
-`.event-row__link` already uses to guarantee a full-row tap target on the
-Events tab, just applied directly to the link since there is no full-row
-wrapper here. Measured on a real render at 320px and 375px: both links'
+sentence/row rather than filling one — `.tonight-card__name` and
+`.tonight-card__game-link` both apply `display: inline-flex; align-items:
+center; min-height: var(--tap-min)`, the same fix `.event-card__link`
+already uses to guarantee a full-card tap target on the Events tab, just
+applied directly to the link since there is no full-row wrapper here.
+Measured on a real render at 320px and 375px: both links'
 bounding-box height is >=44px at both widths. Neither link suppresses the
 app's global `:focus-visible` ring (`css/base.css`) — a real keyboard Tab
 onto the event-name link renders the same 3px solid `--color-accent` ring,
@@ -668,12 +667,9 @@ draws elsewhere — not an empty "Pairs with" line. The whole card links to
 `overflow: hidden` to clip the black strip to the card's rounded corners,
 hover → `--shadow-2` + underline on the name) was originally built to
 mirror the Events list's per-event card shape for visual consistency
-between the two tabs' list pages. The Events list has since moved to the
-`.event-group`/`.event-row` compact-row pattern (bordered *group*,
-hairline-divided rows) as part of the Events/Games redesign's row-shape
-pass; the Games list was **not** asked to follow and still uses its own
-per-game bordered-card shape — the two lists' shapes are allowed to
-diverge here, not a sign of drift.
+between the two tabs' list pages. The Events list's `.event-card` now
+shares this exact header-strip-over-body shape again (see "Event card"
+above), so the two lists' cards read as the same kind of thing.
 
 Each game's own detail page (`gameDetailView()`) renders: a back-link to
 `#/games`; its category name as a small kicker (`pageHeader`'s `kicker`);

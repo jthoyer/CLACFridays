@@ -9,39 +9,42 @@ import {
 } from '../ui.js';
 
 /**
- * The event-row <ul> for one discipline category (or, in principle, any
- * event list) — the single piece of row-rendering markup, called once per
+ * The event-card <ul> for one discipline category (or, in principle, any
+ * event list) — the single piece of card-rendering markup, called once per
  * category below rather than duplicated per section. Refactored out of what
  * used to be eventsView()'s only list when the Events tab was a single flat
  * list; grouping by discipline (Track/Jumps/Throws/Bonus) reuses this
  * unchanged.
  *
- * Visual shape (compact-row redesign): one bordered/rounded `.event-group`
- * container per category holding single-line `.event-row`s, divided by a
- * hairline, rather than each event as its own separate bordered card. The
- * `resourceSummary()` line ("2 videos", "1 article") is deliberately NOT
- * rendered here any more — it isn't part of this row's design — but the
- * data/helper is untouched and still renders on the Event Detail page
- * (js/views/eventDetail.js).
+ * Visual shape: each event is its own bordered/rounded `.event-card`, its
+ * name reversed white-on-dark in a `.event-card__strip` header band above a
+ * lighter `.event-card__body` band holding the tagline — same header-band-
+ * over-body-band language as `.game-list__link` (js/views/games.js), so an
+ * event card and a game card read as the same kind of thing. No numeral
+ * badge — the name alone identifies the event. The `resourceSummary()` line
+ * ("2 videos", "1 article") is deliberately NOT rendered here — it isn't
+ * part of this card's design — but the data/helper is untouched and still
+ * renders on the Event Detail page (js/views/eventDetail.js).
  */
 function eventCardList(list) {
-  const rows = list
+  const cards = list
     .map((e) => {
       const pressed = tonight.isTonightEvent(e.slug);
       return `
-        <li class="event-row">
-          <a class="event-row__link" href="#/events/${esc(e.slug)}">
-            <span class="event-row__num" aria-hidden="true">${e.number}</span>
-            <span class="event-row__body">
-              <span class="event-row__name">${esc(e.name)} →</span>
-              <span class="event-row__tag">${esc(e.tagline)}</span>
+        <li class="event-card">
+          <a class="event-card__link" href="#/events/${esc(e.slug)}">
+            <span class="event-card__strip">
+              <span class="event-card__name">${esc(e.name)} →</span>
+            </span>
+            <span class="event-card__body">
+              <span class="event-card__tag">${esc(e.tagline)}</span>
             </span>
           </a>
           ${tonightToggleButton(e, pressed)}
         </li>`;
     })
     .join('');
-  return `<ul class="event-group">${rows}</ul>`;
+  return `<ul class="event-cards">${cards}</ul>`;
 }
 
 export function eventsView() {

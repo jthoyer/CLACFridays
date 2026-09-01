@@ -550,11 +550,11 @@
         </article>
 
         <article class="sg-tile">
-          <div class="sg-tile__hd"><h3>Event row</h3><span class="sg-tile__spec">eventsView()</span></div>
+          <div class="sg-tile__hd"><h3>Event card</h3><span class="sg-tile__spec">eventsView()</span></div>
           <p class="sg-tile__note">
             Built by calling <code>eventsView()</code> from
             <code>js/views/events.js</code> just now and taking its first
-            <code>.event-row</code> — including its per-card toggle, in
+            <code>.event-card</code> — including its per-card toggle, in
             whatever state your browser's saved selection currently has it
             (nothing on this page ever writes to that selection).
           </p>
@@ -1091,14 +1091,14 @@
     {
       const tmp = document.createElement('div');
       tmp.innerHTML = eventsView().html;
-      const card = tmp.querySelector('.event-row');
+      const card = tmp.querySelector('.event-card');
       if (card) {
         card.querySelectorAll('[id]').forEach((el) => {
           el.id = `${el.id}--card-demo`;
         });
       }
       const wrap = document.createElement('ul');
-      wrap.className = 'event-group';
+      wrap.className = 'event-cards';
       if (card) wrap.appendChild(card);
       document.getElementById('sg-event-card-demo').appendChild(wrap);
     }
@@ -1264,13 +1264,12 @@
             <li class="tonight-group">
               <article class="tonight-card">
                 <div class="tonight-card__head">
-                  <span class="event-row__num" aria-hidden="true">${evt.number}</span>
-                  <div class="event-row__body">
-                    <h3 class="tonight-card__title">
-                      <a class="event-row__name" href="#/events/${esc(slug)}">${esc(evt.name)} →</a>
-                    </h3>
-                    <p class="event-row__tag">${esc(evt.tagline)}</p>
-                  </div>
+                  <h3 class="tonight-card__title">
+                    <a class="tonight-card__name" href="#/events/${esc(slug)}">${esc(evt.name)} →</a>
+                  </h3>
+                </div>
+                <div class="tonight-card__subhead">
+                  <p class="tonight-card__tag">${esc(evt.tagline)}</p>
                 </div>
                 <p class="tonight-card__section-head tonight-card__section-head--rule">Key rule</p>
                 <div class="tonight-card__section-body tonight-card__section-body--rule">

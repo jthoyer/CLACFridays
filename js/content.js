@@ -332,7 +332,6 @@ export const eventsAtAGlance = {
 export const events = [
   {
     slug: 'sprints',
-    number: 1,
     name: 'Standing Start & Sprints',
     tagline: '70m · 100m · 200m',
     quickFacts: [
@@ -374,7 +373,6 @@ export const events = [
 
   {
     slug: 'middle-distance',
-    number: 2,
     name: 'Middle Distance Running',
     tagline: '400m · 800m',
     quickFacts: [
@@ -423,7 +421,6 @@ export const events = [
 
   {
     slug: 'hurdles',
-    number: 3,
     name: 'Hurdles',
     tagline: '60m hurdles · 45cm',
     quickFacts: [
@@ -462,7 +459,6 @@ export const events = [
 
   {
     slug: 'relay',
-    number: 4,
     name: '4 x 100m Relay & Baton Change',
     tagline: 'Team event',
     quickFacts: [
@@ -501,7 +497,6 @@ export const events = [
 
   {
     slug: 'race-walk',
-    number: 5,
     name: 'Race Walk',
     tagline: '700m',
     quickFacts: [
@@ -537,7 +532,6 @@ export const events = [
 
   {
     slug: 'long-jump',
-    number: 6,
     name: 'Long Jump',
     tagline: 'Mat take-off',
     quickFacts: [
@@ -576,7 +570,6 @@ export const events = [
 
   {
     slug: 'high-jump',
-    number: 7,
     name: 'High Jump (Scissor Technique)',
     tagline: 'Scissor technique only',
     quickFacts: [
@@ -618,7 +611,6 @@ export const events = [
 
   {
     slug: 'shot-put',
-    number: 8,
     name: 'Shot Put',
     tagline: '2kg (orange)',
     quickFacts: [
@@ -659,7 +651,6 @@ export const events = [
 
   {
     slug: 'discus',
-    number: 9,
     name: 'Discus',
     tagline: '500g',
     quickFacts: [
@@ -700,7 +691,6 @@ export const events = [
 
   {
     slug: 'turbo-javelin',
-    number: 10,
     name: 'Bonus: Turbo Javelin (Lead-Up Skill)',
     tagline: 'Not a competition event until U11',
     quickFacts: [
