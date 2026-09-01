@@ -741,6 +741,19 @@ same `js/ui.js` helpers the app itself calls. See the note at the very top of
 this file for the two-way sync rule, and `styleguide.html`'s own visible
 banner naming this file as its source of truth.
 
+Its own chrome (not part of the app, so not bound by the four-tab rule or
+`--measure`'s 42rem prose column) is a sticky top nav with scroll-spy
+section links, a short hero, four numbered sections (01 Colour · 02 Type ·
+03 Spacing, radii & elevation · 04 Components) matching this file's own
+section order, and — for Components — a two-column tile gallery (full-width
+tiles for anything that needs the room: the tab bar, the responsive table,
+the picker form, the Tonight-tab card pair, the Games-list/Game-Detail
+pair). Every colour swatch is click-to-copy (writes the hex to the
+clipboard; the visible "Copied" flash is real feedback either way, since
+the clipboard write itself is best-effort). None of this chrome touches the
+"no webfonts, system stack only" or "light mode only" rules above — it's
+plain CSS using the app's own tokens, same as everything else on the page.
+
 ---
 
 ## Accessibility rules for this project

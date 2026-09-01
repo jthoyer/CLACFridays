@@ -21,10 +21,10 @@
 
   <style>
     /*
-      Style-guide-page-only chrome: layout for the swatch grid, demo boxes and
-      pass/fail badges. Not part of css/components.css because none of this is
-      a reusable app UI pattern — it exists only to frame the *real* app
-      patterns being demonstrated below. This rule (never a literal hex, use
+      Style-guide-page-only chrome: the sticky nav, hero, numbered doc
+      sections, swatch/spec/tile layout that frame the *real* app patterns
+      demonstrated below. Not part of css/components.css because none of
+      this is a reusable app UI pattern. This rule (never a literal hex, use
       var(--space-*) / var(--color-*) etc.) covers this stylesheet's layout
       and chrome — it does NOT extend to the two swatch-overlay-label
       exceptions below (`.sg-swatch__block-label`'s `#000` and its
@@ -35,105 +35,208 @@
       variable. AC72's "components reference tokens, never literal hex"
       rule scopes to `css/base.css` / `css/components.css` only; it was never
       claimed to cover this page's own demo-only `<style>` block in full.
+
+      No webfont, no font-family override anywhere below — system stack
+      only, same rule STYLEGUIDE.md's Type section states for the app
+      itself ("loads on track-side mobile data").
     */
-    .sg-toc {
-      list-style: none;
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-2);
-      padding: var(--space-3) var(--gutter);
-      margin: 0;
-      max-width: var(--measure);
-      margin-inline: auto;
-      background: var(--color-surface);
+
+    /* This page is a design-system reference, not app content, so it earns
+       a wider canvas than the app's own 42rem prose column (--measure). */
+    #main.sg-main {
+      max-width: 74rem;
+      padding-bottom: var(--space-8);
+    }
+
+    /* ---- Sticky nav ---- */
+    .sg-topnav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: color-mix(in srgb, var(--color-bg) 90%, transparent);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--color-border-subtle);
     }
-    .sg-toc a {
+    .sg-topnav__in {
+      max-width: 74rem;
+      margin-inline: auto;
+      padding: var(--space-3) var(--gutter);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+    .sg-brand {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-2);
+      text-decoration: none;
+      color: var(--color-heading);
+      min-width: 0;
+    }
+    .sg-brand__mark {
+      width: 0.65rem;
+      height: 0.65rem;
+      border-radius: var(--radius-sm);
+      background: var(--color-accent);
+      flex: none;
+      transform: translateY(-1px);
+    }
+    .sg-brand__name {
+      font-size: var(--fs-300);
+      font-weight: var(--fw-bold);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sg-brand__sub {
+      font-size: var(--fs-100);
+      color: var(--color-text-caption);
+      white-space: nowrap;
+    }
+    .sg-navlinks {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .sg-navlinks::-webkit-scrollbar { display: none; }
+    .sg-navlinks a {
+      flex: none;
       display: inline-flex;
       align-items: center;
       min-height: 2.25rem;
+      font-size: var(--fs-100);
+      font-weight: var(--fw-semibold);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--color-text-muted);
       padding: var(--space-1) var(--space-3);
       border-radius: var(--radius-pill);
-      background: var(--color-accent-tint);
-      color: var(--color-accent-strong);
-      font-size: var(--fs-200);
-      font-weight: var(--fw-semibold);
-      text-decoration: none;
+      white-space: nowrap;
     }
-    .sg-toc a:hover,
-    .sg-toc a:focus-visible {
-      background: var(--color-accent);
-      color: var(--color-accent-on);
+    .sg-navlinks a:hover,
+    .sg-navlinks a:focus-visible { background: var(--color-accent-tint); color: var(--color-accent-strong); }
+    .sg-navlinks a.is-active { background: var(--color-accent); color: var(--color-accent-on); }
+    .sg-navlinks a.sg-navlinks__back { margin-left: var(--space-2); color: var(--color-accent); }
+
+    /* ---- Hero ---- */
+    .sg-hero {
+      max-width: 74rem;
+      margin-inline: auto;
+      padding: var(--space-8) var(--gutter) var(--space-6);
+    }
+    .sg-eyebrow {
+      font-size: var(--fs-100);
+      font-weight: var(--fw-bold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin: 0 0 var(--space-3);
+    }
+    .sg-hero h1 { font-size: var(--fs-700); }
+    .sg-hero__lede {
+      margin-top: var(--space-4);
+      max-width: 48rem;
+      font-size: var(--fs-400);
+      line-height: var(--lh-body);
+      color: var(--color-text-muted);
+    }
+    .sg-hero__meta {
+      margin-top: var(--space-5);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    .sg-hero__meta span {
+      font-size: var(--fs-100);
+      font-weight: var(--fw-semibold);
+      letter-spacing: 0.03em;
+      color: var(--color-text-caption);
+      background: var(--color-neutral-100);
+      border: 1px solid var(--color-border-subtle);
+      padding: 0.3rem var(--space-3);
+      border-radius: var(--radius-pill);
     }
     .sg-banner {
-      margin-bottom: var(--space-5);
+      margin-top: var(--space-6);
+      max-width: 48rem;
       padding: var(--space-4);
       background: var(--color-accent-tint);
       border: 1px solid var(--color-border-interactive);
       border-radius: var(--radius-lg);
       color: var(--color-accent-strong);
       font-weight: var(--fw-medium);
+      font-size: var(--fs-300);
     }
-    .sg-banner a {
-      color: inherit;
-    }
-    .sg-subsection {
-      margin-top: var(--space-6);
-      padding-top: var(--space-5);
+    .sg-banner a { color: inherit; }
+
+    /* ---- Doc sections ---- */
+    .sg-doc {
+      padding: var(--space-7) 0;
       border-top: 1px solid var(--color-border-subtle);
     }
-    .sg-subsection__title {
-      font-size: var(--fs-500);
-      margin-bottom: var(--space-2);
-    }
-    .sg-note {
-      font-size: var(--fs-200);
-      color: var(--color-text-muted);
-      margin: var(--space-2) 0 var(--space-3);
-      line-height: var(--lh-snug);
-    }
-    .sg-demo {
-      padding: var(--space-4);
-      background: var(--color-neutral-50);
-      border: 1px dashed var(--color-border-interactive);
-      border-radius: var(--radius-lg);
-    }
-    .sg-demo-row {
+    .sg-doc:first-of-type { border-top: 0; padding-top: var(--space-6); }
+    .sg-doc__hd {
       display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-4);
-      align-items: flex-start;
+      align-items: baseline;
+      gap: var(--space-3);
+      scroll-margin-top: 4.5rem;
     }
-    .sg-demo-row > * {
-      flex: 1 1 12rem;
-    }
-    .sg-demo-label {
-      display: block;
-      margin-bottom: var(--space-2);
-      font-size: var(--fs-100);
-      font-weight: var(--fw-bold);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+    .sg-num {
+      font-family: var(--font-mono);
+      font-size: var(--fs-200);
       color: var(--color-text-caption);
     }
+    .sg-doc__hd h2 { font-size: var(--fs-600); }
+    .sg-doc__intro {
+      max-width: 48rem;
+      margin: var(--space-3) 0 var(--space-6);
+      color: var(--color-text-muted);
+      font-size: var(--fs-300);
+      line-height: var(--lh-body);
+    }
+    .sg-subhead {
+      font-size: var(--fs-500);
+      margin: var(--space-6) 0 var(--space-3);
+    }
+    .sg-doc > .sg-subhead:first-of-type { margin-top: 0; }
 
-    /* Colour swatches */
-    .sg-token-grid {
+    /* ---- Colour swatches ---- */
+    .sg-swatch-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
       gap: var(--space-4);
     }
     .sg-swatch {
+      display: block;
+      width: 100%;
+      margin: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      font: inherit;
+      color: inherit;
+      text-align: left;
       background: var(--color-surface);
       border: 1px solid var(--color-border-subtle);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-1);
       overflow: hidden;
+      cursor: pointer;
+      padding: 0;
+      transition: box-shadow 0.15s ease;
     }
+    .sg-swatch:hover,
+    .sg-swatch:focus-visible { box-shadow: var(--shadow-2); }
     .sg-swatch__block {
       display: flex;
       align-items: flex-end;
-      min-height: 4.5rem;
+      min-height: 4.75rem;
       padding: var(--space-2) var(--space-3);
     }
     .sg-swatch__block-label {
@@ -144,9 +247,7 @@
       background: rgba(255, 255, 255, 0.85);
       color: #000;
     }
-    .sg-swatch__meta {
-      padding: var(--space-3);
-    }
+    .sg-swatch__meta { padding: var(--space-3); }
     .sg-swatch__name {
       display: block;
       font-family: var(--font-mono);
@@ -155,33 +256,34 @@
       color: var(--color-heading);
     }
     .sg-swatch__hex {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
       font-family: var(--font-mono);
       font-size: var(--fs-100);
       color: var(--color-text-muted);
       margin: 0.15rem 0 var(--space-2);
     }
+    .sg-swatch__copy {
+      font-family: var(--font-sans);
+      font-weight: var(--fw-semibold);
+      color: var(--color-accent);
+      opacity: 0;
+      flex: none;
+    }
+    .sg-swatch:hover .sg-swatch__copy,
+    .sg-swatch:focus-visible .sg-swatch__copy { opacity: 1; }
+    .sg-swatch__copy.is-copied { opacity: 1; color: var(--color-success); }
     .sg-swatch__use {
       font-size: var(--fs-200);
       color: var(--color-text-muted);
       margin: 0 0 var(--space-2);
       line-height: var(--lh-snug);
     }
-    .sg-ratios {
-      list-style: none;
-      display: grid;
-      gap: 0.3rem;
-    }
-    .sg-ratio {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      font-size: var(--fs-100);
-    }
-    .sg-ratio__bg {
-      font-family: var(--font-mono);
-      color: var(--color-text-caption);
-    }
+    .sg-ratios { list-style: none; display: grid; gap: 0.3rem; margin: 0; padding: 0; }
+    .sg-ratio { display: flex; align-items: center; gap: var(--space-2); font-size: var(--fs-100); }
+    .sg-ratio__bg { font-family: var(--font-mono); color: var(--color-text-caption); }
     .sg-badge {
       font-weight: var(--fw-bold);
       padding: 0.1rem var(--space-2);
@@ -189,48 +291,44 @@
       font-size: var(--fs-100);
       letter-spacing: 0.03em;
     }
-    .sg-badge--pass {
-      background: var(--color-accent-tint);
-      color: var(--color-accent-strong);
-      border: 1px solid var(--color-accent);
-    }
-    .sg-badge--fail {
-      background: var(--color-warn-surface);
-      color: var(--color-warn-text);
-      border: 1px solid var(--color-warn-border);
-    }
+    .sg-badge--pass { background: var(--color-accent-tint); color: var(--color-accent-strong); border: 1px solid var(--color-accent); }
+    .sg-badge--fail { background: var(--color-warn-surface); color: var(--color-warn-text); border: 1px solid var(--color-warn-border); }
 
-    /* Type samples */
-    .sg-type-row {
+    /* ---- Type specimens ---- */
+    .sg-spec-row {
       display: flex;
       align-items: baseline;
-      gap: var(--space-4);
-      padding: var(--space-3) 0;
-      border-bottom: 1px solid var(--color-border-subtle);
+      gap: var(--space-5);
+      padding: var(--space-4) 0;
+      border-top: 1px solid var(--color-border-subtle);
     }
-    .sg-type-row:last-child {
-      border-bottom: 0;
-    }
-    .sg-type-meta {
-      flex: 0 0 9rem;
+    .sg-spec-row:first-child { border-top: 0; padding-top: 0; }
+    .sg-spec-meta {
+      flex: 0 0 12rem;
       font-family: var(--font-mono);
       font-size: var(--fs-100);
-      color: var(--color-text-muted);
+      color: var(--color-text-caption);
       line-height: var(--lh-snug);
     }
-    .sg-type-sample {
-      margin: 0;
-      color: var(--color-text);
-      font-weight: var(--fw-regular);
+    .sg-spec-meta b {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: var(--fs-200);
+      font-weight: var(--fw-bold);
+      color: var(--color-heading);
+      margin-bottom: 0.15rem;
     }
+    .sg-spec-sample { flex: 1; min-width: 0; margin: 0; color: var(--color-text); }
 
-    /* Scale strip (spacing/radii) */
-    .sg-scale-strip {
-      display: flex;
-      align-items: flex-end;
-      gap: var(--space-3);
-      flex-wrap: wrap;
+    /* ---- Scale (spacing/radii/elevation) ---- */
+    .sg-scale-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-1);
+      padding: var(--space-5);
     }
+    .sg-scale-strip { display: flex; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap; }
     .sg-scale-chip {
       display: flex;
       flex-direction: column;
@@ -240,10 +338,67 @@
       color: var(--color-text-muted);
       font-family: var(--font-mono);
     }
-    .sg-scale-chip__box {
-      background: var(--color-accent-tint);
-      border: 1px solid var(--color-accent);
+    .sg-scale-chip__box { background: var(--color-accent-tint); border: 1px solid var(--color-accent); }
+
+    .sg-elevation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+      gap: var(--space-4);
     }
+    .sg-elevation-grid > div {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+    }
+    .sg-demo-label {
+      display: block;
+      margin-bottom: var(--space-2);
+      font-size: var(--fs-100);
+      font-weight: var(--fw-bold);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--color-text-caption);
+      font-family: var(--font-mono);
+    }
+
+    /* ---- Component gallery ---- */
+    .sg-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
+    .sg-tile {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-1);
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .sg-tile--wide { grid-column: 1 / -1; }
+    .sg-tile__hd {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .sg-tile__hd h3 { font-size: var(--fs-400); }
+    .sg-tile__spec {
+      font-family: var(--font-mono);
+      font-size: var(--fs-100);
+      color: var(--color-text-caption);
+      text-align: right;
+    }
+    .sg-tile__note { font-size: var(--fs-200); color: var(--color-text-muted); line-height: var(--lh-snug); margin: 0; }
+    .sg-tile__stage {
+      background: var(--color-bg);
+      border: 1px dashed var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+    }
+    .sg-tile__stage--row { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: flex-start; }
+    .sg-tile__stage--row > * { flex: 1 1 12rem; }
+    .sg-tile__stage--flat { background: none; border: none; padding: 0; }
 
     /* Contained tab-bar demo: the real .tabbar is position:fixed in the app
        shell; here it's pinned to the bottom of a bounded demo box instead so
@@ -251,280 +406,339 @@
     .sg-tabbar-demo {
       position: relative;
       height: calc(var(--tabbar-height) + 2px);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-md);
       overflow: hidden;
       border: 1px solid var(--color-border-subtle);
     }
-    .sg-tabbar-demo .tabbar {
-      position: absolute;
-      inset: auto 0 0 0;
+    .sg-tabbar-demo .tabbar { position: absolute; inset: auto 0 0 0; }
+
+    /* ---- Footer ---- */
+    .sg-footer {
+      max-width: 74rem;
+      margin-inline: auto;
+      padding: var(--space-7) var(--gutter) var(--space-8);
+      border-top: 1px solid var(--color-border-subtle);
+    }
+    .sg-footer p { font-size: var(--fs-200); color: var(--color-text-caption); line-height: var(--lh-body); max-width: 48rem; margin: 0 0 var(--space-3); }
+    .sg-footer p:last-child { margin-bottom: 0; }
+    .sg-footer a { color: var(--color-accent); }
+    .sg-footer code { font-size: 0.85em; }
+
+    @media (max-width: 46em) {
+      .sg-hero { padding: var(--space-6) var(--gutter) var(--space-5); }
+      .sg-hero h1 { font-size: var(--fs-600); }
+      .sg-doc { padding: var(--space-6) 0; }
+      .sg-gallery { grid-template-columns: 1fr; }
+      .sg-spec-row { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+      .sg-spec-meta { flex: none; width: auto; }
+      .sg-brand__sub { display: none; }
     }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
 
-  <header class="app-bar">
-    <p class="app-bar__title">Style Guide — U10 Boys Age Manager Guide</p>
+  <header>
+    <nav class="sg-topnav" aria-label="Style guide sections">
+      <div class="sg-topnav__in">
+        <a class="sg-brand" href="#main">
+          <span class="sg-brand__mark" aria-hidden="true"></span>
+          <span class="sg-brand__name">U10 Boys Age Manager Guide</span>
+          <span class="sg-brand__sub">/ Style Guide</span>
+        </a>
+        <div class="sg-navlinks" id="sg-navlinks">
+          <a href="#sg-colour">Colour</a>
+          <a href="#sg-type">Type</a>
+          <a href="#sg-scale">Spacing &amp; elevation</a>
+          <a href="#sg-components">Components</a>
+          <a class="sg-navlinks__back" href="index.html">Back to the app ↗</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sg-hero">
+      <p class="sg-eyebrow">Reference · rendered from STYLEGUIDE.md</p>
+      <h1 id="page-title" tabindex="-1">Style Guide</h1>
+      <p class="sg-hero__lede">
+        Stripe-derived design system for the NSW Little Athletics U10 Boys
+        Age Manager Guide — every colour, type size and component the app
+        uses, in one place. Colour swatches read live from
+        <code>css/tokens.css</code>, type samples render at their real size,
+        and every component example is produced by calling the exact same
+        <code>js/ui.js</code> helper the live app calls, not by hand-copied
+        markup. Click any hex to copy it.
+      </p>
+      <div class="sg-hero__meta">
+        <span>WCAG 2.1 AA</span>
+        <span>Light mode only</span>
+        <span>System fonts, no webfonts</span>
+        <span>44px tap targets</span>
+        <span>Stripe-derived palette</span>
+      </div>
+      <div class="sg-banner">
+        <strong>Source of truth:</strong> this page is rendered
+        <em>from</em> <a href="STYLEGUIDE.md">STYLEGUIDE.md</a>. If this
+        page and STYLEGUIDE.md ever disagree, STYLEGUIDE.md is correct and
+        this page is stale — see the sync note at the top of that file.
+      </div>
+    </div>
   </header>
 
-  <nav class="sg-toc" aria-label="Style guide sections">
-    <a href="#sg-colour">Colour</a>
-    <a href="#sg-type">Type</a>
-    <a href="#sg-scale">Spacing, radii &amp; elevation</a>
-    <a href="#sg-components">Components</a>
-    <a href="index.html">Back to the app ↗</a>
-  </nav>
-
-  <main class="app-main" id="main">
-    <div class="sg-banner">
-      <strong>Source of truth:</strong> this page is rendered <em>from</em>
-      <a href="STYLEGUIDE.md">STYLEGUIDE.md</a> — colour swatches read live
-      from <code>css/tokens.css</code>, type samples render at their real
-      size, and every component example below is produced by calling the
-      exact same <code>js/ui.js</code> helper the live app calls, not by
-      hand-copied markup. If this page and STYLEGUIDE.md ever disagree,
-      STYLEGUIDE.md is correct and this page is stale — see the sync note at
-      the top of that file.
-    </div>
-
-    <h1 id="page-title" tabindex="-1">Style Guide</h1>
-    <p class="page-head__lead">
-      Stripe-derived design system for the NSW Little Athletics U10 Boys Age
-      Manager Guide — every colour, type size and component the app uses, in
-      one place.
-    </p>
-
-    <section class="sg-subsection" id="sg-colour" aria-labelledby="sg-colour-h">
-      <h2 class="sg-subsection__title" id="sg-colour-h">Colour</h2>
-      <p class="sg-note">
+  <main class="app-main sg-main" id="main">
+    <section class="sg-doc" id="sg-colour" aria-labelledby="sg-colour-h">
+      <div class="sg-doc__hd"><span class="sg-num" aria-hidden="true">01</span><h2 id="sg-colour-h">Colour</h2></div>
+      <p class="sg-doc__intro">
         Every ratio below is computed at load time (WCAG 2.1 relative
         luminance) from the colour actually resolved from
-        <code>css/tokens.css</code> right now — it is not a number typed into
-        this page. If a value here and the same pairing in STYLEGUIDE.md ever
-        disagree, one of them is stale; re-measure both.
+        <code>css/tokens.css</code> right now — it is not a number typed
+        into this page. If a value here and the same pairing in
+        STYLEGUIDE.md ever disagree, one of them is stale; re-measure both.
       </p>
 
-      <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Surfaces</h3>
-      <div class="sg-token-grid" id="sg-surface-grid"></div>
+      <h3 class="sg-subhead">Surfaces</h3>
+      <div class="sg-swatch-grid" id="sg-surface-grid"></div>
 
-      <h3 class="sg-subsection__title" style="font-size:var(--fs-400);margin-top:var(--space-6)">
-        Text, borders &amp; focus
-      </h3>
-      <div class="sg-token-grid" id="sg-text-grid"></div>
+      <h3 class="sg-subhead">Text, borders &amp; focus</h3>
+      <div class="sg-swatch-grid" id="sg-text-grid"></div>
     </section>
 
-    <section class="sg-subsection" id="sg-type" aria-labelledby="sg-type-h">
-      <h2 class="sg-subsection__title" id="sg-type-h">Type</h2>
-      <p class="sg-note">
-        System font stack only — no webfont download. Each row below is
-        rendered at its real token size; the px value shown is read back from
-        the rendered element, not typed in.
+    <section class="sg-doc" id="sg-type" aria-labelledby="sg-type-h">
+      <div class="sg-doc__hd"><span class="sg-num" aria-hidden="true">02</span><h2 id="sg-type-h">Type</h2></div>
+      <p class="sg-doc__intro">
+        System font stack only — no webfont download, because this loads on
+        track-side mobile data. Each row below is rendered at its real
+        token size; the px value shown is read back from the rendered
+        element, not typed in.
       </p>
       <div id="sg-type-list"></div>
     </section>
 
-    <section class="sg-subsection" id="sg-scale" aria-labelledby="sg-scale-h">
-      <h2 class="sg-subsection__title" id="sg-scale-h">Spacing, radii &amp; elevation</h2>
+    <section class="sg-doc" id="sg-scale" aria-labelledby="sg-scale-h">
+      <div class="sg-doc__hd"><span class="sg-num" aria-hidden="true">03</span><h2 id="sg-scale-h">Spacing, radii &amp; elevation</h2></div>
+      <p class="sg-doc__intro">4px base spacing scale. Three consistent shadow levels — never an arbitrary one-off shadow.</p>
 
-      <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Spacing (4px base)</h3>
-      <div class="sg-scale-strip" id="sg-spacing-strip"></div>
+      <h3 class="sg-subhead">Spacing (4px base)</h3>
+      <div class="sg-scale-card"><div class="sg-scale-strip" id="sg-spacing-strip"></div></div>
 
-      <h3 class="sg-subsection__title" style="font-size:var(--fs-400);margin-top:var(--space-5)">Radii</h3>
-      <div class="sg-scale-strip" id="sg-radii-strip"></div>
+      <h3 class="sg-subhead">Radii</h3>
+      <div class="sg-scale-card"><div class="sg-scale-strip" id="sg-radii-strip"></div></div>
 
-      <h3 class="sg-subsection__title" style="font-size:var(--fs-400);margin-top:var(--space-5)">Elevation</h3>
-      <div class="sg-demo-row" id="sg-shadow-strip"></div>
+      <h3 class="sg-subhead">Elevation</h3>
+      <div class="sg-elevation-grid" id="sg-shadow-strip"></div>
     </section>
 
-    <section class="sg-subsection" id="sg-components" aria-labelledby="sg-components-h">
-      <h2 class="sg-subsection__title" id="sg-components-h">Components</h2>
-      <p class="sg-note">
-        One live example per component section in STYLEGUIDE.md, in the same
-        order. Where a <code>js/ui.js</code> helper renders the component,
-        the markup below was produced by importing and calling that helper
-        just now — the same function the live app calls on every render.
+    <section class="sg-doc" id="sg-components" aria-labelledby="sg-components-h">
+      <div class="sg-doc__hd"><span class="sg-num" aria-hidden="true">04</span><h2 id="sg-components-h">Components</h2></div>
+      <p class="sg-doc__intro">
+        One live example per component section in STYLEGUIDE.md, in the
+        same order. Where a <code>js/ui.js</code> helper renders the
+        component, the markup below was produced by importing and calling
+        that helper just now — the same function the live app calls on
+        every render.
       </p>
 
-      <div class="sg-subsection" style="border-top:0;padding-top:0">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Bottom tab bar</h3>
-        <p class="sg-note">
-          No <code>js/ui.js</code> helper renders this — it's hand-authored
-          in <code>index.html</code> — so it's reproduced here verbatim
-          (contained in a bounded box; the real one is
-          <code>position: fixed</code> to the viewport).
-        </p>
-        <div class="sg-tabbar-demo" id="sg-tabbar-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Event row</h3>
-        <p class="sg-note">
-          Built by calling <code>eventsView()</code> from
-          <code>js/views/events.js</code> just now and taking its first
-          <code>.event-row</code> — including its per-card toggle, in
-          whatever state your browser's saved selection currently has it
-          (nothing on this page ever writes to that selection).
-        </p>
-        <div class="sg-demo" id="sg-event-card-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Events tab: grouped by discipline</h3>
-        <p class="sg-note">
-          Built by calling the real <code>eventsView()</code> just now and
-          taking its category <code>&lt;h2&gt;</code> headings, in order
-          (Track / Jumps / Throws / Bonus) — the same four
-          <code>&lt;section&gt;</code>s the live Events tab renders.
-        </p>
-        <div class="sg-demo" id="sg-event-categories-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Per-card Tonight toggle</h3>
-        <p class="sg-note">
-          Both states, produced by two direct calls to
-          <code>tonightToggleButton()</code> from <code>js/ui.js</code> — a
-          44&times;44 icon-only circle. The accessible name
-          (<code>aria-label</code>) is identical in both; the glyph
-          (+ / &check;) and border style (dashed / solid) are the two
-          required non-colour signals that change (the fill also changes to
-          a solid <code>--color-success</code> green when on, but colour is
-          never the only signal — see STYLEGUIDE.md).
-        </p>
-        <div class="sg-demo sg-demo-row" id="sg-toggle-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Event Detail "Add to tonight" CTA</h3>
-        <p class="sg-note">
-          Both states, produced by two direct calls to
-          <code>tonightCtaButton()</code> from <code>js/ui.js</code> — the
-          same per-event Tonight state as the toggle above, reusing the exact
-          same <code>data-action="toggle-tonight"</code> click handler.
-        </p>
-        <div class="sg-demo sg-demo-row" id="sg-cta-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Fact list</h3>
-        <p class="sg-note">Calls <code>factList()</code> with three real facts from <code>ageGroupFacts</code>.</p>
-        <div class="sg-demo" id="sg-factlist-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Responsive table</h3>
-        <p class="sg-note">Calls <code>responsiveTable()</code> with three real rows from <code>eventsAtAGlance</code>. Resize the window below 40em to see it restack.</p>
-        <div class="sg-demo" id="sg-table-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Safety callout</h3>
-        <p class="sg-note">Calls <code>safetyCallout()</code> with one event's real, verbatim safety text.</p>
-        <div class="sg-demo" id="sg-safety-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Resource card</h3>
-        <p class="sg-note">
-          Calls <code>resourceCard()</code> three ways: a full video embed, a
-          full article out-link, and a compact library row.
-        </p>
-        <div class="sg-demo" id="sg-resource-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Buttons</h3>
-        <p class="sg-note">No helper renders these — <code>.btn</code>/<code>.btn--primary</code>/<code>.btn--ghost</code> are plain CSS classes.</p>
-        <div class="sg-demo sg-demo-row">
-          <button class="btn btn--primary" type="button">Primary action</button>
-          <button class="btn btn--ghost" type="button">Secondary / dismiss</button>
-        </div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Tonight / Everything mode switch</h3>
-        <p class="sg-note">Two calls to <code>modeSwitch()</code>, one per state.</p>
-        <div class="sg-demo sg-demo-row" id="sg-modeswitch-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Onboarding / edit picker</h3>
-        <p class="sg-note">
-          The real picker form, produced by calling <code>openPicker()</code>
-          then <code>tonightView()</code> from
-          <code>js/views/tonight.js</code>. Its Save button is disarmed on
-          this page only (<code>preventDefault</code> on submit) so trying it
-          doesn't reload the page — nothing here writes to your saved
-          selection.
-        </p>
-        <div class="sg-demo" id="sg-picker-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Tonight tab: event card (event + key rule + game tonight)</h3>
-        <p class="sg-note">
-          Two real events rendered with the same <code>.tonight-card</code>
-          markup the Tonight tab uses, each with its own linked games
-          rendered as a "Games tonight (N)" section of bordered game cards.
-          An event with zero linked games would render no games section at
-          all instead of an empty one (AC16) — every current event has at
-          least one, so that branch has no live example today.
-        </p>
-        <div class="sg-demo" id="sg-grouping-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Games list link + Game Detail page</h3>
-        <p class="sg-note">
-          Left: one real list item, taken from calling <code>gamesView()</code>
-          just now (the link + one-sentence summary that replaced the old
-          full-card body). Right: the "What to do" section of that same
-          game's own page, taken from calling
-          <code>gameDetailView('hoop-monster')</code> — note the accent-blue
-          <code>&lt;h1&gt;</code>, a deliberate distinction from every other
-          page's navy heading.
-        </p>
-        <div class="sg-demo-row" id="sg-gamedetail-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Empty / near-empty Tonight-mode state</h3>
-        <p class="sg-note">Calls <code>tonightEmptyState()</code> with the real copy from <code>tonightCopy.emptyState</code>.</p>
-        <div class="sg-demo" id="sg-empty-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Is Tonight-mode filtering active?</h3>
-        <p class="sg-note">
-          Not a visual component — a predicate, <code>tonight.isFiltering()</code>.
-          The box below reads its live value (and the two values it's derived
-          from) straight out of <code>js/tonight.js</code> for whatever this
-          browser's real state happens to be right now — read-only, nothing
-          here changes it.
-        </p>
-        <div class="sg-demo" id="sg-filtering-demo"></div>
-      </div>
-
-      <div class="sg-subsection">
-        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Two render paths</h3>
-        <p class="sg-note">Not a visual component — a routing/focus behaviour rule with no markup of its own to demonstrate live on a standalone page.</p>
-        <div class="sg-demo">
-          <p style="margin:0 0 var(--space-3)">
-            <strong>Real navigation</strong> (hash changed): scrolls to top,
-            moves focus to the new <code>#page-title</code>.
+      <div class="sg-gallery">
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Bottom tab bar</h3><span class="sg-tile__spec">hand-authored in index.html</span></div>
+          <p class="sg-tile__note">
+            No <code>js/ui.js</code> helper renders this — it's
+            hand-authored in <code>index.html</code> — so it's reproduced
+            here verbatim (contained in a bounded box; the real one is
+            <code>position: fixed</code> to the viewport).
           </p>
-          <p style="margin:0">
-            <strong>State-only re-render</strong> (<code>tonight:change</code>
-            event — mode switch, per-card toggle, picker open/close/save):
-            repaints <code>#view</code> only; <code>interactions.js</code>
-            places focus deliberately afterwards. See STYLEGUIDE.md for the
-            full rule.
+          <div class="sg-tile__stage sg-tabbar-demo" id="sg-tabbar-demo"></div>
+        </article>
+
+        <article class="sg-tile">
+          <div class="sg-tile__hd"><h3>Event row</h3><span class="sg-tile__spec">eventsView()</span></div>
+          <p class="sg-tile__note">
+            Built by calling <code>eventsView()</code> from
+            <code>js/views/events.js</code> just now and taking its first
+            <code>.event-row</code> — including its per-card toggle, in
+            whatever state your browser's saved selection currently has it
+            (nothing on this page ever writes to that selection).
           </p>
-        </div>
+          <div class="sg-tile__stage" id="sg-event-card-demo"></div>
+        </article>
+
+        <article class="sg-tile">
+          <div class="sg-tile__hd"><h3>Events tab: grouped by discipline</h3><span class="sg-tile__spec">eventsView()</span></div>
+          <p class="sg-tile__note">
+            Built by calling the real <code>eventsView()</code> just now
+            and taking its category <code>&lt;h2&gt;</code> headings, in
+            order (Track / Jumps / Throws / Bonus) — the same four
+            <code>&lt;section&gt;</code>s the live Events tab renders.
+          </p>
+          <div class="sg-tile__stage" id="sg-event-categories-demo"></div>
+        </article>
+
+        <article class="sg-tile">
+          <div class="sg-tile__hd"><h3>Per-card Tonight toggle</h3><span class="sg-tile__spec">tonightToggleButton()</span></div>
+          <p class="sg-tile__note">
+            Both states, produced by two direct calls to
+            <code>tonightToggleButton()</code> from <code>js/ui.js</code> —
+            a 44&times;44 icon-only circle. The accessible name
+            (<code>aria-label</code>) is identical in both; the glyph
+            (+ / &check;) and border style (dashed / solid) are the two
+            required non-colour signals that change (the fill also changes
+            to a solid <code>--color-success</code> green when on, but
+            colour is never the only signal — see STYLEGUIDE.md).
+          </p>
+          <div class="sg-tile__stage sg-tile__stage--row" id="sg-toggle-demo"></div>
+        </article>
+
+        <article class="sg-tile">
+          <div class="sg-tile__hd"><h3>Event Detail "Add to tonight" CTA</h3><span class="sg-tile__spec">tonightCtaButton()</span></div>
+          <p class="sg-tile__note">
+            Both states, produced by two direct calls to
+            <code>tonightCtaButton()</code> from <code>js/ui.js</code> —
+            the same per-event Tonight state as the toggle above, reusing
+            the exact same <code>data-action="toggle-tonight"</code> click
+            handler.
+          </p>
+          <div class="sg-tile__stage sg-tile__stage--row" id="sg-cta-demo"></div>
+        </article>
+
+        <article class="sg-tile">
+          <div class="sg-tile__hd"><h3>Fact list</h3><span class="sg-tile__spec">factList()</span></div>
+          <p class="sg-tile__note">Calls <code>factList()</code> with three real facts from <code>ageGroupFacts</code>.</p>
+          <div class="sg-tile__stage" id="sg-factlist-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Responsive table</h3><span class="sg-tile__spec">responsiveTable()</span></div>
+          <p class="sg-tile__note">Calls <code>responsiveTable()</code> with three real rows from <code>eventsAtAGlance</code>. Resize the window below 40em to see it restack.</p>
+          <div class="sg-tile__stage" id="sg-table-demo"></div>
+        </article>
+
+        <article class="sg-tile">
+          <div class="sg-tile__hd"><h3>Safety callout</h3><span class="sg-tile__spec">safetyCallout()</span></div>
+          <p class="sg-tile__note">Calls <code>safetyCallout()</code> with one event's real, verbatim safety text.</p>
+          <div class="sg-tile__stage" id="sg-safety-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Resource card</h3><span class="sg-tile__spec">resourceCard()</span></div>
+          <p class="sg-tile__note">
+            Calls <code>resourceCard()</code> three ways: a full video
+            embed, a full article out-link, and a compact library row.
+          </p>
+          <div class="sg-tile__stage" id="sg-resource-demo"></div>
+        </article>
+
+        <article class="sg-tile">
+          <div class="sg-tile__hd"><h3>Buttons</h3><span class="sg-tile__spec">.btn / .btn--primary / .btn--ghost</span></div>
+          <p class="sg-tile__note">No helper renders these — <code>.btn</code>/<code>.btn--primary</code>/<code>.btn--ghost</code> are plain CSS classes.</p>
+          <div class="sg-tile__stage sg-tile__stage--row">
+            <button class="btn btn--primary" type="button">Primary action</button>
+            <button class="btn btn--ghost" type="button">Secondary / dismiss</button>
+          </div>
+        </article>
+
+        <article class="sg-tile">
+          <div class="sg-tile__hd"><h3>Tonight / Everything mode switch</h3><span class="sg-tile__spec">modeSwitch()</span></div>
+          <p class="sg-tile__note">Two calls to <code>modeSwitch()</code>, one per state.</p>
+          <div class="sg-tile__stage sg-tile__stage--row" id="sg-modeswitch-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Onboarding / edit picker</h3><span class="sg-tile__spec">openPicker() + tonightView()</span></div>
+          <p class="sg-tile__note">
+            The real picker form, produced by calling
+            <code>openPicker()</code> then <code>tonightView()</code> from
+            <code>js/views/tonight.js</code>. Its Save button is disarmed
+            on this page only (<code>preventDefault</code> on submit) so
+            trying it doesn't reload the page — nothing here writes to your
+            saved selection.
+          </p>
+          <div class="sg-tile__stage" id="sg-picker-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Tonight tab: event card (event + key rule + games tonight)</h3><span class="sg-tile__spec">.tonight-card</span></div>
+          <p class="sg-tile__note">
+            Two real events rendered with the same
+            <code>.tonight-card</code> markup the Tonight tab uses, each
+            with its own linked games rendered as a "Games tonight (N)"
+            section of bordered game cards. An event with zero linked
+            games would render no games section at all instead of an
+            empty one (AC16) — every current event has at least one, so
+            that branch has no live example today.
+          </p>
+          <div class="sg-tile__stage" id="sg-grouping-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Games list link + Game Detail page</h3><span class="sg-tile__spec">gamesView() + gameDetailView()</span></div>
+          <p class="sg-tile__note">
+            Left: one real list item, taken from calling
+            <code>gamesView()</code> just now (the link + one-sentence
+            summary that replaced the old full-card body). Right: the
+            "What to do" section of that same game's own page, taken from
+            calling <code>gameDetailView('hoop-monster')</code> — note the
+            accent-blue <code>&lt;h1&gt;</code>, a deliberate distinction
+            from every other page's navy heading.
+          </p>
+          <div class="sg-tile__stage sg-tile__stage--row" id="sg-gamedetail-demo"></div>
+        </article>
+
+        <article class="sg-tile">
+          <div class="sg-tile__hd"><h3>Empty / near-empty Tonight-mode state</h3><span class="sg-tile__spec">tonightEmptyState()</span></div>
+          <p class="sg-tile__note">Calls <code>tonightEmptyState()</code> with the real copy from <code>tonightCopy.emptyState</code>.</p>
+          <div class="sg-tile__stage" id="sg-empty-demo"></div>
+        </article>
+
+        <article class="sg-tile">
+          <div class="sg-tile__hd"><h3>Is Tonight-mode filtering active?</h3><span class="sg-tile__spec">tonight.isFiltering()</span></div>
+          <p class="sg-tile__note">
+            Not a visual component — a predicate,
+            <code>tonight.isFiltering()</code>. The box below reads its
+            live value (and the two values it's derived from) straight out
+            of <code>js/tonight.js</code> for whatever this browser's real
+            state happens to be right now — read-only, nothing here
+            changes it.
+          </p>
+          <div class="sg-tile__stage" id="sg-filtering-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Two render paths</h3><span class="sg-tile__spec">router.js</span></div>
+          <p class="sg-tile__note">Not a visual component — a routing/focus behaviour rule with no markup of its own to demonstrate live on a standalone page.</p>
+          <div class="sg-tile__stage sg-tile__stage--flat">
+            <p style="margin:0 0 var(--space-3)">
+              <strong>Real navigation</strong> (hash changed): scrolls to
+              top, moves focus to the new <code>#page-title</code>.
+            </p>
+            <p style="margin:0">
+              <strong>State-only re-render</strong>
+              (<code>tonight:change</code> event — mode switch, per-card
+              toggle, picker open/close/save): repaints <code>#view</code>
+              only; <code>interactions.js</code> places focus deliberately
+              afterwards. See STYLEGUIDE.md for the full rule.
+            </p>
+          </div>
+        </article>
       </div>
     </section>
   </main>
+
+  <footer class="sg-footer">
+    <p>
+      <strong>Sync rule.</strong> A change to a token value, a type-scale
+      row or a component pattern requires the <em>same</em> change here and
+      in <a href="STYLEGUIDE.md">STYLEGUIDE.md</a>, in the same edit — see
+      the checklist at the top of that file. Colour swatches read live from
+      <code>css/tokens.css</code> custom properties, so a token
+      <em>value</em> change updates itself; a token being added or removed
+      still needs a swatch added or removed by hand.
+    </p>
+    <p>
+      This page is not a router route — a fifth tab-bar entry would breach
+      the exactly-four-tabs rule — so it carries its own landmarks
+      (<code>header</code>, <code>main</code>, a skip link) rather than
+      reusing <code>index.html</code>'s.
+    </p>
+  </footer>
 
   <script type="module">
     import {
@@ -580,6 +794,24 @@
     }
     function resolveToken(name) {
       return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    /* Click-to-copy affordance on every colour swatch below. Clipboard
+       write is best-effort (silently ignored if denied/unsupported); the
+       visible "Copied" flash is the real feedback either way. */
+    function copyToClipboard(text, indicatorEl) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => {});
+      }
+      const original = indicatorEl.dataset.label || indicatorEl.textContent;
+      indicatorEl.dataset.label = original;
+      indicatorEl.textContent = 'Copied';
+      indicatorEl.classList.add('is-copied');
+      window.clearTimeout(indicatorEl._sgCopyTimer);
+      indicatorEl._sgCopyTimer = window.setTimeout(() => {
+        indicatorEl.textContent = original;
+        indicatorEl.classList.remove('is-copied');
+      }, 1200);
     }
 
     /* Real ui.js helpers assign stable, content-derived ids (e.g.
@@ -641,7 +873,7 @@
         { label: 'body text', text: '--color-text' },
         { label: 'heading', text: '--color-heading' }
       ]],
-      ['--color-neutral-100', '<code> background', [
+      ['--color-neutral-100', '<code>&lt;code&gt;</code> background', [
         { label: 'body text', text: '--color-text' }
       ]],
       ['--color-accent-tint', 'Tinted surface, hover backgrounds', [
@@ -707,6 +939,27 @@
       return `<span class="sg-swatch__block-label" style="background:${overlay === '#FFFFFF' ? 'rgba(0,0,0,.55)' : 'rgba(255,255,255,.85)'};color:${overlay}">Aa</span>`;
     }
 
+    function buildSwatchCard(varName, use, ratioListHtml) {
+      const hex = resolveToken(varName);
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'sg-swatch';
+      card.title = `Click to copy ${hex}`;
+      card.setAttribute('aria-label', `${varName}, ${hex}. Click to copy.`);
+      card.innerHTML = `
+        <div class="sg-swatch__block" style="background:${esc(hex)}">${swatchBlockHtml(hex)}</div>
+        <div class="sg-swatch__meta">
+          <code class="sg-swatch__name">${esc(varName)}</code>
+          <p class="sg-swatch__hex"><span>${esc(hex)}</span><span class="sg-swatch__copy">Copy</span></p>
+          <p class="sg-swatch__use">${use}</p>
+          <ul class="sg-ratios">${ratioListHtml}</ul>
+        </div>`;
+      card.addEventListener('click', () => {
+        copyToClipboard(hex, card.querySelector('.sg-swatch__copy'));
+      });
+      return card;
+    }
+
     const surfaceGrid = document.getElementById('sg-surface-grid');
     SURFACE_TOKENS.forEach(([varName, use, pairings]) => {
       const hex = resolveToken(varName);
@@ -722,17 +975,7 @@
           </li>`;
         })
         .join('');
-      const card = document.createElement('div');
-      card.className = 'sg-swatch';
-      card.innerHTML = `
-        <div class="sg-swatch__block" style="background:${esc(hex)}">${swatchBlockHtml(hex)}</div>
-        <div class="sg-swatch__meta">
-          <code class="sg-swatch__name">${esc(varName)}</code>
-          <code class="sg-swatch__hex">${esc(hex)}</code>
-          <p class="sg-swatch__use">${use}</p>
-          <ul class="sg-ratios">${ratios}</ul>
-        </div>`;
-      surfaceGrid.appendChild(card);
+      surfaceGrid.appendChild(buildSwatchCard(varName, use, ratios));
     });
 
     const textGrid = document.getElementById('sg-text-grid');
@@ -757,17 +1000,7 @@
           </li>`;
         })
         .join('');
-      const card = document.createElement('div');
-      card.className = 'sg-swatch';
-      card.innerHTML = `
-        <div class="sg-swatch__block" style="background:${esc(hex)}">${swatchBlockHtml(hex)}</div>
-        <div class="sg-swatch__meta">
-          <code class="sg-swatch__name">${esc(t.v)}</code>
-          <code class="sg-swatch__hex">${esc(hex)}</code>
-          <p class="sg-swatch__use">${t.use}</p>
-          <ul class="sg-ratios">${ratios}</ul>
-        </div>`;
-      textGrid.appendChild(card);
+      textGrid.appendChild(buildSwatchCard(t.v, t.use, ratios));
     });
 
     /* ---------------------------------------------------------------
@@ -786,12 +1019,12 @@
     const typeList = document.getElementById('sg-type-list');
     TYPE_TOKENS.forEach(([varName, use]) => {
       const row = document.createElement('div');
-      row.className = 'sg-type-row';
+      row.className = 'sg-spec-row';
       row.innerHTML = `
-        <span class="sg-type-meta">${esc(varName)}<br><span id="px-${varName}">…</span><br>${use}</span>
-        <p class="sg-type-sample" style="font-size:var(${varName})">The quick brown fox jumps over the lazy dog.</p>`;
+        <div class="sg-spec-meta"><b>${esc(use)}</b>${esc(varName)} · <span id="px-${varName}">…</span></div>
+        <p class="sg-spec-sample" style="font-size:var(${varName})">The quick brown fox jumps over the lazy dog.</p>`;
       typeList.appendChild(row);
-      const sample = row.querySelector('.sg-type-sample');
+      const sample = row.querySelector('.sg-spec-sample');
       const px = Math.round(parseFloat(getComputedStyle(sample).fontSize) * 100) / 100;
       row.querySelector(`#px-${varName}`).textContent = `${px}px`;
     });
@@ -982,7 +1215,7 @@
       }
     }
 
-    // Tonight tab: event card (event + key rule + game tonight). Local
+    // Tonight tab: event card (event + key rule + games tonight). Local
     // read-only mirrors (not duplicated as render helpers, just page-local
     // glue) of views/tonight.js's private gamesForEvent()/keyRuleFor() — this
     // page never touches the app's real localStorage-backed selection, so it
@@ -1073,6 +1306,26 @@
           <div class="fact-list__row"><dt class="fact-list__label">tonight.hasSelection()</dt><dd class="fact-list__value"><code>${esc(String(has))}</code></dd></div>
           <div class="fact-list__row"><dt class="fact-list__label">tonight.isFiltering()</dt><dd class="fact-list__value"><code>${esc(String(filtering))}</code></dd></div>
         </dl>`;
+    }
+
+    /* ---------------------------------------------------------------
+       Nav scroll-spy — highlights the doc section currently in view.
+       Mirrors the four #sg-* sections above; the "Back to the app" link
+       is excluded (it isn't a section anchor).
+       --------------------------------------------------------------- */
+    {
+      const links = Array.from(document.querySelectorAll('#sg-navlinks a[href^="#sg-"]'));
+      const sections = links.map((a) => document.querySelector(a.getAttribute('href')));
+      function onScroll() {
+        const pos = window.scrollY + 90;
+        let activeIdx = 0;
+        sections.forEach((sec, i) => {
+          if (sec && sec.offsetTop <= pos) activeIdx = i;
+        });
+        links.forEach((a, i) => a.classList.toggle('is-active', i === activeIdx));
+      }
+      document.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
     }
   </script>
 </body>
