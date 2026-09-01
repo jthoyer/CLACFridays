@@ -986,8 +986,14 @@
   padding: var(--space-3) var(--space-4);
 }
 
+/* `color: inherit` is required here, not decorative: base.css's global
+   `h1, h2, h3, h4 { color: var(--color-heading) }` rule targets this `<h2>`
+   directly, which otherwise wins over the reversed-white `color` set on the
+   parent `.game-category-card__head` band below (no other rule here
+   competes for `color`, so nothing overrides that default without this). */
 .game-category-card__name {
   margin: 0;
+  color: inherit;
   font-size: var(--fs-500);
   line-height: var(--lh-tight);
 }
