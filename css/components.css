@@ -951,6 +951,15 @@
   color: var(--color-text-muted);
 }
 
+/* "Pairs with <Event>" on the Game Detail page — same pairsWithNote()
+   helper and text treatment as `.game-list__pairs` above, placed under the
+   page header since a category's kicker can span more than one event. */
+.game__pairs {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-200);
+  color: var(--color-text-muted);
+}
+
 /* --- Games list: link + one-sentence summary ------------------------------
    Each game on the Games list (js/views/games.js) links to its own detail
    page (js/views/gameDetail.js) instead of inlining its full instructions —
@@ -1001,6 +1010,17 @@
   color: var(--color-text-muted);
   font-size: var(--fs-300);
   line-height: var(--lh-snug);
+}
+
+/* "Pairs with <Event>" — pairsWithNote() in js/ui.js, shared with
+   `.game__pairs` below on the Game Detail page. Sits inside the same <a>
+   as the rest of the card (plain text, no nested link — an <a> cannot
+   legally contain another interactive element). */
+.game-list__pairs {
+  display: block;
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--fs-200);
 }
 
 /* One-gear-per-game pill — shared by the Games list and Game Detail page

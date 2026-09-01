@@ -7,7 +7,7 @@
  * two implementations drift and the two surfaces silently disagree.
  */
 
-import { tonightCopy, getResource } from './content.js';
+import { tonightCopy, getResource, getEvent } from './content.js';
 
 /** Escape text for safe interpolation into HTML (also covers attribute values). */
 export function esc(value) {
@@ -26,6 +26,31 @@ export function esc(value) {
 export function safeUrl(url) {
   const s = String(url || '').trim();
   return /^https?:\/\//i.test(s) ? s : '#';
+}
+
+/**
+ * "Pairs with <Event>[, <Event> and <Event>]" note for a game — resolves a
+ * game item's item-level `eventSlugs` (js/content.js) to real event names via
+ * `getEvent()`, so it can never drift from the events list. Used on both the
+ * Games list (`js/views/games.js`) and the Game Detail page
+ * (`js/views/gameDetail.js`) — one implementation, since a category can
+ * bundle games for several events (e.g. "Jump Games" covers both Long Jump
+ * and High Jump) and the category name/kicker alone doesn't say which one a
+ * given game goes with. Returns the empty string for a game with no linked
+ * event (e.g. Freeze Tag) — deliberate, not forgotten, same distinction
+ * `assertContentLinkage()` already draws elsewhere.
+ */
+export function pairsWithNote(eventSlugs, className = 'game-pairs') {
+  const names = (eventSlugs || [])
+    .map((slug) => getEvent(slug))
+    .filter(Boolean)
+    .map((e) => esc(e.name));
+  if (!names.length) return '';
+  const joined =
+    names.length > 1
+      ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
+      : names[0];
+  return `<p class="${esc(className)}">Pairs with ${joined}</p>`;
 }
 
 /** <dl> of {label, value} pairs — the Quick Facts / at-a-glance pattern. */

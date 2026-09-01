@@ -634,8 +634,20 @@ The Games list no longer inlines each game's full instructions or its
 technique video. Each game is now a disclosure-style link — an
 accent-coloured name ending in a trailing `→` (`.game-list__name`, same
 reading-as-a-link pattern as `.event-row__name`'s trailing `→`) plus its
-one-sentence `summary` beneath it (`.game-list__summary`, muted text) —
-linking to `#/games/<slug>`. Card shape (`.game-list__link`: bordered,
+one-sentence `summary` beneath it (`.game-list__summary`, muted text), then
+a `pairsWithNote()` (`js/ui.js`) "Pairs with `<Event>`" line
+(`.game-list__pairs`, muted caption) — plain text, not a link, since it sits
+inside the same `<a>` as the rest of the card and an `<a>` cannot legally
+contain another interactive element. This exists because a category can
+bundle games for more than one event (e.g. "Jump Games" covers both Long
+Jump and High Jump — see `content.js`), so the category name alone doesn't
+say which specific event a given game goes with; `pairsWithNote()` resolves
+the game's own item-level `eventSlugs` via `getEvent()` instead, so it can
+never drift from the events list. A game with no linked event (Freeze Tag)
+renders no note at all — deliberate, same distinction
+`assertContentLinkage()` already draws elsewhere — not an empty "Pairs
+with" line. The whole card links to `#/games/<slug>`. Card shape
+(`.game-list__link`: bordered,
 `--shadow-1`, hover → `--color-accent-tint` + `--shadow-2`) was originally
 built to mirror the Events list's per-event card shape for visual
 consistency between the two tabs' list pages. The Events list has since
@@ -650,7 +662,11 @@ Each game's own detail page (`gameDetailView()`) renders: a back-link to
 an `<h1>` **coloured `--color-accent`, not the default `--color-heading`
 navy** every other view's `<h1>` uses — a deliberate visual distinction (see
 `pageHeader()`'s new `titleAccent` option and `.page-head__title--accent` in
-`css/components.css`), not an oversight; a "What to do" section rendering
+`css/components.css`), not an oversight; the same `pairsWithNote()` "Pairs
+with `<Event>`" line as the list (`.game__pairs`, same muted-caption
+treatment, same reasoning — the kicker names the category, not necessarily
+the one event this game pairs with), placed right under the header, before
+the gear pill; a "What to do" section rendering
 `item.bullets` via the existing `bulletList()` helper (not new bullet
 markup); and — **only if the item has one or more `videoResources`** — a
 "Watch & Learn" section using the existing `resourceCard()`/`videoEmbed()`

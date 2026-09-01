@@ -1,5 +1,5 @@
 import { getGameItem, getResource, games } from '../content.js';
-import { esc, articleLink, bulletList, pageHeader, resourceCard } from '../ui.js';
+import { esc, articleLink, bulletList, pageHeader, pairsWithNote, resourceCard } from '../ui.js';
 
 /**
  * One game's own page — introduced by the Games-tab redesign so a game's
@@ -12,6 +12,11 @@ import { esc, articleLink, bulletList, pageHeader, resourceCard } from '../ui.js
  *
  * "What to do" reuses bulletList() (js/ui.js) for `item.bullets` rather than
  * inventing new list markup, per the "grep ui.js first" rule.
+ *
+ * The "Pairs with" note (pairsWithNote(), js/ui.js) resolves the item's own
+ * `eventSlugs` rather than the category's — a category can bundle games for
+ * more than one event (e.g. "Jump Games"), so `category.name` in the kicker
+ * above isn't specific enough on its own.
  *
  * "Watch & Learn" only renders when the item has one or more
  * `videoResources` — a game with none (Baton Down the Line, Freeze Tag)
@@ -66,6 +71,7 @@ export function gameDetailView(slug) {
         titleAccent: true
       })}
 
+      ${pairsWithNote(item.eventSlugs, 'game__pairs')}
       ${item.gear ? `<p class="gear-pill">${esc(item.gear)}</p>` : ''}
 
       <section class="section section--spaced" aria-labelledby="what-to-do">

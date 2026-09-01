@@ -1,6 +1,6 @@
 import { games, tonightCopy } from '../content.js';
 import * as tonight from '../tonight.js';
-import { esc, modeSwitch, pageHeader, tonightEmptyState } from '../ui.js';
+import { esc, modeSwitch, pageHeader, pairsWithNote, tonightEmptyState } from '../ui.js';
 
 /**
  * One game's list-page entry: a disclosure-style link (accent-coloured name
@@ -11,6 +11,12 @@ import { esc, modeSwitch, pageHeader, tonightEmptyState } from '../ui.js';
  * inline video) that used to render here via gameItem() — the list page no
  * longer inlines any video embed; every game's video, if it has one, lives
  * on its own detail page now (see gameDetail.js).
+ *
+ * A category can bundle games for more than one event (e.g. "Jump Games"
+ * covers both Long Jump and High Jump — see content.js), so the category
+ * heading alone doesn't say which event a given game pairs with;
+ * `pairsWithNote()` (js/ui.js) adds that per item, resolved from the game's
+ * own `eventSlugs` rather than the category's.
  */
 function gameListItem(item) {
   return `
@@ -19,6 +25,7 @@ function gameListItem(item) {
         <span class="game-list__name">${esc(item.name)} <span aria-hidden="true">→</span></span>
         ${item.gear ? `<span class="gear-pill">${esc(item.gear)}</span>` : ''}
         <span class="game-list__summary">${esc(item.summary)}</span>
+        ${pairsWithNote(item.eventSlugs, 'game-list__pairs')}
       </a>
     </li>`;
 }
