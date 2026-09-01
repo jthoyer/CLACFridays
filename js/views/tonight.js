@@ -162,6 +162,7 @@ function renderSummary() {
                   item.name
                 )} →</a>
                 — ${esc(item.summary)}
+                ${item.gear ? `<br><span class="gear-pill">${esc(item.gear)}</span>` : ''}
               </p>
             </div>`
         )

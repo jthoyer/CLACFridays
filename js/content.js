@@ -781,6 +781,7 @@ export const games = {
         {
           name: 'Cone Clean-Up Race',
           slug: 'cone-clean-up-race',
+          gear: 'Cones',
           summary:
             'A cone-collection relay against the clock that sneaks in standing-start ' +
             'reps between rounds.',
@@ -804,6 +805,7 @@ export const games = {
         {
           name: 'Hoop Monster',
           slug: 'hoop-monster',
+          gear: 'Hoops',
           summary:
             'A game of musical hoops that doubles as a waiting-turn management system ' +
             'and rehearses reactive sprinting.',
@@ -814,6 +816,151 @@ export const games = {
           ],
           eventSlugs: ['sprints'],
           videoResources: [{ key: 'video-standing-start', prefix: 'Standing Start' }]
+        },
+        {
+          name: 'Red Light, Green Light',
+          slug: 'red-light-green-light',
+          gear: 'Cones',
+          summary:
+            'A stop-start reaction game that channels the classic call-and-response ' +
+            'game into sprint-start discipline.',
+          bullets: [
+            'Athletes line up on a start line marked with cones; the coach calls “green light” to sprint forward and “red light” to stop instantly, still and balanced.',
+            'Anyone who moves after “red light”, or doesn’t stop in a solid, ready position, goes back to the start.',
+            'Directly rehearses the drive-away reaction and the “wait for it” discipline a legal standing start needs.'
+          ],
+          eventSlugs: ['sprints'],
+          videoResources: [{ key: 'video-standing-start', prefix: 'Standing Start' }]
+        }
+      ]
+    },
+    {
+      id: 'distance',
+      name: 'Pacing & Endurance Games',
+      kicker: 'Skill Games',
+      eventSlugs: ['middle-distance', 'race-walk'],
+      items: [
+        {
+          name: 'Pace Partners',
+          slug: 'pace-partners',
+          gear: 'Stopwatch',
+          summary:
+            'A partnered pacing game where one athlete sets a steady speed and the ' +
+            'other learns to match it.',
+          bullets: [
+            'Pair athletes up; one leads a lap at a steady “conversation pace” while the partner stays exactly alongside without overtaking.',
+            'Swap roles each lap so both athletes practise setting and following an even pace.',
+            'Builds the even-pacing instinct that stops the classic “sprint the first 100m and fade” mistake.'
+          ],
+          eventSlugs: ['middle-distance'],
+          videoResources: [{ key: 'video-running-technique', prefix: 'Running Technique' }]
+        },
+        {
+          name: 'Traffic Light Pace',
+          slug: 'traffic-light-pace',
+          gear: 'Cones',
+          summary:
+            'A colour-coded jogging game that trains athletes to change pace on ' +
+            'command without losing form.',
+          bullets: [
+            'Mark a loop with cones; call out “cruise”, “push” or “sprint” and athletes adjust their pace to match, keeping tall running posture throughout.',
+            'Mix up the calls so nobody can predict the next change – this rehearses the controlled pace changes needed for the 400m and 800m.',
+            'Finish every round on “cruise” so athletes leave the game recovered, not gassed.'
+          ],
+          eventSlugs: ['middle-distance']
+        },
+        {
+          name: 'Breathing Ladder',
+          slug: 'breathing-ladder',
+          gear: null,
+          summary:
+            'A jog-and-count game that grooves rhythmic breathing under mild fatigue.',
+          bullets: [
+            'Athletes jog in a loose group, counting two steps in, two steps out on the coach’s cue.',
+            'Every 30 seconds, add one more step to the count (three in/three out, then four), easing the pace slightly to keep it manageable.',
+            'Reinforces the controlled breathing rhythm that fixes early-panic breathing, a common fault in new 800m runners.'
+          ],
+          eventSlugs: ['middle-distance']
+        },
+        {
+          name: 'Straight-Leg Statues',
+          slug: 'straight-leg-statues',
+          gear: null,
+          summary:
+            'A freeze-and-check game that grooves the straight-leg-at-contact rule ' +
+            'with zero speed pressure.',
+          bullets: [
+            'Athletes walk slowly around a marked area; on “freeze”, they stop mid-stride and hold the position.',
+            'The coach checks each athlete’s front leg is straight at the knee – anyone bent gently resets before continuing.',
+            'Isolates the single most common reason for a caution, with no speed to distract from it.'
+          ],
+          eventSlugs: ['race-walk'],
+          videoResources: [{ key: 'video-racewalking', prefix: 'Race Walk' }]
+        },
+        {
+          name: 'Hip Roll Follow-the-Leader',
+          slug: 'hip-roll-follow-the-leader',
+          gear: null,
+          summary:
+            'A follow-the-leader walking game that exaggerates the hip roll behind ' +
+            'legal race-walk speed.',
+          bullets: [
+            'Athletes form a line behind a leader who exaggerates the hip roll while keeping technique legal.',
+            'Every 20m, the back athlete moves to the front and becomes the new leader, so everyone gets a turn setting the technique.',
+            'Makes “speed comes from the hips, not longer strides” something athletes can copy, not just hear.'
+          ],
+          eventSlugs: ['race-walk']
+        },
+        {
+          name: 'Silent Judge',
+          slug: 'silent-judge',
+          gear: null,
+          summary:
+            'A peer-judging game that trains athletes to spot the loss-of-contact ' +
+            'fault themselves.',
+          bullets: [
+            'Pair athletes up; one walks a short course while the other watches only for “creeping” (a visible loss of ground contact).',
+            'The judge silently raises a hand the moment they see a loss of contact, and the walker resets pace without stopping.',
+            'Builds the same self-awareness a real race-walk judge rewards – athletes learn to feel the fault before it happens.'
+          ],
+          eventSlugs: ['race-walk']
+        }
+      ]
+    },
+    {
+      id: 'hurdles-games',
+      name: 'Hurdle Games',
+      kicker: 'Skill Games',
+      eventSlugs: ['hurdles'],
+      items: [
+        {
+          name: 'Step-Over Puddles',
+          slug: 'step-over-puddles',
+          gear: 'Low hurdles',
+          summary:
+            'A walk-through hurdle mobility game that uses imaginary puddles to ' +
+            'groove the lead-leg action.',
+          bullets: [
+            'Lay 4–6 hurdles flat or on their lowest setting in a line.',
+            'Athletes walk the line calling “step over the puddle!” as they drive the lead knee up and through, not jumping.',
+            'A slow, no-pressure way to bank lead-leg reps before adding any real hurdling speed.'
+          ],
+          eventSlugs: ['hurdles'],
+          videoResources: [{ key: 'video-hurdles', prefix: 'Hurdles' }]
+        },
+        {
+          name: 'Rhythm Claps',
+          slug: 'rhythm-claps',
+          gear: 'Low hurdles',
+          summary:
+            'A clap-along hurdling game that grooves a consistent stride pattern ' +
+            'between flights.',
+          bullets: [
+            'Set 3–4 low hurdles with even spacing; the group claps a steady beat as each athlete goes through.',
+            'Athletes aim to match one clap per stride, landing on the same beat at each hurdle to find a consistent rhythm.',
+            'Turns “settle on an odd stride count” into something athletes can feel and hear, not just think about.'
+          ],
+          eventSlugs: ['hurdles']
         }
       ]
     },
@@ -826,6 +973,7 @@ export const games = {
         {
           name: 'Step-and-Stick Ladder',
           slug: 'step-and-stick-ladder',
+          gear: 'Markers',
           summary:
             'A marker ladder into the long jump pit that grooves a consistent run-up ' +
             'stride pattern.',
@@ -838,8 +986,37 @@ export const games = {
           videoResources: [{ key: 'video-long-jump', prefix: 'Long Jump' }]
         },
         {
+          name: 'Standing Jump Challenge',
+          slug: 'standing-jump-challenge',
+          gear: 'Markers',
+          summary:
+            'A two-feet-to-two-feet distance game that builds the arm swing and soft ' +
+            'landing before any run-up exists.',
+          bullets: [
+            'Mark a start line and have athletes standing-jump for distance, landing feet together with knees bent (“land like a frog”).',
+            'Mark each athlete’s best landing spot and let them try to beat it over 3–4 attempts.',
+            'Builds the exact arm-swing and landing habits the beginner progression starts with, with no run-up to manage.'
+          ],
+          eventSlugs: ['long-jump']
+        },
+        {
+          name: 'Take-Off Foot Finder',
+          slug: 'take-off-foot-finder',
+          gear: 'Markers',
+          summary:
+            'A short-approach game that helps athletes lock in their natural take-off ' +
+            'foot before formalising a run-up.',
+          bullets: [
+            'Set a marker 4–6 strides from the pit; athletes jog in and take off from whichever foot feels natural, landing on two feet.',
+            'Note which foot each athlete favours over several turns – most will show a clear, consistent preference.',
+            'Confirms the take-off foot before any run-up is formalised, avoiding a habit that’s hard to unlearn later.'
+          ],
+          eventSlugs: ['long-jump']
+        },
+        {
           name: 'Scissor Steps (no bar)',
           slug: 'scissor-steps-no-bar',
+          gear: 'High jump mat',
           summary:
             'A no-bar, no-pressure drill for grooving the high jump approach angle and ' +
             'take-off leg.',
@@ -849,6 +1026,34 @@ export const games = {
           ],
           eventSlugs: ['high-jump'],
           videoResources: [{ key: 'video-high-jump', prefix: 'High Jump' }]
+        },
+        {
+          name: 'Angle Approach Race',
+          slug: 'angle-approach-race',
+          gear: 'Markers',
+          summary:
+            'A marked-angle running game that grooves the 30–40 degree approach line ' +
+            'before any bar is added.',
+          bullets: [
+            'Lay a marked line on the ground at roughly 30–40 degrees to where the bar would sit.',
+            'Athletes take turns running the line at increasing pace, stepping onto the mat at the end without a bar present.',
+            'Locks in the approach angle early – the single biggest technical building block for a legal scissor jump.'
+          ],
+          eventSlugs: ['high-jump']
+        },
+        {
+          name: 'Kick and Land',
+          slug: 'kick-and-land',
+          gear: null,
+          summary:
+            'A standing drill game that isolates the outside-leg take-off and ' +
+            'inside-leg kick before adding a run-in.',
+          bullets: [
+            'Athletes stand side-on to the mat and practise kicking the inside leg up and over an imaginary bar, landing on the mat.',
+            'The coach gives an instant clap or call the moment the kicking leg is straight – quick feedback on the “bent-knee drive” fault.',
+            'A slow-motion, no-run-in way to bank leg-action reps between turns at the real bar.'
+          ],
+          eventSlugs: ['high-jump']
         }
       ]
     },
@@ -861,6 +1066,7 @@ export const games = {
         {
           name: 'Target Hoops',
           slug: 'target-hoops',
+          gear: 'Hoops',
           summary:
             'A target-accuracy throwing game that rewards control over raw power.',
           bullets: [
@@ -876,6 +1082,93 @@ export const games = {
             { key: 'video-discus', prefix: 'Discus' },
             { key: 'video-javelin', prefix: 'Turbo Javelin' }
           ]
+        },
+        {
+          name: 'Neck Push Line',
+          slug: 'neck-push-line',
+          gear: null,
+          summary:
+            'A close-range, no-throw game that grooves the shot’s “push, don’t throw” ' +
+            'action.',
+          bullets: [
+            'Athletes stand in pairs an arm’s length apart, shot tucked under the jaw, and gently push the shot into a partner’s waiting hands.',
+            'No arc, no distance – just a straight-line push repeated until the “push off the neck” motion feels natural.',
+            'Removes the temptation to throw the shot like a ball, since there’s no distance to chase yet.'
+          ],
+          eventSlugs: ['shot-put'],
+          videoResources: [{ key: 'video-shot-put', prefix: 'Shot Put' }]
+        },
+        {
+          name: 'Grid Put',
+          slug: 'grid-put',
+          gear: 'Markers',
+          summary:
+            'A scoring-zone put game that rewards a full, balanced finish over raw ' +
+            'distance.',
+          bullets: [
+            'Mark three scoring zones at increasing distance from the circle with cones or chalk lines.',
+            'Athletes score points for the zone their put lands in, with bonus points for finishing “thumb down” in full extension.',
+            'Rewards good technique at the finish, not just how far the shot travels.'
+          ],
+          eventSlugs: ['shot-put']
+        },
+        {
+          name: 'Sandwich Freeze',
+          slug: 'sandwich-freeze',
+          gear: null,
+          summary:
+            'A grip-and-hold game that locks in the “discus sandwich” starting ' +
+            'position before any throwing begins.',
+          bullets: [
+            'In pairs, athletes hold the discus in the two-handed “sandwich” grip and freeze in the side-on starting position on the coach’s call.',
+            'Partners check each other’s grip – fingers spread evenly, no tight palming – before swapping roles.',
+            'Builds the starting position into muscle memory so it’s automatic once real throws begin.'
+          ],
+          eventSlugs: ['discus'],
+          videoResources: [{ key: 'video-discus', prefix: 'Discus' }]
+        },
+        {
+          name: 'Spin Check',
+          slug: 'spin-check',
+          gear: null,
+          summary:
+            'A short-range release game that trains a clean, flat spin off the index ' +
+            'finger.',
+          bullets: [
+            'From a standing position close to a fence or net, athletes release the discus with a gentle flick, aiming for the flattest, longest spin they can see.',
+            'A wobbling discus means the grip or release needs resetting; a wobble-free spin means it’s ready for full-distance throws.',
+            'Gives athletes an instant, visible signal for good technique instead of relying on distance alone.'
+          ],
+          eventSlugs: ['discus']
+        },
+        {
+          name: 'Cricket Arm Check',
+          slug: 'cricket-arm-check',
+          gear: null,
+          summary:
+            'A no-implement mimic game that locks in the overarm throwing action ' +
+            'before any turbo jav is picked up.',
+          bullets: [
+            'Athletes mimic a cricket or tennis overarm throw in slow motion, side-on with the non-throwing arm pointing at the target.',
+            'The coach checks each athlete’s arm path is overarm, not side-arm, before they progress to throwing the real implement.',
+            'Fixes the most common turbo jav fault – throwing side-arm like a discus – before it becomes a habit.'
+          ],
+          eventSlugs: ['turbo-javelin'],
+          videoResources: [{ key: 'video-javelin', prefix: 'Turbo Javelin' }]
+        },
+        {
+          name: 'Fan Zone Distance',
+          slug: 'fan-zone-distance',
+          gear: 'Markers',
+          summary:
+            'A marshalled distance game that rewards a safe, confident overarm ' +
+            'release in a single throwing direction.',
+          bullets: [
+            'Mark a wide, fan-shaped landing area with cones; only one athlete throws at a time, everyone else waits behind the line.',
+            'Athletes take turns throwing for distance, with the marker moved out each time someone beats the current best.',
+            'Keeps throws safe and single-direction while still making distance progress feel like a game.'
+          ],
+          eventSlugs: ['turbo-javelin']
         }
       ]
     },
@@ -902,6 +1195,7 @@ export const games = {
         {
           name: 'Baton Down the Line',
           slug: 'baton-down-the-line',
+          gear: 'Baton',
           summary:
             'A hand-to-hand baton relay with zero running, ideal for a tight waiting area.',
           bullets: [
@@ -916,8 +1210,23 @@ export const games = {
           // video block is deliberate (AC47), not an omission.
         },
         {
+          name: 'Zone Tag',
+          slug: 'zone-tag',
+          gear: 'Cones',
+          summary:
+            'A go-mark reaction game that teaches receivers exactly when to start ' +
+            'moving in the take-over zone.',
+          bullets: [
+            'Mark a take-over zone with cones and a go-mark a few strides inside it.',
+            'The “incoming runner” jogs in; the receiver must start moving the instant the incoming runner’s foot touches the go-mark, not before.',
+            'Rehearses the timing skill that prevents both early (illegal) and late (slow) baton exchanges.'
+          ],
+          eventSlugs: ['relay']
+        },
+        {
           name: 'Hurdles Shuttle Relay',
           slug: 'hurdles-shuttle-relay',
+          gear: 'Hurdles',
           summary:
             'A shuttle relay over low hurdles that combines hurdle rhythm with relay-tag fun.',
           bullets: [
@@ -943,6 +1252,9 @@ export const games = {
         {
           name: 'Freeze Tag',
           slug: 'freeze-tag',
+          // No gear: needs nothing but players, so no pill renders (see
+          // gameListItem() in js/views/games.js).
+          gear: null,
           summary:
             'A classic no-skill-agenda tag game, kept short and used sparingly.',
           bullets: [

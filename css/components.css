@@ -634,7 +634,7 @@
   font-weight: var(--fw-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--color-text-caption);
+  color: var(--color-accent);
 }
 
 .fact-list__value {
@@ -931,6 +931,21 @@
   color: var(--color-text-muted);
   font-size: var(--fs-300);
   line-height: var(--lh-snug);
+}
+
+/* One-gear-per-game pill — shared by every place a game is presented (Games
+   list, Game Detail page, Tonight tab's "Game tonight" row): text alone
+   carries the meaning (the gear's name), so no colour-only signal is at
+   stake here the way it is for toggle/active states elsewhere. */
+.gear-pill {
+  display: inline-block;
+  margin-top: var(--space-2);
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-tint);
+  color: var(--color-accent-strong);
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
 }
 
 /* --- Resource cards (Watch & Learn) -------------------------------------- */

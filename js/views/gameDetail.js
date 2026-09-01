@@ -66,6 +66,8 @@ export function gameDetailView(slug) {
         titleAccent: true
       })}
 
+      ${item.gear ? `<p class="gear-pill">${esc(item.gear)}</p>` : ''}
+
       <section class="section section--spaced" aria-labelledby="what-to-do">
         <h2 class="section__title" id="what-to-do">What to do</h2>
         ${bulletList(item.bullets)}

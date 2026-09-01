@@ -17,6 +17,7 @@ function gameListItem(item) {
     <li>
       <a class="game-list__link" href="#/games/${esc(item.slug)}">
         <span class="game-list__name">${esc(item.name)} <span aria-hidden="true">→</span></span>
+        ${item.gear ? `<span class="gear-pill">${esc(item.gear)}</span>` : ''}
         <span class="game-list__summary">${esc(item.summary)}</span>
       </a>
     </li>`;
