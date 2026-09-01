@@ -761,11 +761,19 @@
    interactive hairline, --radius-lg corners, --shadow-1. A header row
    (numeral + name link + tagline, reusing `.event-row__num`/`__body`/
    `__name`/`__tag` verbatim from the Events tab so the two tabs' event
-   identity never drifts) is followed by a "Key rule" row and zero or more
-   "Game tonight" rows, each divided from the one above by a 1px hairline —
-   the same stacked-row-inside-one-card pattern `.event-group`'s
-   `.event-row + .event-row` hairline already uses, just applied to rows of
-   differing content instead of repeated event rows. */
+   identity never drifts) is followed by two full-bleed colour sections,
+   "Key rule" and "Games tonight" (the second omitted entirely when the
+   event has no linked games — AC16). Each section is a dark header band
+   (`--color-accent-strong` / `--color-success`, reversed white text)
+   directly above a lighter body band in the same colour family
+   (`--color-accent-tint` / `--color-success-tint`): the colour itself
+   carries the section boundary, so "Games tonight" needs only one
+   "(N)"-counted head instead of a caption repeated per game. The games
+   themselves render as individually bordered/shadowed white cards
+   (`.tonight-card__game`) inside that body band, each with its equipment
+   tag inline next to the title rather than on its own line below the
+   summary. `.tonight-card`'s own `overflow: hidden` clips both bands to
+   the card's rounded corners, so neither needs its own radius. */
 
 .tonight-groups {
   list-style: none;
@@ -805,28 +813,65 @@
   min-height: var(--tap-min);
 }
 
-.tonight-card__row {
-  padding: var(--space-3) var(--space-4);
-}
-
-.tonight-card__row + .tonight-card__row {
-  border-top: 1px solid var(--color-border-subtle);
-}
-
-.tonight-card__label {
-  margin: 0 0 4px;
+.tonight-card__section-head {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
   font-size: var(--fs-100);
   font-weight: var(--fw-bold);
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
 }
 
-.tonight-card__value {
+.tonight-card__section-head--rule {
+  background: var(--color-accent-strong);
+  color: var(--color-accent-on);
+}
+
+.tonight-card__section-head--games {
+  background: var(--color-success);
+  color: var(--color-success-on);
+}
+
+.tonight-card__section-body {
+  padding: var(--space-3) var(--space-4);
+}
+
+.tonight-card__section-body--rule {
+  background: var(--color-accent-tint);
+}
+
+.tonight-card__section-body--games {
+  background: var(--color-success-tint);
+}
+
+.tonight-card__rule-value {
   margin: 0;
   font-size: var(--fs-300);
   line-height: var(--lh-snug);
-  color: var(--color-text);
+  color: var(--color-accent-strong);
+}
+
+.tonight-card__game-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.tonight-card__game {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  padding: var(--space-3) var(--space-4);
+}
+
+.tonight-card__game-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
 }
 
 /* Same accent link treatment as `.event-row__name`/`.game-list__name`
@@ -842,6 +887,24 @@
 
 .tonight-card__game-link:hover {
   text-decoration: underline;
+}
+
+.tonight-card__game-tag {
+  flex: none;
+  display: inline-block;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-tint);
+  color: var(--color-accent-strong);
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+}
+
+.tonight-card__game-summary {
+  margin: var(--space-1) 0 0;
+  font-size: var(--fs-200);
+  line-height: var(--lh-snug);
+  color: var(--color-text-muted);
 }
 
 /* --- Games ----------------------------------------------------------------
@@ -933,10 +996,13 @@
   line-height: var(--lh-snug);
 }
 
-/* One-gear-per-game pill — shared by every place a game is presented (Games
-   list, Game Detail page, Tonight tab's "Game tonight" row): text alone
-   carries the meaning (the gear's name), so no colour-only signal is at
-   stake here the way it is for toggle/active states elsewhere. */
+/* One-gear-per-game pill — shared by the Games list and Game Detail page
+   (block, below the summary). The Tonight tab's own game cards use the
+   inline `.tonight-card__game-tag` instead — same colour pairing, different
+   position — because there the tag sits next to the title on one line
+   rather than its own line below the text. Either way text alone carries
+   the meaning (the gear's name), so no colour-only signal is at stake here
+   the way it is for toggle/active states elsewhere. */
 .gear-pill {
   display: inline-block;
   margin-top: var(--space-2);

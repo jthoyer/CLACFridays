@@ -135,38 +135,48 @@ function renderSummary() {
   }
 
   // AC14–AC18: each selected event gets its own bordered card — a header
-  // (numeral + name link + tagline), a "Key rule" row, then one "Game
-  // tonight" row per game whose item-level eventSlugs include this event
-  // (js/content.js). An event with zero linked games (middle-distance,
-  // race-walk) renders with no "Game tonight" row at all — deliberate, not
-  // forgotten (see assertContentLinkage()'s comments on this same
-  // distinction) — gameRows is the empty string, not an empty section or a
-  // "no game" placeholder.
+  // (numeral + name link + tagline), a "Key rule" section, then — only when
+  // the event has at least one linked game (js/content.js) — a "Games
+  // tonight (N)" section. An event with zero linked games renders with no
+  // games section at all — deliberate, not forgotten (see
+  // assertContentLinkage()'s comments on this same distinction) —
+  // gamesSection is the empty string, not an empty section or a "no game"
+  // placeholder. Each section is a dark header band naming it
+  // (reversed white text) over a lighter body band in the same colour, so
+  // the games no longer need a caption repeated per item — they render as
+  // their own bordered/shadowed cards (`.tonight-card__game`) instead.
   //
   // The event name keeps its <h3> (unchanged heading level from before this
-  // restyle); the per-game name link is no longer its own heading (it used
-  // to be an <h4> via gameItem()) because it is no longer sub-content of the
-  // event the way a full game write-up was — it is now one line in a "Game
-  // tonight" row, same weight as the "Key rule" row's plain-text value, so a
-  // heading here would outrank content it no longer actually introduces.
+  // restyle); the per-game name link is not its own heading (it used to be
+  // an <h4> via gameItem()) because it is no longer sub-content of the event
+  // the way a full game write-up was — it is one line inside a "Games
+  // tonight" card, so a heading here would outrank content it no longer
+  // actually introduces.
   const groups = selectedEvents
     .map((e) => {
       const linkedGames = gamesForEvent(e.slug);
-      const gameRows = linkedGames
+      const gameCards = linkedGames
         .map(
           (item) => `
-            <div class="tonight-card__row">
-              <p class="tonight-card__label">Game tonight</p>
-              <p class="tonight-card__value">
+            <li class="tonight-card__game">
+              <div class="tonight-card__game-head">
                 <a class="tonight-card__game-link" href="#/games/${esc(item.slug)}">${esc(
                   item.name
                 )} →</a>
-                — ${esc(item.summary)}
-                ${item.gear ? `<br><span class="gear-pill">${esc(item.gear)}</span>` : ''}
-              </p>
-            </div>`
+                ${item.gear ? `<span class="tonight-card__game-tag">${esc(item.gear)}</span>` : ''}
+              </div>
+              <p class="tonight-card__game-summary">${esc(item.summary)}</p>
+            </li>`
         )
         .join('');
+
+      const gamesSection = linkedGames.length
+        ? `
+            <p class="tonight-card__section-head tonight-card__section-head--games">Games tonight (${linkedGames.length})</p>
+            <div class="tonight-card__section-body tonight-card__section-body--games">
+              <ul class="tonight-card__game-list">${gameCards}</ul>
+            </div>`
+        : '';
 
       return `
         <li class="tonight-group">
@@ -182,11 +192,11 @@ function renderSummary() {
                 <p class="event-row__tag">${esc(e.tagline)}</p>
               </div>
             </div>
-            <div class="tonight-card__row">
-              <p class="tonight-card__label">Key rule</p>
-              <p class="tonight-card__value">${esc(keyRuleFor(e.slug))}</p>
+            <p class="tonight-card__section-head tonight-card__section-head--rule">Key rule</p>
+            <div class="tonight-card__section-body tonight-card__section-body--rule">
+              <p class="tonight-card__rule-value">${esc(keyRuleFor(e.slug))}</p>
             </div>
-            ${gameRows}
+            ${gamesSection}
           </article>
         </li>`;
     })

@@ -533,16 +533,19 @@ resolved too, and does not immediately reopen the form.
 All picker copy (legend, note, button labels, empty-state text) is sourced
 from `content.js`'s `tonightCopy` object, same rule as every other view.
 
-### Tonight tab: event card (event + key rule + game tonight)
+### Tonight tab: event card (event + key rule + games tonight)
 Each selected event renders as one bordered/rounded `.tonight-card`
 (`css/components.css`) built by `js/views/tonight.js`'s `renderSummary()` —
 the same card language as `.event-group`/`.event-row` (Events tab) and
 `.game-list__link` (Games tab): `--color-surface` fill,
 `--color-border-interactive` hairline, `--radius-lg` corners, `--shadow-1`.
-Top to bottom, three row types stack inside one card, each divided from the
-next by a 1px `--color-border-subtle` hairline (`.tonight-card__row +
-.tonight-card__row`, the same stacked-row-inside-one-card pattern
-`.event-row + .event-row` already uses):
+Below the header, the card is two full-bleed **colour sections** — "Key
+rule" and "Games tonight" — rather than a stack of hairline-divided rows:
+each is a dark header band naming the section in reversed (white) type
+directly above a lighter body band in the same colour family, so the
+section boundary is carried by the colour change itself, edge to edge, not
+by a line. `.tonight-card`'s own `overflow: hidden` clips both bands to the
+card's rounded corners, so neither band declares its own radius.
 
 - **Header** (`.tonight-card__head`) — the event's numeral badge and name
   link plus tagline, reusing `.event-row__num` / `.event-row__body` /
@@ -550,45 +553,65 @@ next by a 1px `--color-border-subtle` hairline (`.tonight-card__row +
   (not a scoped copy) so an event's identity can never read differently
   between the two tabs. The name link carries the same trailing "→" baked
   into its text as `.event-row__name` does on the Events tab.
-- **"Key rule" row** — a `KEY RULE` caption (`.tonight-card__label`) above
-  the rule's plain-text value (`.tonight-card__value`), read from
-  `eventsAtAGlance.rows` in `content.js` (row matched by `slug`, third cell —
-  "Key U10 Rule") rather than duplicated. `assertContentLinkage()` guarantees
-  one row per event slug across all 10 events, so every selected event has a
-  match.
-- **"Game tonight" row(s)** — one per game whose **item-level** `eventSlugs`
-  includes this event (`gamesForEvent()`, unchanged), each a `GAME TONIGHT`
-  caption above the game's name (`.tonight-card__game-link`, same
-  accent-link-with-trailing-arrow treatment, linking to its own
-  `#/games/<slug>` detail route) followed by an em dash and the game's
-  one-sentence `summary` — **not** its full `bullets` and **not** an inline
-  video; those stay on the game's own detail page only. An event with zero
-  linked games (Middle Distance Running, Race Walk) renders **no** "Game
-  tonight" row at all — deliberate, not forgotten (same
-  "deliberately-unlinked-vs-forgotten" distinction `assertContentLinkage()`
-  enforces for Freeze Tag's empty `eventSlugs`) — `gameRows` is the empty
-  string, not an empty section or a placeholder.
+- **"Key rule" section** — a `KEY RULE` head band
+  (`.tonight-card__section-head--rule`: `--color-accent-strong` fill,
+  `--color-accent-on` white text, 10.70:1) over a body band
+  (`.tonight-card__section-body--rule`: `--color-accent-tint` fill) holding
+  the rule's plain-text value (`.tonight-card__rule-value`,
+  `--color-accent-strong` text, 9.21:1 on tint — both pairings already
+  measured under "Accent" in the Colour section above, reused unchanged
+  here), read from `eventsAtAGlance.rows` in `content.js` (row matched by
+  `slug`, third cell — "Key U10 Rule") rather than duplicated.
+  `assertContentLinkage()` guarantees one row per event slug across all 10
+  events, so every selected event has a match.
+- **"Games tonight (N)" section** — rendered only when at least one game's
+  **item-level** `eventSlugs` includes this event (`gamesForEvent()`,
+  unchanged); an event with zero linked games renders **no** games section
+  at all — deliberate, not forgotten (same "deliberately-unlinked-vs-
+  forgotten" distinction `assertContentLinkage()` enforces for Freeze Tag's
+  empty `eventSlugs`) — `gamesSection` is the empty string, not an empty
+  section or a placeholder. (Every one of the 10 events currently has at
+  least one linked game, so this branch has no live example today; it stays
+  because `content.js` doesn't guarantee that will always be true.) When
+  present: a `GAMES TONIGHT (N)` head band
+  (`.tonight-card__section-head--games`: `--color-success` fill,
+  `--color-success-on` white text, 6.60:1) over a body band
+  (`.tonight-card__section-body--games`: `--color-success-tint` fill)
+  holding a `.tonight-card__game-list` of individually bordered/shadowed
+  white `.tonight-card__game` cards (`--color-border-subtle` hairline,
+  `--radius-md`, `--shadow-1`) — one per game, so games no longer need a
+  caption repeated per item to read as separate from one another. Each
+  card's head row (`.tonight-card__game-head`) puts the game's name link
+  (`.tonight-card__game-link`, same accent-link-with-trailing-arrow
+  treatment as `.event-row__name`, linking to its own `#/games/<slug>`
+  detail route) and its equipment tag (`.tonight-card__game-tag`, same
+  `--color-accent-tint`/`--color-accent-strong` pairing the old `.gear-pill`
+  uses elsewhere, just inline instead of on its own line) on one row, with
+  the game's one-sentence `summary` (`.tonight-card__game-summary`) below —
+  **not** its full `bullets` and **not** an inline video; those stay on the
+  game's own detail page only.
 
-This replaced the previous shape, where each event was a bare `<h3>` link
-followed by its games rendered through the full `gameItem()` helper (name +
-full prose instructions + inline video). `gameItem()` itself is unchanged and
-still documented above for anyone extending it, but the Tonight tab no longer
-calls it — a coach glancing at this list mid-session now gets the one fact
-per row (rule, or game name + one line) the mockup called for, with the full
+This replaced the previous shape, where each game was its own row with a
+`GAME TONIGHT` caption repeated above every item and the equipment tag
+sitting on its own line below the summary (easy to mistake for a fourth,
+disconnected row). `gameItem()` itself is unchanged and still documented
+above for anyone extending it, but the Tonight tab has never called it here
+— a coach glancing at this list mid-session gets the one fact per section
+(rule, or a set of game cards) the redesign called for, with the full
 instructions and video one tap away on the event's/game's own detail page.
 
-Heading level: the event name keeps its `<h3>` (unchanged from before this
-restyle — see `.tonight-card__title`). The per-game name link is
-**deliberately no longer its own heading** (it used to be an `<h4>` via
-`gameItem()`): it is no longer sub-content introducing a nested article, just
-one line in a "Game tonight" row at the same weight as the "Key rule" row's
-value, so a heading there would now outrank content it doesn't introduce.
+Heading level: the event name keeps its `<h3>` (unchanged from before the
+original restyle — see `.tonight-card__title`). The per-game name link is
+**not its own heading** (it used to be an `<h4>` via `gameItem()`): it is
+one line inside a "Games tonight" card, not sub-content introducing a
+nested article, so a heading there would outrank content it doesn't
+introduce.
 
-Both the event-name link and the game-name link get their own `>= 44px`
+Both the event-name link and each game-name link get their own `>= 44px`
 (`--tap-min`) tap-target height even though they sit inline within a
-sentence rather than filling a row — `.tonight-card__title .event-row__name`
-and `.tonight-card__game-link` both apply `display: inline-flex;
-align-items: center; min-height: var(--tap-min)`, the same fix
+sentence/row rather than filling one — `.tonight-card__title
+.event-row__name` and `.tonight-card__game-link` both apply `display:
+inline-flex; align-items: center; min-height: var(--tap-min)`, the same fix
 `.event-row__link` already uses to guarantee a full-row tap target on the
 Events tab, just applied directly to the link since there is no full-row
 wrapper here. Measured on a real render at 320px and 375px: both links'

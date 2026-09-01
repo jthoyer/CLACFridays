@@ -465,9 +465,11 @@
         <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Tonight tab: event card (event + key rule + game tonight)</h3>
         <p class="sg-note">
           Two real events rendered with the same <code>.tonight-card</code>
-          markup the Tonight tab uses: Hurdles (has a linked game, so it gets
-          a "Game tonight" row) and Middle Distance (has none, so the card
-          stops after "Key rule" — no empty row, no placeholder — AC16).
+          markup the Tonight tab uses, each with its own linked games
+          rendered as a "Games tonight (N)" section of bordered game cards.
+          An event with zero linked games would render no games section at
+          all instead of an empty one (AC16) — every current event has at
+          least one, so that branch has no live example today.
         </p>
         <div class="sg-demo" id="sg-grouping-demo"></div>
       </div>
@@ -1006,18 +1008,25 @@
         .map((slug) => {
           const evt = events.find((e) => e.slug === slug);
           const linked = gamesForEventDemo(slug);
-          const gameRows = linked
+          const gameCards = linked
             .map(
               (item) => `
-                <div class="tonight-card__row">
-                  <p class="tonight-card__label">Game tonight</p>
-                  <p class="tonight-card__value">
+                <li class="tonight-card__game">
+                  <div class="tonight-card__game-head">
                     <a class="tonight-card__game-link" href="#/games/${esc(item.slug)}">${esc(item.name)} →</a>
-                    — ${esc(item.summary)}
-                  </p>
-                </div>`
+                    ${item.gear ? `<span class="tonight-card__game-tag">${esc(item.gear)}</span>` : ''}
+                  </div>
+                  <p class="tonight-card__game-summary">${esc(item.summary)}</p>
+                </li>`
             )
             .join('');
+          const gamesSection = linked.length
+            ? `
+                <p class="tonight-card__section-head tonight-card__section-head--games">Games tonight (${linked.length})</p>
+                <div class="tonight-card__section-body tonight-card__section-body--games">
+                  <ul class="tonight-card__game-list">${gameCards}</ul>
+                </div>`
+            : '';
           return `
             <li class="tonight-group">
               <article class="tonight-card">
@@ -1030,11 +1039,11 @@
                     <p class="event-row__tag">${esc(evt.tagline)}</p>
                   </div>
                 </div>
-                <div class="tonight-card__row">
-                  <p class="tonight-card__label">Key rule</p>
-                  <p class="tonight-card__value">${esc(keyRuleForDemo(slug))}</p>
+                <p class="tonight-card__section-head tonight-card__section-head--rule">Key rule</p>
+                <div class="tonight-card__section-body tonight-card__section-body--rule">
+                  <p class="tonight-card__rule-value">${esc(keyRuleForDemo(slug))}</p>
                 </div>
-                ${gameRows}
+                ${gamesSection}
               </article>
             </li>`;
         })
