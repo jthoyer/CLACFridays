@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Living, rendered style guide for the NSW Little Athletics Under 10 Boys Age Manager Guide app — derived from STYLEGUIDE.md.">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:,">
+  <title>Style Guide — NSW Little Athletics U10 Boys Age Manager Guide</title>
+
+  <!--
+    Relative paths only, same as index.html — this must work under a GitHub
+    Pages project subpath, and this page is NOT a router route: it carries no
+    tab-bar entry and is not linked from index.html's <nav> (AC73). It is
+    linked FROM README.md, and it links back to the app below.
+  -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <style>
+    /*
+      Style-guide-page-only chrome: layout for the swatch grid, demo boxes and
+      pass/fail badges. Not part of css/components.css because none of this is
+      a reusable app UI pattern — it exists only to frame the *real* app
+      patterns being demonstrated below. This rule (never a literal hex, use
+      var(--space-*) / var(--color-*) etc.) covers this stylesheet's layout
+      and chrome — it does NOT extend to the two swatch-overlay-label
+      exceptions below (`.sg-swatch__block-label`'s `#000` and its
+      script-computed `#FFFFFF`/`#000000` overlay colour): those two need
+      true, palette-independent black/white so the "Aa" label stays readable
+      against whichever arbitrary swatch colour it happens to be drawn over —
+      a token can't serve that purpose since the swatch colour IS the
+      variable. AC72's "components reference tokens, never literal hex"
+      rule scopes to `css/base.css` / `css/components.css` only; it was never
+      claimed to cover this page's own demo-only `<style>` block in full.
+    */
+    .sg-toc {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--gutter);
+      margin: 0;
+      max-width: var(--measure);
+      margin-inline: auto;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+    .sg-toc a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.25rem;
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-pill);
+      background: var(--color-accent-tint);
+      color: var(--color-accent-strong);
+      font-size: var(--fs-200);
+      font-weight: var(--fw-semibold);
+      text-decoration: none;
+    }
+    .sg-toc a:hover,
+    .sg-toc a:focus-visible {
+      background: var(--color-accent);
+      color: var(--color-accent-on);
+    }
+    .sg-banner {
+      margin-bottom: var(--space-5);
+      padding: var(--space-4);
+      background: var(--color-accent-tint);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-lg);
+      color: var(--color-accent-strong);
+      font-weight: var(--fw-medium);
+    }
+    .sg-banner a {
+      color: inherit;
+    }
+    .sg-subsection {
+      margin-top: var(--space-6);
+      padding-top: var(--space-5);
+      border-top: 1px solid var(--color-border-subtle);
+    }
+    .sg-subsection__title {
+      font-size: var(--fs-500);
+      margin-bottom: var(--space-2);
+    }
+    .sg-note {
+      font-size: var(--fs-200);
+      color: var(--color-text-muted);
+      margin: var(--space-2) 0 var(--space-3);
+      line-height: var(--lh-snug);
+    }
+    .sg-demo {
+      padding: var(--space-4);
+      background: var(--color-neutral-50);
+      border: 1px dashed var(--color-border-interactive);
+      border-radius: var(--radius-lg);
+    }
+    .sg-demo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      align-items: flex-start;
+    }
+    .sg-demo-row > * {
+      flex: 1 1 12rem;
+    }
+    .sg-demo-label {
+      display: block;
+      margin-bottom: var(--space-2);
+      font-size: var(--fs-100);
+      font-weight: var(--fw-bold);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--color-text-caption);
+    }
+
+    /* Colour swatches */
+    .sg-token-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+      gap: var(--space-4);
+    }
+    .sg-swatch {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-1);
+      overflow: hidden;
+    }
+    .sg-swatch__block {
+      display: flex;
+      align-items: flex-end;
+      min-height: 4.5rem;
+      padding: var(--space-2) var(--space-3);
+    }
+    .sg-swatch__block-label {
+      font-size: var(--fs-100);
+      font-weight: var(--fw-bold);
+      padding: 0.15rem var(--space-2);
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.85);
+      color: #000;
+    }
+    .sg-swatch__meta {
+      padding: var(--space-3);
+    }
+    .sg-swatch__name {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: var(--fs-200);
+      font-weight: var(--fw-bold);
+      color: var(--color-heading);
+    }
+    .sg-swatch__hex {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: var(--fs-100);
+      color: var(--color-text-muted);
+      margin: 0.15rem 0 var(--space-2);
+    }
+    .sg-swatch__use {
+      font-size: var(--fs-200);
+      color: var(--color-text-muted);
+      margin: 0 0 var(--space-2);
+      line-height: var(--lh-snug);
+    }
+    .sg-ratios {
+      list-style: none;
+      display: grid;
+      gap: 0.3rem;
+    }
+    .sg-ratio {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--fs-100);
+    }
+    .sg-ratio__bg {
+      font-family: var(--font-mono);
+      color: var(--color-text-caption);
+    }
+    .sg-badge {
+      font-weight: var(--fw-bold);
+      padding: 0.1rem var(--space-2);
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-100);
+      letter-spacing: 0.03em;
+    }
+    .sg-badge--pass {
+      background: var(--color-accent-tint);
+      color: var(--color-accent-strong);
+      border: 1px solid var(--color-accent);
+    }
+    .sg-badge--fail {
+      background: var(--color-warn-surface);
+      color: var(--color-warn-text);
+      border: 1px solid var(--color-warn-border);
+    }
+
+    /* Type samples */
+    .sg-type-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+    .sg-type-row:last-child {
+      border-bottom: 0;
+    }
+    .sg-type-meta {
+      flex: 0 0 9rem;
+      font-family: var(--font-mono);
+      font-size: var(--fs-100);
+      color: var(--color-text-muted);
+      line-height: var(--lh-snug);
+    }
+    .sg-type-sample {
+      margin: 0;
+      color: var(--color-text);
+      font-weight: var(--fw-regular);
+    }
+
+    /* Scale strip (spacing/radii) */
+    .sg-scale-strip {
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .sg-scale-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: var(--fs-100);
+      color: var(--color-text-muted);
+      font-family: var(--font-mono);
+    }
+    .sg-scale-chip__box {
+      background: var(--color-accent-tint);
+      border: 1px solid var(--color-accent);
+    }
+
+    /* Contained tab-bar demo: the real .tabbar is position:fixed in the app
+       shell; here it's pinned to the bottom of a bounded demo box instead so
+       it doesn't cover the whole styleguide page. */
+    .sg-tabbar-demo {
+      position: relative;
+      height: calc(var(--tabbar-height) + 2px);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--color-border-subtle);
+    }
+    .sg-tabbar-demo .tabbar {
+      position: absolute;
+      inset: auto 0 0 0;
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="app-bar">
+    <p class="app-bar__title">Style Guide — U10 Boys Age Manager Guide</p>
+  </header>
+
+  <nav class="sg-toc" aria-label="Style guide sections">
+    <a href="#sg-colour">Colour</a>
+    <a href="#sg-type">Type</a>
+    <a href="#sg-scale">Spacing, radii &amp; elevation</a>
+    <a href="#sg-components">Components</a>
+    <a href="index.html">Back to the app ↗</a>
+  </nav>
+
+  <main class="app-main" id="main">
+    <div class="sg-banner">
+      <strong>Source of truth:</strong> this page is rendered <em>from</em>
+      <a href="STYLEGUIDE.md">STYLEGUIDE.md</a> — colour swatches read live
+      from <code>css/tokens.css</code>, type samples render at their real
+      size, and every component example below is produced by calling the
+      exact same <code>js/ui.js</code> helper the live app calls, not by
+      hand-copied markup. If this page and STYLEGUIDE.md ever disagree,
+      STYLEGUIDE.md is correct and this page is stale — see the sync note at
+      the top of that file.
+    </div>
+
+    <h1 id="page-title" tabindex="-1">Style Guide</h1>
+    <p class="page-head__lead">
+      Stripe-derived design system for the NSW Little Athletics U10 Boys Age
+      Manager Guide — every colour, type size and component the app uses, in
+      one place.
+    </p>
+
+    <section class="sg-subsection" id="sg-colour" aria-labelledby="sg-colour-h">
+      <h2 class="sg-subsection__title" id="sg-colour-h">Colour</h2>
+      <p class="sg-note">
+        Every ratio below is computed at load time (WCAG 2.1 relative
+        luminance) from the colour actually resolved from
+        <code>css/tokens.css</code> right now — it is not a number typed into
+        this page. If a value here and the same pairing in STYLEGUIDE.md ever
+        disagree, one of them is stale; re-measure both.
+      </p>
+
+      <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Surfaces</h3>
+      <div class="sg-token-grid" id="sg-surface-grid"></div>
+
+      <h3 class="sg-subsection__title" style="font-size:var(--fs-400);margin-top:var(--space-6)">
+        Text, borders &amp; focus
+      </h3>
+      <div class="sg-token-grid" id="sg-text-grid"></div>
+    </section>
+
+    <section class="sg-subsection" id="sg-type" aria-labelledby="sg-type-h">
+      <h2 class="sg-subsection__title" id="sg-type-h">Type</h2>
+      <p class="sg-note">
+        System font stack only — no webfont download. Each row below is
+        rendered at its real token size; the px value shown is read back from
+        the rendered element, not typed in.
+      </p>
+      <div id="sg-type-list"></div>
+    </section>
+
+    <section class="sg-subsection" id="sg-scale" aria-labelledby="sg-scale-h">
+      <h2 class="sg-subsection__title" id="sg-scale-h">Spacing, radii &amp; elevation</h2>
+
+      <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Spacing (4px base)</h3>
+      <div class="sg-scale-strip" id="sg-spacing-strip"></div>
+
+      <h3 class="sg-subsection__title" style="font-size:var(--fs-400);margin-top:var(--space-5)">Radii</h3>
+      <div class="sg-scale-strip" id="sg-radii-strip"></div>
+
+      <h3 class="sg-subsection__title" style="font-size:var(--fs-400);margin-top:var(--space-5)">Elevation</h3>
+      <div class="sg-demo-row" id="sg-shadow-strip"></div>
+    </section>
+
+    <section class="sg-subsection" id="sg-components" aria-labelledby="sg-components-h">
+      <h2 class="sg-subsection__title" id="sg-components-h">Components</h2>
+      <p class="sg-note">
+        One live example per component section in STYLEGUIDE.md, in the same
+        order. Where a <code>js/ui.js</code> helper renders the component,
+        the markup below was produced by importing and calling that helper
+        just now — the same function the live app calls on every render.
+      </p>
+
+      <div class="sg-subsection" style="border-top:0;padding-top:0">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Bottom tab bar</h3>
+        <p class="sg-note">
+          No <code>js/ui.js</code> helper renders this — it's hand-authored
+          in <code>index.html</code> — so it's reproduced here verbatim
+          (contained in a bounded box; the real one is
+          <code>position: fixed</code> to the viewport).
+        </p>
+        <div class="sg-tabbar-demo" id="sg-tabbar-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Event row</h3>
+        <p class="sg-note">
+          Built by calling <code>eventsView()</code> from
+          <code>js/views/events.js</code> just now and taking its first
+          <code>.event-row</code> — including its per-card toggle, in
+          whatever state your browser's saved selection currently has it
+          (nothing on this page ever writes to that selection).
+        </p>
+        <div class="sg-demo" id="sg-event-card-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Events tab: grouped by discipline</h3>
+        <p class="sg-note">
+          Built by calling the real <code>eventsView()</code> just now and
+          taking its category <code>&lt;h2&gt;</code> headings, in order
+          (Track / Jumps / Throws / Bonus) — the same four
+          <code>&lt;section&gt;</code>s the live Events tab renders.
+        </p>
+        <div class="sg-demo" id="sg-event-categories-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Per-card Tonight toggle</h3>
+        <p class="sg-note">
+          Both states, produced by two direct calls to
+          <code>tonightToggleButton()</code> from <code>js/ui.js</code> — a
+          44&times;44 icon-only circle. The accessible name
+          (<code>aria-label</code>) is identical in both; the glyph
+          (+ / &check;) and border style (dashed / solid) are the two
+          required non-colour signals that change (the fill also changes to
+          a solid <code>--color-success</code> green when on, but colour is
+          never the only signal — see STYLEGUIDE.md).
+        </p>
+        <div class="sg-demo sg-demo-row" id="sg-toggle-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Event Detail "Add to tonight" CTA</h3>
+        <p class="sg-note">
+          Both states, produced by two direct calls to
+          <code>tonightCtaButton()</code> from <code>js/ui.js</code> — the
+          same per-event Tonight state as the toggle above, reusing the exact
+          same <code>data-action="toggle-tonight"</code> click handler.
+        </p>
+        <div class="sg-demo sg-demo-row" id="sg-cta-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Fact list</h3>
+        <p class="sg-note">Calls <code>factList()</code> with three real facts from <code>ageGroupFacts</code>.</p>
+        <div class="sg-demo" id="sg-factlist-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Responsive table</h3>
+        <p class="sg-note">Calls <code>responsiveTable()</code> with three real rows from <code>eventsAtAGlance</code>. Resize the window below 40em to see it restack.</p>
+        <div class="sg-demo" id="sg-table-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Safety callout</h3>
+        <p class="sg-note">Calls <code>safetyCallout()</code> with one event's real, verbatim safety text.</p>
+        <div class="sg-demo" id="sg-safety-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Resource card</h3>
+        <p class="sg-note">
+          Calls <code>resourceCard()</code> three ways: a full video embed, a
+          full article out-link, and a compact library row.
+        </p>
+        <div class="sg-demo" id="sg-resource-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Buttons</h3>
+        <p class="sg-note">No helper renders these — <code>.btn</code>/<code>.btn--primary</code>/<code>.btn--ghost</code> are plain CSS classes.</p>
+        <div class="sg-demo sg-demo-row">
+          <button class="btn btn--primary" type="button">Primary action</button>
+          <button class="btn btn--ghost" type="button">Secondary / dismiss</button>
+        </div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Tonight / Everything mode switch</h3>
+        <p class="sg-note">Two calls to <code>modeSwitch()</code>, one per state.</p>
+        <div class="sg-demo sg-demo-row" id="sg-modeswitch-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Onboarding / edit picker</h3>
+        <p class="sg-note">
+          The real picker form, produced by calling <code>openPicker()</code>
+          then <code>tonightView()</code> from
+          <code>js/views/tonight.js</code>. Its Save button is disarmed on
+          this page only (<code>preventDefault</code> on submit) so trying it
+          doesn't reload the page — nothing here writes to your saved
+          selection.
+        </p>
+        <div class="sg-demo" id="sg-picker-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Tonight tab: event card (event + key rule + game tonight)</h3>
+        <p class="sg-note">
+          Two real events rendered with the same <code>.tonight-card</code>
+          markup the Tonight tab uses: Hurdles (has a linked game, so it gets
+          a "Game tonight" row) and Middle Distance (has none, so the card
+          stops after "Key rule" — no empty row, no placeholder — AC16).
+        </p>
+        <div class="sg-demo" id="sg-grouping-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Games list link + Game Detail page</h3>
+        <p class="sg-note">
+          Left: one real list item, taken from calling <code>gamesView()</code>
+          just now (the link + one-sentence summary that replaced the old
+          full-card body). Right: the "What to do" section of that same
+          game's own page, taken from calling
+          <code>gameDetailView('hoop-monster')</code> — note the accent-blue
+          <code>&lt;h1&gt;</code>, a deliberate distinction from every other
+          page's navy heading.
+        </p>
+        <div class="sg-demo-row" id="sg-gamedetail-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Empty / near-empty Tonight-mode state</h3>
+        <p class="sg-note">Calls <code>tonightEmptyState()</code> with the real copy from <code>tonightCopy.emptyState</code>.</p>
+        <div class="sg-demo" id="sg-empty-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Is Tonight-mode filtering active?</h3>
+        <p class="sg-note">
+          Not a visual component — a predicate, <code>tonight.isFiltering()</code>.
+          The box below reads its live value (and the two values it's derived
+          from) straight out of <code>js/tonight.js</code> for whatever this
+          browser's real state happens to be right now — read-only, nothing
+          here changes it.
+        </p>
+        <div class="sg-demo" id="sg-filtering-demo"></div>
+      </div>
+
+      <div class="sg-subsection">
+        <h3 class="sg-subsection__title" style="font-size:var(--fs-400)">Two render paths</h3>
+        <p class="sg-note">Not a visual component — a routing/focus behaviour rule with no markup of its own to demonstrate live on a standalone page.</p>
+        <div class="sg-demo">
+          <p style="margin:0 0 var(--space-3)">
+            <strong>Real navigation</strong> (hash changed): scrolls to top,
+            moves focus to the new <code>#page-title</code>.
+          </p>
+          <p style="margin:0">
+            <strong>State-only re-render</strong> (<code>tonight:change</code>
+            event — mode switch, per-card toggle, picker open/close/save):
+            repaints <code>#view</code> only; <code>interactions.js</code>
+            places focus deliberately afterwards. See STYLEGUIDE.md for the
+            full rule.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import {
+      events,
+      games,
+      ageGroupFacts,
+      eventsAtAGlance,
+      library,
+      tonightCopy,
+      getResource
+    } from './js/content.js';
+    import {
+      esc,
+      factList,
+      responsiveTable,
+      safetyCallout,
+      resourceCard,
+      modeSwitch,
+      tonightToggleButton,
+      tonightCtaButton,
+      tonightEmptyState
+    } from './js/ui.js';
+    import * as tonight from './js/tonight.js';
+    import { eventsView } from './js/views/events.js';
+    import { gamesView } from './js/views/games.js';
+    import { gameDetailView } from './js/views/gameDetail.js';
+    import { openPicker, tonightView } from './js/views/tonight.js';
+
+    /* ---------------------------------------------------------------
+       Contrast: same WCAG 2.1 relative-luminance formula as every ratio
+       quoted in css/tokens.css and STYLEGUIDE.md. Computed here at load
+       time from whatever css/tokens.css actually resolves right now —
+       this page cannot silently claim a ratio the live tokens don't back.
+       --------------------------------------------------------------- */
+    function srgbToLin(c) {
+      c /= 255;
+      return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    }
+    function relLum(hex) {
+      let h = hex.replace('#', '');
+      if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+      const r = parseInt(h.slice(0, 2), 16);
+      const g = parseInt(h.slice(2, 4), 16);
+      const b = parseInt(h.slice(4, 6), 16);
+      return 0.2126 * srgbToLin(r) + 0.7152 * srgbToLin(g) + 0.0722 * srgbToLin(b);
+    }
+    function contrastRatio(a, b) {
+      const l1 = relLum(a);
+      const l2 = relLum(b);
+      const lighter = Math.max(l1, l2);
+      const darker = Math.min(l1, l2);
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+    function resolveToken(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    /* Real ui.js helpers assign stable, content-derived ids (e.g.
+       tonight-toggle-sprints) so the live app can refocus a specific control
+       after a repaint. This page calls several of those helpers more than
+       once — both toggle states, both mode-switch states, plus a real
+       eventsView() card that happens to render the same event — which would
+       otherwise emit the same id more than once on one page (WCAG 4.1.1). To
+       keep demos rendering from the real helpers unmodified while staying
+       id-unique, every id in a demo fragment is namespaced with a
+       demo-specific suffix immediately after render, before insertion. */
+    function withUniqueIds(html, suffix) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      tmp.querySelectorAll('[id]').forEach((el) => {
+        el.id = `${el.id}--${suffix}`;
+      });
+      return tmp.innerHTML;
+    }
+
+    const bg = {
+      white: resolveToken('--color-white'),
+      canvas: resolveToken('--color-neutral-50'),
+      tint: resolveToken('--color-accent-tint'),
+      warnSurface: resolveToken('--color-warn-surface'),
+      accent: resolveToken('--color-accent'),
+      accentStrong: resolveToken('--color-accent-strong'),
+      successTint: resolveToken('--color-success-tint'),
+      success: resolveToken('--color-success')
+    };
+    const bgLabel = {
+      white: 'white',
+      canvas: 'canvas',
+      tint: 'accent tint',
+      warnSurface: 'warn surface',
+      accent: 'accent fill',
+      accentStrong: 'accent-strong fill',
+      successTint: 'success tint',
+      success: 'success fill'
+    };
+
+    /* ---------------------------------------------------------------
+       Colour swatches — one per colour custom property declared in
+       css/tokens.css (30 total: 21 "raw" ramp/brand/accent/warn tokens +
+       9 semantic aliases), each read live via getComputedStyle so the hex
+       shown can never drift from the token's real value.
+       --------------------------------------------------------------- */
+    // Each surface token also lists the text colour(s) actually placed on it
+    // in css/components.css, so AC74's "measured contrast figure(s)" is met
+    // for surfaces too, not just for the Text/borders/focus grid below. Every
+    // ratio is computed at render time by the same contrastRatio() used
+    // everywhere else on this page — nothing here is a typed-in number.
+    const SURFACE_TOKENS = [
+      ['--color-white', 'Card surface', [
+        { label: 'body text', text: '--color-text' },
+        { label: 'heading', text: '--color-heading' }
+      ]],
+      ['--color-neutral-50', 'App canvas (Stripe "surface")', [
+        { label: 'body text', text: '--color-text' },
+        { label: 'heading', text: '--color-heading' }
+      ]],
+      ['--color-neutral-100', '<code> background', [
+        { label: 'body text', text: '--color-text' }
+      ]],
+      ['--color-accent-tint', 'Tinted surface, hover backgrounds', [
+        { label: 'muted text (.picker__label:hover)', text: '--color-text-muted' },
+        { label: 'accent (links, badge text)', text: '--color-accent' },
+        { label: 'accent-strong (numerals, hover)', text: '--color-accent-strong' }
+      ]],
+      ['--color-accent-deep', 'App bar fill (dark shell surface)', [
+        { label: 'white (app-bar text)', text: '--color-white' }
+      ]],
+      ['--color-success', 'Active per-card Tonight toggle fill', [
+        { label: 'white (check glyph/text)', text: '--color-success-on' }
+      ]],
+      ['--color-success-tint', 'Tinted success surface (.btn--ghost-success hover)', [
+        { label: 'success (border/text)', text: '--color-success' }
+      ]],
+      ['--color-warn-surface', 'Safety callout / noscript background', [
+        { label: 'warn text', text: '--color-warn-text' },
+        { label: 'warn label', text: '--color-warn-label' },
+        { label: 'warn border', text: '--color-warn-border' }
+      ]],
+      ['--color-warn-surface-alt', 'Video badge background', [
+        { label: 'warn text (.badge--video)', text: '--color-warn-text' }
+      ]],
+      ['--color-bg', 'alias — body background (= neutral-50)', [
+        { label: 'body text', text: '--color-text' }
+      ]],
+      ['--color-surface', 'alias — card background (= white)', [
+        { label: 'body text', text: '--color-text' }
+      ]]
+    ];
+
+    const TEXT_TOKENS = [
+      { v: '--color-neutral-200', use: '--color-border-subtle — decorative dividers ONLY, never a control boundary', bgs: ['white'], threshold: 3, decorative: true },
+      { v: '--color-neutral-400', use: '--color-border-interactive — every control boundary', bgs: ['white', 'canvas', 'tint', 'warnSurface'], threshold: 3 },
+      { v: '--color-neutral-600', use: '--color-text-caption — captions, meta', bgs: ['white', 'canvas'], threshold: 4.5 },
+      { v: '--color-neutral-700', use: '--color-text-muted — muted body text', bgs: ['white', 'canvas', 'tint'], threshold: 4.5 },
+      { v: '--color-neutral-800', use: '--color-text — body default (Stripe "body")', bgs: ['white', 'canvas'], threshold: 4.5 },
+      { v: '--color-neutral-900', use: '--color-heading — h1–h4 (Stripe "heading")', bgs: ['white', 'canvas'], threshold: 4.5 },
+      { v: '--color-brand', use: 'Decorative gradient ONLY (.app-bar::after) — never text, border or focus ring', bgs: ['white', 'canvas'], threshold: 4.5, neverText: true },
+      { v: '--color-brand-cyan', use: 'Decorative gradient stop ONLY — never text', bgs: ['white'], threshold: 4.5, neverText: true },
+      { v: '--color-accent', use: 'Links, focus ring, control borders, badge text — darkened blurple', bgs: ['white', 'canvas', 'tint', 'warnSurface'], threshold: 4.5 },
+      { v: '--color-accent-strong', use: 'Numerals, kickers, hover/pressed', bgs: ['white', 'canvas', 'tint', 'warnSurface'], threshold: 4.5 },
+      { v: '--color-accent-on', use: 'Text on accent / accent-strong fills', bgs: ['accent', 'accentStrong'], threshold: 4.5 },
+      { v: '--color-success', use: 'Active toggle fill; Event Detail "in tonight" CTA border/text', bgs: ['white', 'canvas', 'successTint'], threshold: 4.5 },
+      { v: '--color-success-on', use: 'Check glyph/text on --color-success fill', bgs: ['success'], threshold: 4.5 },
+      { v: '--color-warn-border', use: 'Safety callout border, "!" glyph fill', bgs: ['white', 'warnSurface'], threshold: 4.5 },
+      { v: '--color-warn-text', use: 'Safety callout body text', bgs: ['warnSurface'], threshold: 4.5 },
+      { v: '--color-warn-label', use: 'Safety callout "SAFETY" label', bgs: ['warnSurface'], threshold: 4.5 },
+      { v: '--color-border-subtle', use: 'alias (= neutral-200) — decorative only', bgs: ['white'], threshold: 3, decorative: true },
+      { v: '--color-border-interactive', use: 'alias (= neutral-400)', bgs: ['white', 'canvas', 'tint', 'warnSurface'], threshold: 3 },
+      { v: '--color-heading', use: 'alias (= neutral-900) — h1–h4', bgs: ['white', 'canvas'], threshold: 4.5 },
+      { v: '--color-text', use: 'alias (= neutral-800) — body default', bgs: ['white', 'canvas'], threshold: 4.5 },
+      { v: '--color-text-muted', use: 'alias (= neutral-700)', bgs: ['white', 'canvas', 'tint'], threshold: 4.5 },
+      { v: '--color-text-caption', use: 'alias (= neutral-600)', bgs: ['white', 'canvas'], threshold: 4.5 },
+      { v: '--color-focus', use: 'alias (= accent) — :focus-visible ring colour', bgs: ['white', 'canvas', 'tint', 'warnSurface'], threshold: 3 }
+    ];
+
+    function swatchBlockHtml(hex) {
+      // Pick readable overlay text for the block itself (not a graded pairing).
+      const onWhite = contrastRatio(hex, '#FFFFFF');
+      const overlay = onWhite > 2.5 ? '#FFFFFF' : '#000000';
+      return `<span class="sg-swatch__block-label" style="background:${overlay === '#FFFFFF' ? 'rgba(0,0,0,.55)' : 'rgba(255,255,255,.85)'};color:${overlay}">Aa</span>`;
+    }
+
+    const surfaceGrid = document.getElementById('sg-surface-grid');
+    SURFACE_TOKENS.forEach(([varName, use, pairings]) => {
+      const hex = resolveToken(varName);
+      const ratios = pairings
+        .map((p) => {
+          const textHex = resolveToken(p.text);
+          const ratio = contrastRatio(textHex, hex);
+          const pass = ratio >= 4.5;
+          return `<li class="sg-ratio">
+            <span class="sg-ratio__bg">${esc(p.label)}</span>
+            <span>${ratio.toFixed(2)}:1</span>
+            <span class="sg-badge sg-badge--${pass ? 'pass' : 'fail'}">${pass ? 'PASS' : 'FAIL'}</span>
+          </li>`;
+        })
+        .join('');
+      const card = document.createElement('div');
+      card.className = 'sg-swatch';
+      card.innerHTML = `
+        <div class="sg-swatch__block" style="background:${esc(hex)}">${swatchBlockHtml(hex)}</div>
+        <div class="sg-swatch__meta">
+          <code class="sg-swatch__name">${esc(varName)}</code>
+          <code class="sg-swatch__hex">${esc(hex)}</code>
+          <p class="sg-swatch__use">${use}</p>
+          <ul class="sg-ratios">${ratios}</ul>
+        </div>`;
+      surfaceGrid.appendChild(card);
+    });
+
+    const textGrid = document.getElementById('sg-text-grid');
+    TEXT_TOKENS.forEach((t) => {
+      const hex = resolveToken(t.v);
+      const ratios = t.bgs
+        .map((bgKey) => {
+          const ratio = contrastRatio(hex, bg[bgKey]);
+          const pass = ratio >= t.threshold;
+          let badge;
+          if (t.decorative) {
+            badge = `<span class="sg-badge sg-badge--fail">DECORATIVE ONLY</span>`;
+          } else if (t.neverText) {
+            badge = `<span class="sg-badge sg-badge--fail">NEVER USED AS TEXT</span>`;
+          } else {
+            badge = `<span class="sg-badge sg-badge--${pass ? 'pass' : 'fail'}">${pass ? 'PASS' : 'FAIL'}</span>`;
+          }
+          return `<li class="sg-ratio">
+            <span class="sg-ratio__bg">on ${esc(bgLabel[bgKey])}</span>
+            <span>${ratio.toFixed(2)}:1</span>
+            ${badge}
+          </li>`;
+        })
+        .join('');
+      const card = document.createElement('div');
+      card.className = 'sg-swatch';
+      card.innerHTML = `
+        <div class="sg-swatch__block" style="background:${esc(hex)}">${swatchBlockHtml(hex)}</div>
+        <div class="sg-swatch__meta">
+          <code class="sg-swatch__name">${esc(t.v)}</code>
+          <code class="sg-swatch__hex">${esc(hex)}</code>
+          <p class="sg-swatch__use">${t.use}</p>
+          <ul class="sg-ratios">${ratios}</ul>
+        </div>`;
+      textGrid.appendChild(card);
+    });
+
+    /* ---------------------------------------------------------------
+       Type scale — each row rendered at its real size; px value read back
+       from the live element, not hand-typed.
+       --------------------------------------------------------------- */
+    const TYPE_TOKENS = [
+      ['--fs-100', 'Badges, footnotes, tab labels'],
+      ['--fs-200', 'Captions, meta, notes, kickers'],
+      ['--fs-300', 'Secondary body — list items, card copy'],
+      ['--fs-400', 'Body default (outdoor legible)'],
+      ['--fs-500', 'h2'],
+      ['--fs-600', 'h1, narrow'],
+      ['--fs-700', 'h1, from 40em']
+    ];
+    const typeList = document.getElementById('sg-type-list');
+    TYPE_TOKENS.forEach(([varName, use]) => {
+      const row = document.createElement('div');
+      row.className = 'sg-type-row';
+      row.innerHTML = `
+        <span class="sg-type-meta">${esc(varName)}<br><span id="px-${varName}">…</span><br>${use}</span>
+        <p class="sg-type-sample" style="font-size:var(${varName})">The quick brown fox jumps over the lazy dog.</p>`;
+      typeList.appendChild(row);
+      const sample = row.querySelector('.sg-type-sample');
+      const px = Math.round(parseFloat(getComputedStyle(sample).fontSize) * 100) / 100;
+      row.querySelector(`#px-${varName}`).textContent = `${px}px`;
+    });
+
+    /* ---------------------------------------------------------------
+       Spacing / radii / elevation strips.
+       --------------------------------------------------------------- */
+    const spacingStrip = document.getElementById('sg-spacing-strip');
+    ['--space-1', '--space-2', '--space-3', '--space-4', '--space-5', '--space-6', '--space-7', '--space-8']
+      .forEach((v) => {
+        const px = resolveToken(v);
+        const chip = document.createElement('div');
+        chip.className = 'sg-scale-chip';
+        chip.innerHTML = `<span class="sg-scale-chip__box" style="width:${px};height:${px}"></span>${v}<br>${px}`;
+        spacingStrip.appendChild(chip);
+      });
+
+    const radiiStrip = document.getElementById('sg-radii-strip');
+    ['--radius-sm', '--radius-md', '--radius-lg', '--radius-pill'].forEach((v) => {
+      const r = resolveToken(v);
+      const chip = document.createElement('div');
+      chip.className = 'sg-scale-chip';
+      chip.innerHTML = `<span class="sg-scale-chip__box" style="width:3rem;height:3rem;border-radius:${r}"></span>${v}<br>${r}`;
+      radiiStrip.appendChild(chip);
+    });
+
+    const shadowStrip = document.getElementById('sg-shadow-strip');
+    ['--shadow-1', '--shadow-2', '--shadow-3'].forEach((v) => {
+      const chip = document.createElement('div');
+      chip.innerHTML = `
+        <span class="sg-demo-label">${v}</span>
+        <div style="height:4.5rem;border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(${v})"></div>`;
+      shadowStrip.appendChild(chip);
+    });
+
+    /* ---------------------------------------------------------------
+       Components — live examples, calling the real helpers wherever one
+       exists (AC76). Nothing below writes to localStorage.
+       --------------------------------------------------------------- */
+
+    // Bottom tab bar — hand-authored (no ui.js helper renders it).
+    document.getElementById('sg-tabbar-demo').innerHTML = `
+      <nav class="tabbar" aria-label="Main (demo — not a real landmark on this page)">
+        <ul class="tabbar__list">
+          <li class="tabbar__item"><a class="tab" href="#/tonight" data-tab="tonight" aria-current="page">
+            <span class="tab__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg></span>
+            <span class="tab__label">Tonight</span></a></li>
+          <li class="tabbar__item"><a class="tab" href="#/events" data-tab="events">
+            <span class="tab__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span>
+            <span class="tab__label">Events</span></a></li>
+          <li class="tabbar__item"><a class="tab" href="#/games" data-tab="games">
+            <span class="tab__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="8"/><path d="M12 4v16"/><path d="M4 12h16"/></svg></span>
+            <span class="tab__label">Games</span></a></li>
+          <li class="tabbar__item"><a class="tab" href="#/rules" data-tab="rules">
+            <span class="tab__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7"/><path d="M9 16h7"/></svg></span>
+            <span class="tab__label">Rules</span></a></li>
+        </ul>
+      </nav>`;
+
+    // Event card — real output of eventsView(), first card only. Its
+    // per-card toggle carries the same content-derived id the toggle demo
+    // below also produces for the same event, so its ids are namespaced too
+    // (see withUniqueIds above).
+    {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = eventsView().html;
+      const card = tmp.querySelector('.event-row');
+      if (card) {
+        card.querySelectorAll('[id]').forEach((el) => {
+          el.id = `${el.id}--card-demo`;
+        });
+      }
+      const wrap = document.createElement('ul');
+      wrap.className = 'event-group';
+      if (card) wrap.appendChild(card);
+      document.getElementById('sg-event-card-demo').appendChild(wrap);
+    }
+
+    // Events tab: grouped by discipline — real output of eventsView(), just
+    // the four category <h2> headings (each section's own row list is
+    // already demoed above under "Event card").
+    {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = eventsView().html;
+      const headings = Array.from(tmp.querySelectorAll('.event-category-kicker')).map((h) => h.textContent);
+      document.getElementById('sg-event-categories-demo').innerHTML =
+        `<ol class="bullets">${headings.map((h) => `<li>${esc(h)}</li>`).join('')}</ol>`;
+    }
+
+    // Games list link + Game Detail page — real output of gamesView() (one
+    // list item) and gameDetailView() ("What to do" section), side by side.
+    {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = gamesView().html;
+      const item = tmp.querySelector('.game-list li');
+
+      const detailTmp = document.createElement('div');
+      detailTmp.innerHTML = gameDetailView('hoop-monster').html;
+      detailTmp.querySelectorAll('[id]').forEach((el) => { el.id = `${el.id}--gamedetail-demo`; });
+      const heading = detailTmp.querySelector('.page-head__title');
+      const whatToDo = detailTmp.querySelector('#what-to-do--gamedetail-demo')?.closest('section');
+
+      const demo = document.getElementById('sg-gamedetail-demo');
+      demo.innerHTML = '';
+      const listWrap = document.createElement('div');
+      listWrap.style.flex = '1 1 14rem';
+      listWrap.innerHTML = '<span class="sg-demo-label">Games list</span>';
+      const ul = document.createElement('ul');
+      ul.className = 'game-list';
+      if (item) ul.appendChild(item);
+      listWrap.appendChild(ul);
+
+      const detailWrap = document.createElement('div');
+      detailWrap.style.flex = '1 1 14rem';
+      detailWrap.innerHTML = '<span class="sg-demo-label">Game Detail</span>';
+      if (heading) detailWrap.appendChild(heading);
+      if (whatToDo) detailWrap.appendChild(whatToDo);
+
+      demo.appendChild(listWrap);
+      demo.appendChild(detailWrap);
+    }
+
+    // Per-card Tonight toggle — both states, direct calls. Both states are
+    // rendered for the SAME event, so tonightToggleButton() returns the same
+    // id twice; namespace each state separately (see withUniqueIds above).
+    {
+      const demo = document.getElementById('sg-toggle-demo');
+      const sample = events[0];
+      demo.innerHTML = `
+        <div><span class="sg-demo-label">Off</span>${withUniqueIds(tonightToggleButton(sample, false), 'toggle-off')}</div>
+        <div><span class="sg-demo-label">On</span>${withUniqueIds(tonightToggleButton(sample, true), 'toggle-on')}</div>`;
+    }
+
+    // Event Detail "Add to tonight" CTA — both states, direct calls. Same
+    // slug as the toggle demo above, so ids are namespaced separately too.
+    {
+      const demo = document.getElementById('sg-cta-demo');
+      const sample = events[0];
+      demo.innerHTML = `
+        <div style="flex:1 1 12rem"><span class="sg-demo-label">Not in tonight</span>${withUniqueIds(tonightCtaButton(sample, false), 'cta-off')}</div>
+        <div style="flex:1 1 12rem"><span class="sg-demo-label">In tonight</span>${withUniqueIds(tonightCtaButton(sample, true), 'cta-on')}</div>`;
+    }
+
+    // Fact list
+    document.getElementById('sg-factlist-demo').innerHTML = factList(ageGroupFacts.facts.slice(0, 3));
+
+    // Responsive table
+    document.getElementById('sg-table-demo').innerHTML = responsiveTable({
+      columns: eventsAtAGlance.columns,
+      rows: eventsAtAGlance.rows.slice(0, 3).map((r) => r.cells),
+      caption: 'Style guide sample: three rows of the Under 10 Boys events-at-a-glance table.'
+    });
+
+    // Safety callout — a real event's verbatim safety text.
+    document.getElementById('sg-safety-demo').innerHTML = safetyCallout(events[0].safety);
+
+    // Resource card — video (full), article (full), and a compact row.
+    {
+      const demo = document.getElementById('sg-resource-demo');
+      const video = resourceCard(getResource('video-standing-start'), { context: 'Style Guide — resource card demo' });
+      const article = resourceCard(getResource('article-relay-changes'));
+      const compact = `<ul class="resource-list">${resourceCard(getResource('article-laa-rules'), { compact: true, prefix: 'Reference' })}</ul>`;
+      demo.innerHTML = `
+        <p class="sg-demo-label">kind: 'video'</p>${video}
+        <p class="sg-demo-label" style="margin-top:var(--space-4)">kind: 'article'</p>${article}
+        <p class="sg-demo-label" style="margin-top:var(--space-4)">compact: true</p>${compact}`;
+    }
+
+    // Tonight / Everything mode switch — both states. modeSwitch() always
+    // renders BOTH buttons (mode-switch-tonight AND mode-switch-everything)
+    // regardless of which mode is passed, so two calls emit each id twice;
+    // namespace per call (see withUniqueIds above).
+    document.getElementById('sg-modeswitch-demo').innerHTML = `
+      <div><span class="sg-demo-label">mode: tonight</span>${withUniqueIds(modeSwitch('tonight'), 'mode-demo-tonight')}</div>
+      <div><span class="sg-demo-label">mode: everything</span>${withUniqueIds(modeSwitch('everything'), 'mode-demo-everything')}</div>`;
+
+    // Onboarding / edit picker — force the picker branch, disarm submit.
+    {
+      openPicker();
+      const html = tonightView().html;
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      const form = tmp.querySelector('.picker');
+      const demo = document.getElementById('sg-picker-demo');
+      if (form) {
+        demo.appendChild(form);
+        form.addEventListener('submit', (e) => e.preventDefault());
+      }
+    }
+
+    // Tonight tab: event card (event + key rule + game tonight). Local
+    // read-only mirrors (not duplicated as render helpers, just page-local
+    // glue) of views/tonight.js's private gamesForEvent()/keyRuleFor() — this
+    // page never touches the app's real localStorage-backed selection, so it
+    // can't reuse tonight.js's exported selection state directly. The markup
+    // below is a byte-for-byte copy of tonightView()'s real card template so
+    // the two can't silently drift.
+    function gamesForEventDemo(slug) {
+      const items = [];
+      games.categories.forEach((cat) => {
+        (cat.items || []).forEach((item) => {
+          if ((item.eventSlugs || []).includes(slug)) items.push(item);
+        });
+      });
+      return items;
+    }
+    function keyRuleForDemo(slug) {
+      return eventsAtAGlance.rows.find((r) => r.slug === slug).cells[2];
+    }
+    {
+      const demo = document.getElementById('sg-grouping-demo');
+      const sampleSlugs = ['hurdles', 'middle-distance'];
+      const html = sampleSlugs
+        .map((slug) => {
+          const evt = events.find((e) => e.slug === slug);
+          const linked = gamesForEventDemo(slug);
+          const gameRows = linked
+            .map(
+              (item) => `
+                <div class="tonight-card__row">
+                  <p class="tonight-card__label">Game tonight</p>
+                  <p class="tonight-card__value">
+                    <a class="tonight-card__game-link" href="#/games/${esc(item.slug)}">${esc(item.name)} →</a>
+                    — ${esc(item.summary)}
+                  </p>
+                </div>`
+            )
+            .join('');
+          return `
+            <li class="tonight-group">
+              <article class="tonight-card">
+                <div class="tonight-card__head">
+                  <span class="event-row__num" aria-hidden="true">${evt.number}</span>
+                  <div class="event-row__body">
+                    <h3 class="tonight-card__title">
+                      <a class="event-row__name" href="#/events/${esc(slug)}">${esc(evt.name)} →</a>
+                    </h3>
+                    <p class="event-row__tag">${esc(evt.tagline)}</p>
+                  </div>
+                </div>
+                <div class="tonight-card__row">
+                  <p class="tonight-card__label">Key rule</p>
+                  <p class="tonight-card__value">${esc(keyRuleForDemo(slug))}</p>
+                </div>
+                ${gameRows}
+              </article>
+            </li>`;
+        })
+        .join('');
+      demo.innerHTML = `<ul class="tonight-groups">${html}</ul>`;
+    }
+
+    // Empty / near-empty Tonight-mode state. The default action is
+    // `href="#/tonight"`, a router-relative link that is a dead no-op on
+    // this standalone, non-router page — so it's overridden here to point at
+    // the real app instead (same pattern as the "Back to the app ↗" link in
+    // the nav above), rather than leaving a broken link in the demo.
+    document.getElementById('sg-empty-demo').innerHTML = tonightEmptyState(
+      tonightCopy.emptyState,
+      `<a class="btn btn--primary" href="index.html#/tonight">${esc(tonightCopy.chooseEventsCta)} ↗</a>`
+    );
+
+    // Is Tonight-mode filtering active? — live, read-only values.
+    {
+      const demo = document.getElementById('sg-filtering-demo');
+      const mode = tonight.getMode();
+      const has = tonight.hasSelection();
+      const filtering = tonight.isFiltering();
+      demo.innerHTML = `
+        <dl class="fact-list">
+          <div class="fact-list__row"><dt class="fact-list__label">tonight.getMode()</dt><dd class="fact-list__value"><code>${esc(mode)}</code></dd></div>
+          <div class="fact-list__row"><dt class="fact-list__label">tonight.hasSelection()</dt><dd class="fact-list__value"><code>${esc(String(has))}</code></dd></div>
+          <div class="fact-list__row"><dt class="fact-list__label">tonight.isFiltering()</dt><dd class="fact-list__value"><code>${esc(String(filtering))}</code></dd></div>
+        </dl>`;
+    }
+  </script>
+</body>
+</html>

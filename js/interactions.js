@@ -1,0 +1,157 @@
+/**
+ * interactions.js — the ONE place that binds interactive behaviour for
+ * Tonight mode (mode switch, picker open/close/save).
+ *
+ * The router replaces `outlet.innerHTML` on every render, which destroys any
+ * listener attached to an element inside it. Rather than re-attaching
+ * listeners inside each view function (easy to forget, silently drops on the
+ * next route change), every listener here is bound ONCE, on `outlet` itself
+ * — which the router never replaces, only its children — and dispatches by
+ * inspecting `event.target` for `data-action` attributes.
+ */
+
+import * as tonight from './tonight.js';
+import { tonightCopy } from './content.js';
+import { openPicker, closePicker, pickerSaved } from './views/tonight.js';
+
+/** Force a repaint of the current route without navigating (no hash change). */
+function repaint() {
+  window.dispatchEvent(new CustomEvent('tonight:change'));
+}
+
+/** Screen-reader announcement, written to the live region in index.html
+ *  (`#tonight-status`, outside #view so the router's repaint never destroys
+ *  it — see index.html). A live region only reliably announces on a DOM
+ *  *mutation* after it is already in the accessibility tree, so the text is
+ *  cleared and re-set on the next tick rather than set once. */
+function announce(message) {
+  const el = document.getElementById('tonight-status');
+  if (!el) return;
+  el.textContent = '';
+  window.setTimeout(() => {
+    el.textContent = message;
+  }, 30);
+}
+
+function focusHeading() {
+  const heading = document.getElementById('page-title');
+  if (heading) heading.focus();
+  window.scrollTo(0, 0);
+}
+
+function focusPickerLegend() {
+  const legend = document.getElementById('picker-legend');
+  if (legend) legend.focus();
+}
+
+function focusById(id, fallback = focusHeading) {
+  const el = document.getElementById(id);
+  if (el) {
+    // preventScroll: true — this is a state-only repaint (mode switch,
+    // per-card toggle), not a real navigation, so refocusing must never
+    // jump the viewport (AC31). focusHeading()'s explicit window.scrollTo
+    // is the one deliberate exception, for real navigations only.
+    el.focus({ preventScroll: true });
+  } else {
+    fallback();
+  }
+}
+
+function handleClick(event) {
+  const modeBtn = event.target.closest('[data-action="set-mode"]');
+  if (modeBtn) {
+    const mode = modeBtn.dataset.mode;
+    const focusId = modeBtn.id;
+    tonight.setMode(mode); // synchronously repaints via the router's listener
+    // Keep the coach's place: re-focus the equivalent button in the freshly
+    // painted DOM rather than letting focus fall back to <body> (WCAG 2.4.3).
+    focusById(focusId, () => {});
+    return;
+  }
+
+  const openBtn = event.target.closest('[data-action="open-picker"]');
+  if (openBtn) {
+    openPicker();
+    repaint();
+    focusPickerLegend();
+    return;
+  }
+
+  // Cancel (editing an existing selection) and Skip (first-run, nothing
+  // saved yet) are the same action with a conditional label only — both
+  // discard the in-progress form and return focus to the same place. See
+  // views/tonight.js's picker__actions button for the label logic.
+  const dismissBtn = event.target.closest('[data-action="dismiss-picker"]');
+  if (dismissBtn) {
+    closePicker();
+    repaint();
+    focusById('open-picker-btn');
+    return;
+  }
+
+  // Per-card Tonight toggle (Events list). See tonight.js's
+  // toggleTonightEvent() for why this deliberately never calls setMode() —
+  // mode is pinned to whatever it already was, so this control can never
+  // silently re-filter the page the coach is looking at (AC28).
+  const toggleBtn = event.target.closest('[data-action="toggle-tonight"]');
+  if (toggleBtn) {
+    const slug = toggleBtn.dataset.slug;
+    const name = toggleBtn.dataset.eventName;
+    const toggleId = toggleBtn.id;
+    const wasSelected = tonight.isTonightEvent(slug);
+
+    tonight.toggleTonightEvent(slug); // synchronously repaints via the router's listener
+
+    // AC31 focus fallback chain — never scrolls (this is a state-only
+    // re-render, not a real navigation; see router.js's "Two render paths").
+    // 1. The same toggle button, re-found by its stable slug-derived id, in
+    //    the freshly painted DOM.
+    // 2. If Tonight-mode filtering just removed that event's card entirely,
+    //    the top mode switch's Tonight button.
+    // 3. The page heading, if even that isn't present.
+    // Never falls all the way through to <body> — the last link in the
+    // chain is a no-op only reachable if #page-title itself is missing,
+    // which no view allows.
+    focusById(toggleId, () =>
+      focusById('mode-switch-tonight', () => focusById('page-title', () => {}))
+    );
+
+    announce(
+      wasSelected
+        ? tonightCopy.events.toggleOffAnnouncement(name, tonight.getSelection().length)
+        : tonightCopy.events.toggleOnAnnouncement(name, tonight.getSelection().length)
+    );
+    return;
+  }
+}
+
+function handleSubmit(event) {
+  const form = event.target.closest('[data-tonight-picker]');
+  if (!form) return;
+  event.preventDefault();
+
+  const checked = Array.from(
+    form.querySelectorAll('input[type="checkbox"]:checked')
+  ).map((input) => input.value);
+
+  // Close the picker BEFORE writing the selection: setSelection() notifies
+  // synchronously, and the resulting repaint must already see pickerOpen
+  // false so it paints the summary, not the form it was just submitted from.
+  pickerSaved();
+  tonight.setSelection(checked);
+
+  focusHeading();
+  announce(
+    checked.length === 0
+      ? 'No events selected for tonight.'
+      : `${checked.length} event${checked.length === 1 ? '' : 's'} selected for tonight.`
+  );
+}
+
+/**
+ * @param {HTMLElement} outlet the router's stable outlet element
+ */
+export function bindInteractions(outlet) {
+  outlet.addEventListener('click', handleClick);
+  outlet.addEventListener('submit', handleSubmit);
+}

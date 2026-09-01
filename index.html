@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="NSW Little Athletics Under 10 Boys Age Manager's Coaching Guide: skill progressions, common faults, safety notes, coaching videos and a bank of waiting-period games.">
+  <meta name="color-scheme" content="light">
+  <!-- Matches --color-accent-deep in css/tokens.css (app-bar fill). -->
+  <meta name="theme-color" content="#0A2540">
+  <!-- Suppresses the browser's automatic /favicon.ico request (AC90: zero 404s) — no icon asset exists or is needed. -->
+  <link rel="icon" href="data:,">
+  <title>NSW Little Athletics — U10 Boys Age Manager Guide</title>
+
+  <!-- Relative paths only: this must work under a GitHub Pages project subpath. -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <a class="skip-link" href="#view">Skip to main content</a>
+
+  <header class="app-bar">
+    <p class="app-bar__title">U10 Boys — Age Manager Guide</p>
+  </header>
+
+  <!--
+    The router writes each view into #view. It is the <main> landmark itself
+    and is focusable (tabindex="-1") so the skip link lands here.
+  -->
+  <main class="app-main" id="view" tabindex="-1"></main>
+
+  <!--
+    Tonight-mode announcements (interactions.js's announce()). Lives here,
+    outside #view, so the router's innerHTML repaint of #view never destroys
+    and recreates it. A live region only reliably announces a text mutation
+    once it is already in the accessibility tree; recreating it on every
+    repaint (as it was inside the view template) raced the tree registration
+    against the announcement itself.
+  -->
+  <div id="tonight-status" class="visually-hidden" role="status" aria-live="polite"></div>
+
+  <!--
+    Four tabs, in this DOM order. Tonight is first: it's the default route
+    (empty hash resolves directly to it, no redirect — see router.js) and the
+    brief lists the four tabs in this order. Home was removed and archived
+    (see archive/README.md); nothing here references it.
+  -->
+  <nav class="tabbar" aria-label="Main">
+    <ul class="tabbar__list">
+      <li class="tabbar__item">
+        <a class="tab" href="#/tonight" data-tab="tonight">
+          <span class="tab__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg>
+          </span>
+          <span class="tab__label">Tonight</span>
+        </a>
+      </li>
+      <li class="tabbar__item">
+        <a class="tab" href="#/events" data-tab="events">
+          <span class="tab__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
+          </span>
+          <span class="tab__label">Events</span>
+        </a>
+      </li>
+      <li class="tabbar__item">
+        <a class="tab" href="#/games" data-tab="games">
+          <span class="tab__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="8"/><path d="M12 4v16"/><path d="M4 12h16"/></svg>
+          </span>
+          <span class="tab__label">Games</span>
+        </a>
+      </li>
+      <li class="tabbar__item">
+        <a class="tab" href="#/rules" data-tab="rules">
+          <span class="tab__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7"/><path d="M9 16h7"/></svg>
+          </span>
+          <span class="tab__label">Rules</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <noscript>
+    <p class="noscript">This guide needs JavaScript enabled to display its content.</p>
+  </noscript>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

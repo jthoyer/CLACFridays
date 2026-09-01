@@ -1,0 +1,172 @@
+/* ==========================================================================
+   tokens.css — the design system's single source of truth.
+
+   Every colour, size, radius and shadow used anywhere in this app is declared
+   here. Components reference tokens; they never hard-code a hex value.
+
+   Contrast ratios in the comments below are computed (WCAG 2.1 relative
+   luminance), not estimated, and are measured against the *composited*
+   background the pairing actually renders on — not the token's assumed
+   backdrop. If you change a colour, re-measure. See STYLEGUIDE.md's "Colour"
+   section for the full table and STYLEGUIDE.md's "Deviations from Stripe"
+   section for why several Stripe colours below are restricted to decorative
+   roles only.
+
+   --------------------------------------------------------------------------
+   STRIPE-DERIVED PALETTE (AC59). Source: Stripe's public brand palette,
+   corroborated across independent sources, treated as established fact —
+   #635BFF blurple, #0A2540 dark navy, #425466 body slate, #F6F9FC light
+   surface, #E6EBF1 hairline, #00D4FF cyan, #24B47E success, #CD3D64 error.
+   getdesign.md/stripe/design-md was NOT re-fetched for this pass — it renders
+   client-side and publishes no token values.
+
+   Three of those eight values are deliberately NOT used as given, because
+   they fail this project's AA rules on the surfaces this app actually
+   composites them against:
+     - #635BFF (brand blurple) is 4.70:1 on white and only 4.45:1 on
+       #F6F9FC — FAILS AA as text. It is used only as brand/decorative fill
+       (the app-bar gradient rule below); every text/focus-ring/control-
+       border role is carried by a darkened blurple instead (AC60).
+     - #E6EBF1 (hairline) is 1.20:1 on white — FAILS the >=3:1 control-
+       boundary rule. It is restricted to decorative dividers only
+       (--color-border-subtle); a separate, re-measured token carries the
+       control-boundary role (--color-border-interactive, AC61).
+     - #00D4FF / #24B47E / #CD3D64 (cyan / success / error) are 1.77:1 /
+       2.66:1 / 4.72:1 on white — cyan and success both fail 4.5:1; error
+       (#CD3D64) actually clears 4.5:1 but is still barred from every text /
+       control-boundary / sole-state-indicator role (AC62), because a
+       colour-only state signal fails SC 1.4.1 regardless of its contrast
+       ratio. Only cyan appears at all in this file, as a decorative
+       gradient stop with no text on it (see --color-brand-cyan below).
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* --- Neutral / text ramp (Stripe navy -> slate) -----------------------
+     neutral-800 and neutral-900 are Stripe's own "body" and "heading" hexes,
+     used verbatim (AC59 b/c). The lighter steps (600/700) are new values
+     derived to sit between body and the hairline, each independently
+     re-measured against every surface it actually renders on in this app —
+     not copied from the pre-rebuild ramp, which used a different (bluer)
+     palette entirely. */
+  --color-white: #FFFFFF;
+  --color-neutral-50: #F6F9FC;   /* Stripe "surface" — app canvas (AC59a)     */
+  --color-neutral-100: #EEF2F6;  /* <code> background — body text 6.94:1 on it */
+  --color-neutral-200: #E6EBF1;  /* Stripe "hairline" — decorative only, 1.20:1 on white, see banner above */
+  --color-neutral-400: #7C8695;  /* interactive borders — 3.68:1 white, 3.49:1 canvas, 3.17:1 tint, 3.40:1 warn-surface — all >=3:1 (AC61) */
+  --color-neutral-600: #5F6F87;  /* captions — 5.11:1 white, 4.84:1 canvas, 4.40:1 tint (FAILS — never used on tint; --color-text-muted carries that surface instead, see .picker__label:hover) */
+  --color-neutral-700: #4E5C70;  /* muted body text — 6.80:1 white, 6.43:1 canvas, 5.85:1 tint (.picker__label:hover) */
+  --color-neutral-800: #425466;  /* Stripe "body" — 7.80:1 white, 7.38:1 canvas (AC59c) */
+  --color-neutral-900: #0A2540;  /* Stripe "heading" — 15.54:1 white, 14.70:1 canvas (AC59b) */
+
+  /* --- Brand blurple — decorative / gradient ONLY, never text or a border -
+     AC60: #635BFF fails AA as text (4.45:1 on canvas) so it never appears
+     in a role that requires contrast. --color-brand-cyan exists solely as
+     the second stop of the one decorative gradient this file authorises
+     (AC59f); no text is ever placed on it (AC62). */
+  --color-brand: #635BFF;        /* Stripe blurple — decorative fill only, see .app-bar::after */
+  --color-brand-cyan: #00D4FF;   /* Stripe cyan — decorative gradient stop only, never text (1.77:1 on white) */
+
+  /* --- Accent (darkened blurple) — carries every text/focus/border role -
+     A straight #635BFF fails AA (4.45:1 on canvas). --color-accent is a
+     darkened blurple that clears AA with headroom on every surface it can
+     land on (Q6: take the headroom where free rather than scrape 4.5:1). */
+  --color-accent-tint: #EEECFF;  /* tinted surface (hover/pressed backgrounds) */
+  --color-accent: #4B44D9;       /* links, focus ring, control borders, badge text — 6.71:1 white, 6.35:1 canvas, 5.78:1 tint, 6.19:1 warn-surface (AC60) */
+  --color-accent-strong: #372C96; /* pressed / numerals / hover — 10.70:1 white, 10.12:1 canvas, 9.21:1 tint, 9.86:1 warn-surface */
+  --color-accent-deep: #0A2540;  /* app bar fill — white text on it = 15.54:1 (reuses the Stripe heading navy as a dark shell surface) */
+  --color-accent-on: #FFFFFF;    /* text on --color-accent — 6.71:1; on --color-accent-strong — 10.70:1 */
+
+  /* --- Success (green) — per-card Tonight toggle's active state, and the
+     Event Detail "in tonight" CTA (js/views/eventDetail.js). Project-specific,
+     not part of the Stripe palette (Stripe's own #24B47E fails AA — see the
+     "Deviations from Stripe" banner above), chosen the same way --color-accent
+     was: darkened until it clears AA with headroom on every surface it lands
+     on, rather than merely scraping 4.5:1. -------------------------------- */
+  --color-success-tint: #E6F4EC;  /* tinted surface — .btn--ghost-success hover */
+  --color-success: #0E6B3A;       /* active toggle fill; ghost-CTA border/text — 6.60:1 white, 6.24:1 canvas, 5.82:1 success-tint */
+  --color-success-on: #FFFFFF;    /* check glyph/text on --color-success fill — 6.60:1 */
+
+  /* --- Safety / warning (project-specific; not part of Stripe's palette,
+     unchanged by this pass — its surfaces didn't change, so its ratios
+     didn't either; re-verified, not merely carried forward) ------------- */
+  --color-warn-surface: #FFF4E8;
+  --color-warn-surface-alt: #FFEAD8;
+  --color-warn-border: #C2410C;  /* 5.18:1 on white, 4.77:1 on warn-surface  */
+  --color-warn-text: #7A2E0B;    /* 8.71:1 on --color-warn-surface, 8.10:1 on --color-warn-surface-alt (.badge--video) */
+  --color-warn-label: #8A3308;   /* 7.57:1 on --color-warn-surface           */
+
+  /* --- Semantic aliases ------------------------------------------------- */
+  --color-bg: var(--color-neutral-50);
+  --color-surface: var(--color-white);
+  --color-heading: var(--color-neutral-900);        /* h1-h4 (AC59b)         */
+  --color-text: var(--color-neutral-800);           /* body default (AC59c) */
+  --color-text-muted: var(--color-neutral-700);
+  --color-text-caption: var(--color-neutral-600);
+  --color-border-subtle: var(--color-neutral-200);  /* decorative dividers only (AC61) */
+  --color-border-interactive: var(--color-neutral-400); /* >=3:1 everywhere (AC61) */
+  --color-focus: var(--color-accent);               /* never --color-brand (AC60) */
+
+  /* --- Type scale (1.2 modular, 16px root) ------------------------------
+     Body stays >=400 weight and 18px: Stripe's own weight-300 body text is
+     explicitly rejected here — this app is read outdoors, one-handed,
+     pitch-side (AC64). */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --fs-100: 0.75rem;    /* 12px — badges, footnotes      */
+  --fs-200: 0.875rem;   /* 14px — captions, meta         */
+  --fs-300: 1rem;       /* 16px — secondary body         */
+  --fs-400: 1.125rem;   /* 18px — body (outdoor legible) */
+  --fs-500: 1.35rem;    /* 21.6px — h2                   */
+  --fs-600: 1.625rem;   /* 26px — h1 on narrow           */
+  --fs-700: 1.95rem;    /* 31.2px — h1 from 40em up      */
+
+  --lh-tight: 1.25;
+  --lh-snug: 1.4;
+  --lh-body: 1.6;
+
+  --fw-regular: 400;    /* floor — no rule anywhere sets font-weight below this (AC64) */
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* --- Spacing scale (4px base) ----------------------------------------- */
+  --space-1: 0.25rem;   /*  4px */
+  --space-2: 0.5rem;    /*  8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.5rem;    /* 24px */
+  --space-6: 2rem;      /* 32px */
+  --space-7: 3rem;      /* 48px */
+  --space-8: 4rem;      /* 64px */
+
+  /* --- Radii ------------------------------------------------------------ */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* --- Component sizes ---------------------------------------------------
+     One-off diameters that recur in exactly one component and don't belong
+     in the spacing scale (they're not a gap/inset, they're a fixed circle).
+     The 44px per-card Tonight toggle reuses --tap-min below rather than a
+     new token, since it IS the tap-target floor. */
+  --size-numeral-sm: 1.75rem; /* 28px — Events list row numeral badge (compact-row redesign) */
+
+  /* --- Elevation (3 levels, used consistently on cards) ------------------ */
+  --shadow-1: 0 1px 2px rgba(16, 24, 40, 0.06),
+              0 1px 3px rgba(16, 24, 40, 0.10);
+  --shadow-2: 0 2px 4px -1px rgba(16, 24, 40, 0.06),
+              0 4px 8px -2px rgba(16, 24, 40, 0.10);
+  --shadow-3: 0 4px 8px -2px rgba(16, 24, 40, 0.06),
+              0 12px 20px -4px rgba(16, 24, 40, 0.12);
+
+  /* --- Layout ----------------------------------------------------------- */
+  --measure: 42rem;          /* max content width                           */
+  --gutter: var(--space-4);
+  --tabbar-height: 3.5rem;   /* 56px — exceeds the 44px tap-target minimum  */
+  --tap-min: 2.75rem;        /* 44px — WCAG 2.5.5 / 2.5.8 floor            */
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+}

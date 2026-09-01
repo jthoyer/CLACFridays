@@ -1,0 +1,1191 @@
+/* ==========================================================================
+   components.css — every reusable UI pattern in the app.
+   Ordered: navigation → page furniture → content blocks → resources → tables.
+   ========================================================================== */
+
+/* --- Bottom tab bar ------------------------------------------------------ */
+
+.tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 50;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border-interactive);
+  box-shadow: var(--shadow-3);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tabbar__list {
+  display: flex;
+  max-width: var(--measure);
+  margin-inline: auto;
+  list-style: none;
+}
+
+.tabbar__item {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  /* Tap target: full width of a quarter-viewport column x 56px tall. */
+  min-height: var(--tabbar-height);
+  padding: var(--space-2) var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--fs-100);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+}
+
+.tab__icon svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tab__label {
+  line-height: 1.1;
+}
+
+/*
+  aria-current drives the active state — the accessible property and the
+  visual state come from one source, so they cannot drift apart.
+  Colour is not the only signal: the active tab is also bolder and carries
+  the top rule.
+*/
+.tab[aria-current='page'] {
+  color: var(--color-accent);
+  font-weight: var(--fw-bold);
+  box-shadow: inset 0 3px 0 0 var(--color-accent);
+}
+
+/*
+  Four equal columns (Tonight, Events, Games, Rules — Home removed, see
+  archive/README.md) give each tab an 80px column at 320px viewport width
+  (90px at 360px). Height (--tabbar-height, 56px) already clears the 44px
+  floor regardless of column count, so the only thing to re-check at 4
+  columns is horizontal: the longest label ("Tonight", 7 characters) must
+  not wrap or clip within the column. Re-measured with headless Chrome at
+  both 320px and 360px after the Home removal: at the default --fs-100
+  (12px) every label renders on one line at both widths with clear margin
+  either side, so no font-size step-down is needed. Tightened side padding
+  is kept anyway as a small additional margin at the narrowest supported
+  width. If a 5th tab is ever added, re-measure before assuming the same
+  holds.
+*/
+@media (max-width: 22.5em) {
+  .tab {
+    padding-inline: 2px;
+  }
+}
+
+/* --- Buttons --------------------------------------------------------------
+   Generic action buttons (picker, mode switch's sibling actions, empty
+   states) — distinct from .out-link (bordered external-link chip). Two
+   variants only: solid primary, bordered ghost. Both meet the 44px
+   tap-target floor. (.cta was the one full-width Home hero link; Home was
+   removed and archived, and .cta was removed with it — AC71, see
+   archive/README.md.) */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-size: var(--fs-300);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-accent-on);
+}
+
+.btn--primary:hover {
+  background: var(--color-accent-strong);
+  color: var(--color-accent-on);
+}
+
+.btn--ghost {
+  background: var(--color-surface);
+  border-color: var(--color-border-interactive);
+  color: var(--color-text);
+}
+
+.btn--ghost:hover {
+  background: var(--color-accent-tint);
+  border-color: var(--color-accent);
+}
+
+/*
+  Recessed "already added" state for the Event Detail "Add to tonight" CTA
+  (js/views/eventDetail.js, tonightCtaButton() in ui.js) — a .btn--ghost
+  variant using the success green instead of neutral text/border, so the
+  in-tonight state reads as a positive confirmation rather than a plain
+  secondary action. Measured: 6.60:1 (--color-success on white), 5.82:1 on
+  the hover tint (--color-success-tint) — both well clear of 4.5:1.
+*/
+.btn--ghost-success {
+  background: var(--color-surface);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.btn--ghost-success:hover {
+  background: var(--color-success-tint);
+  border-color: var(--color-success);
+}
+
+/* Full-width variant — the Event Detail "Add to tonight" CTA is the one
+   full-width primary action on that page. */
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+
+.tonight-edit-btn {
+  margin-top: var(--space-4);
+}
+
+/* Wraps the Event Detail "Add to tonight" CTA (js/views/eventDetail.js),
+   giving it the same breathing room every other .section on that page gets
+   from the heading above it, without making the button itself a <section>
+   (it isn't a new heading level, just a page action). */
+.event-cta {
+  margin-top: var(--space-6);
+}
+
+/* --- Tonight / Everything mode switch -------------------------------------
+   Used identically on Events, Games and Rules. Two real buttons in a
+   role="group", not a bare styled div. Active state is never colour-only:
+   it also carries aria-pressed, bold weight and a leading check glyph. */
+
+.mode-switch {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.mode-switch__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--fs-300);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+}
+
+.mode-switch__btn--active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-on);
+  font-weight: var(--fw-bold);
+}
+
+.mode-switch__glyph {
+  display: inline-block;
+  min-width: 0.9em;
+  text-align: center;
+}
+
+/* --- Empty / near-empty Tonight-mode state --------------------------------
+   Shown instead of a bare empty list when a filter yields nothing, so the
+   page reads as a deliberate state rather than a broken one. */
+
+.empty-state {
+  padding: var(--space-6) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  text-align: center;
+}
+
+.empty-state p {
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+}
+
+/* --- Onboarding / edit picker (multi-select over the 10 events) ----------- */
+
+.picker__fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.picker__legend {
+  padding: 0;
+  margin-bottom: var(--space-3);
+  font-size: var(--fs-500);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+}
+
+.picker__list {
+  list-style: none;
+  margin-top: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+.picker__item + .picker__item {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.picker__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+}
+
+.picker__label:hover {
+  background: var(--color-accent-tint);
+}
+
+.picker__checkbox {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.picker__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.picker__name {
+  font-size: var(--fs-400);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.picker__tag {
+  font-size: var(--fs-200);
+  color: var(--color-text-muted);
+}
+
+.picker__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.picker__actions .btn {
+  flex: 1 1 10rem;
+}
+
+/* --- Page header --------------------------------------------------------- */
+
+.page-head {
+  margin-bottom: var(--space-5);
+}
+
+.page-head__kicker {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-200);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-accent-strong);
+}
+
+.page-head__title {
+  font-size: var(--fs-600);
+}
+
+/*
+  Game Detail page only (js/views/gameDetail.js) — a deliberate visual
+  distinction from every other view's <h1>, which stays --color-heading
+  navy. Large bold text (>=26px here) only needs 3:1; --color-accent clears
+  6.71:1 on white / 6.35:1 on canvas, already-measured pairings reused
+  as-is (see STYLEGUIDE.md's Colour section).
+*/
+.page-head__title--accent {
+  color: var(--color-accent);
+}
+
+.page-head__lead {
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--fs-300);
+}
+
+@media (min-width: 40em) {
+  .page-head__title {
+    font-size: var(--fs-700);
+  }
+}
+
+/* --- Sections ------------------------------------------------------------ */
+
+.section {
+  margin-top: var(--space-6);
+}
+
+/*
+  Roomier heading rhythm for the Games list and Games detail pages only
+  (js/views/games.js, js/views/gameDetail.js) — a deliberate, scoped
+  increase from the default --space-6 (32px) to --space-7 (48px), not a
+  global change to every .section consumer (Events, Rules, Tonight, Event
+  Detail all keep the default). Scoped as a modifier rather than edited in
+  place because .section is shared across those other views and a global
+  bump wasn't asked for or re-checked against their layouts.
+*/
+.section--spaced {
+  margin-top: var(--space-7);
+}
+
+.section__head {
+  margin-bottom: var(--space-3);
+}
+
+.section__title {
+  font-size: var(--fs-500);
+  margin-bottom: var(--space-3);
+}
+
+.section__head .section__title {
+  margin-bottom: var(--space-1);
+}
+
+/*
+  Events tab category heading (js/views/events.js) — a small uppercase
+  caption, NOT a .section__title-style heading. Still a real <h2> (the page's
+  heading hierarchy is h1 "Events" -> h2 per category; only the visual
+  treatment changes here, not the level). --color-text-caption at this size
+  (12px bold) does not qualify as "large text" under WCAG's 14pt-bold
+  threshold, so it needs the full 4.5:1 floor — it clears 4.84:1 on the app
+  canvas it renders on here (see STYLEGUIDE.md's Colour section), the same
+  pairing already used for every other kicker/caption in this app.
+*/
+.event-category-kicker {
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-caption);
+}
+
+.event-category-kicker--first {
+  margin-top: 0;
+}
+
+.section__kicker,
+.section__meta {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-200);
+  color: var(--color-text-caption);
+  font-weight: var(--fw-medium);
+}
+
+.note {
+  font-size: var(--fs-200);
+  color: var(--color-text-muted);
+  line-height: var(--lh-snug);
+}
+
+/*
+  "Not in tonight's selection" flag on an event detail deep link. Modifier
+  MUST be declared after its base class .note — both are single-class
+  selectors of equal specificity, so source order decides the winner for any
+  property both declare (here: color). Declaring it earlier previously let
+  .note's later color win by cascade order alone, silently discarding this
+  rule's intended accent colour; keep this rule below .note.
+*/
+.note--flag {
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-accent-tint);
+  border-radius: var(--radius-md);
+  color: var(--color-accent-strong);
+  font-weight: var(--fw-medium);
+}
+
+/* --- Link list ----------------------------------------------------------- */
+
+.link-list {
+  list-style: none;
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.link-list li + li {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.link-list a {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--fw-medium);
+  text-decoration: none;
+}
+
+.link-list a:hover {
+  background: var(--color-accent-tint);
+  text-decoration: underline;
+}
+
+/* --- Back link ----------------------------------------------------------- */
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-3);
+  margin: 0 0 var(--space-3) calc(var(--space-3) * -1);
+  font-size: var(--fs-300);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* --- Event list (compact-row redesign) ------------------------------------
+   Each discipline category renders ONE bordered/rounded `.event-group`
+   container (not one bordered card per event) holding single-line
+   `.event-row`s, each divided from the next by a 1px hairline. */
+
+.event-group {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+/* The <li> wraps the row's <a> and the toggle <button> as SIBLINGS — a
+   <button> cannot be a descendant of <a> (the browser silently reparents it
+   out). See js/views/events.js and ui.js's tonightToggleButton(). Tapping
+   anywhere in the row (other than the toggle) opens the event's detail page
+   via the <a>, which fills the row except for the toggle's own tap area. */
+.event-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.event-row + .event-row {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.event-row__link {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  /* Comfortably above the 44px tap-target floor even though the row itself
+     has no visible card border any more. */
+  min-height: var(--tap-min);
+  gap: var(--space-3);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.event-row__num {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-numeral-sm);
+  height: var(--size-numeral-sm);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-tint);
+  color: var(--color-accent-strong);
+  font-size: var(--fs-200);
+  font-weight: var(--fw-bold);
+}
+
+.event-row__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Styled as a link — the trailing → is appended to the name text itself
+   (see js/views/events.js), same reading pattern as .game-list__name. */
+.event-row__name {
+  font-size: var(--fs-400);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  color: var(--color-accent);
+}
+
+.event-row:hover .event-row__name {
+  text-decoration: underline;
+}
+
+.event-row__tag {
+  margin-top: 2px;
+  font-size: var(--fs-200);
+  color: var(--color-text-muted);
+}
+
+/*
+  Per-card Tonight toggle — a 44x44 icon-only circle (--tap-min doubles as
+  the diameter here, since it IS the tap-target floor). Off: dashed grey
+  border, "+" glyph. On: solid --color-success fill, white "✓" glyph.
+
+  Pressed state is never colour-only (SC 1.4.1): border STYLE changes
+  (dashed -> solid) and the glyph changes (+ -> ✓), in addition to
+  aria-pressed and the background/text colour change. The visible "Add"/"On"
+  text label was dropped as part of this redesign, but both of the required
+  non-colour signals above are unchanged from before it — see
+  tonightToggleButton()'s doc comment in js/ui.js and STYLEGUIDE.md's
+  "Per-card Tonight toggle" section.
+
+  Fill is a solid --color-success (not a tint) so the white glyph reads
+  clearly against it — 6.60:1 on white / 6.24:1 on canvas, well clear of the
+  4.5:1 floor (see tokens.css). Green, not the accent purple, reads as a
+  positive/"on" confirmation distinct from the app's link/brand colour.
+*/
+.tonight-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  border: 2px dashed var(--color-border-interactive);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.tonight-toggle--active {
+  border-style: solid;
+  border-color: var(--color-success);
+  background: var(--color-success);
+  color: var(--color-success-on);
+}
+
+.tonight-toggle__glyph {
+  display: inline-block;
+  font-size: var(--fs-400);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+}
+
+/* --- Definition list (quick facts, at-a-glance) -------------------------- */
+
+.fact-list {
+  margin: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+.fact-list__row {
+  padding: var(--space-3) var(--space-4);
+}
+
+.fact-list__row + .fact-list__row {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.fact-list__label {
+  margin: 0 0 var(--space-1);
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-caption);
+}
+
+.fact-list__value {
+  margin: 0;
+  font-size: var(--fs-300);
+  line-height: var(--lh-snug);
+}
+
+/* --- Progressions and faults --------------------------------------------- */
+
+.steps {
+  list-style: none;
+  counter-reset: step;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.steps li {
+  counter-increment: step;
+  position: relative;
+  padding: var(--space-3) var(--space-4) var(--space-3) var(--space-7);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  font-size: var(--fs-300);
+  line-height: var(--lh-snug);
+}
+
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: var(--space-3);
+  top: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-tint);
+  color: var(--color-accent-strong);
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+}
+
+.bullets {
+  list-style: none;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.bullets li {
+  position: relative;
+  padding-left: var(--space-5);
+  font-size: var(--fs-300);
+  line-height: var(--lh-snug);
+}
+
+.bullets li::before {
+  content: '';
+  position: absolute;
+  left: var(--space-2);
+  top: 0.6em;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+}
+
+/* --- Safety callout ------------------------------------------------------ */
+
+.callout {
+  margin-top: var(--space-6);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+}
+
+.callout--safety {
+  background: var(--color-warn-surface);
+  border: 1px solid var(--color-warn-border);
+  border-left-width: 6px;
+  color: var(--color-warn-text);
+}
+
+.callout__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-200);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-warn-label);
+}
+
+/* Glyph + the word "Safety" carry the meaning, so colour is never the only cue. */
+.callout__glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.375rem;
+  height: 1.375rem;
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-warn-border);
+  color: var(--color-white);
+  font-size: var(--fs-200);
+  line-height: 1;
+}
+
+.callout__body {
+  margin: 0;
+  font-size: var(--fs-300);
+  line-height: var(--lh-snug);
+}
+
+/* --- Tonight tab: event card (event + key rule + game tonight) -----------
+   Each selected event is one bordered/rounded `.tonight-card` — same
+   card language as `.event-group`/`.event-row` (Events tab) and
+   `.game-list__link` (Games tab): --color-surface fill, --color-border-
+   interactive hairline, --radius-lg corners, --shadow-1. A header row
+   (numeral + name link + tagline, reusing `.event-row__num`/`__body`/
+   `__name`/`__tag` verbatim from the Events tab so the two tabs' event
+   identity never drifts) is followed by a "Key rule" row and zero or more
+   "Game tonight" rows, each divided from the one above by a 1px hairline —
+   the same stacked-row-inside-one-card pattern `.event-group`'s
+   `.event-row + .event-row` hairline already uses, just applied to rows of
+   differing content instead of repeated event rows. */
+
+.tonight-groups {
+  list-style: none;
+  display: grid;
+  gap: var(--space-5);
+}
+
+.tonight-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+.tonight-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.tonight-card__title {
+  margin: 0;
+  font-size: var(--fs-400);
+  line-height: var(--lh-snug);
+}
+
+/* `.event-row__name` (reused verbatim from the Events tab) already sets the
+   accent colour/weight; as a standalone link here (not nested inside the
+   full-row `.event-row__link` wrapper that supplies the Events tab's tap
+   target) it needs its own tap-target treatment — same min-height/inline-
+   flex fix `.event-row__link` uses, just applied directly to the link. */
+.tonight-card__title .event-row__name {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+}
+
+.tonight-card__row {
+  padding: var(--space-3) var(--space-4);
+}
+
+.tonight-card__row + .tonight-card__row {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.tonight-card__label {
+  margin: 0 0 4px;
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.tonight-card__value {
+  margin: 0;
+  font-size: var(--fs-300);
+  line-height: var(--lh-snug);
+  color: var(--color-text);
+}
+
+/* Same accent link treatment as `.event-row__name`/`.game-list__name`
+   (trailing → baked into the link text), sized for its own >=44px tap
+   target since it sits inline within a sentence rather than filling a row. */
+.tonight-card__game-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  color: var(--color-accent);
+  font-weight: var(--fw-semibold);
+}
+
+.tonight-card__game-link:hover {
+  text-decoration: underline;
+}
+
+/* --- Games ----------------------------------------------------------------
+   .game / .game__* is the Tonight tab's nested "games under this event"
+   block (js/views/tonight.js, via gameItem() in ui.js) — the only remaining
+   consumer since the Games list page moved to the link-plus-summary pattern
+   below (js/views/games.js) and each game's full detail (including any
+   video) moved to its own page (js/views/gameDetail.js). */
+
+.game {
+  margin-bottom: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+}
+
+.game__name {
+  font-size: var(--fs-400);
+  margin-bottom: var(--space-2);
+}
+
+.game__desc {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-300);
+  line-height: var(--lh-snug);
+}
+
+.game__desc:last-child {
+  margin-bottom: 0;
+}
+
+.game__source {
+  margin: var(--space-3) 0 var(--space-2);
+  font-size: var(--fs-200);
+  color: var(--color-text-muted);
+}
+
+/* --- Games list: link + one-sentence summary ------------------------------
+   Each game on the Games list (js/views/games.js) links to its own detail
+   page (js/views/gameDetail.js) instead of inlining its full instructions —
+   a bordered-card-plus-chevron pattern of its own (this list has no
+   per-card toggle to make room for). This used to intentionally mirror the
+   Events list's old per-event card shape; the Events list moved to the
+   `.event-group`/`.event-row` compact-row pattern above as part of the
+   Events/Games redesign's row-shape pass, and this list was NOT asked to
+   follow — see STYLEGUIDE.md's "Games list link + Game Detail page". */
+
+.game-list {
+  list-style: none;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.game-list__link {
+  display: block;
+  min-height: var(--tap-min);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  text-decoration: none;
+}
+
+.game-list__link:hover {
+  background: var(--color-accent-tint);
+  box-shadow: var(--shadow-2);
+}
+
+.game-list__link:hover .game-list__name {
+  color: var(--color-accent-strong);
+}
+
+.game-list__name {
+  display: block;
+  color: var(--color-accent);
+  font-size: var(--fs-400);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.game-list__summary {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--fs-300);
+  line-height: var(--lh-snug);
+}
+
+/* --- Resource cards (Watch & Learn) -------------------------------------- */
+
+.resource {
+  margin-bottom: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+}
+
+.resource__head {
+  margin-bottom: var(--space-3);
+}
+
+.resource__title {
+  margin: var(--space-2) 0 var(--space-1);
+  font-size: var(--fs-400);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.resource__prefix {
+  color: var(--color-text-muted);
+  font-weight: var(--fw-regular);
+}
+
+.resource__source {
+  margin: 0;
+  font-size: var(--fs-200);
+  color: var(--color-text-muted);
+}
+
+.resource__note {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-300);
+  line-height: var(--lh-snug);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.badge--video {
+  background: var(--color-warn-surface-alt);
+  color: var(--color-warn-text);
+}
+
+.badge--article {
+  background: var(--color-accent-tint);
+  color: var(--color-accent);
+}
+
+.resource-list {
+  list-style: none;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.resource--compact {
+  margin-bottom: 0;
+  box-shadow: var(--shadow-1);
+}
+
+.resource--compact .resource__title {
+  font-size: var(--fs-300);
+}
+
+/* --- Out-links ----------------------------------------------------------- */
+
+.out-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: var(--fs-300);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+}
+
+.out-link:hover {
+  background: var(--color-accent-tint);
+  border-color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.out-link__icon {
+  font-size: var(--fs-300);
+  line-height: 1;
+}
+
+/* --- Responsive 16:9 video embed ----------------------------------------- */
+
+.embed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--color-neutral-900);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.embed__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/*
+  Focus indication for the embedded player is owned by YouTube's document, not
+  by us: when Tab moves focus into a cross-origin frame, the parent's <iframe>
+  element stops matching :focus, so :focus-within does NOT propagate in Chrome.
+  Verified with real Tab presses — activeElement === the iframe while
+  iframe:focus, :focus-within and :has(:focus) were all false.
+
+  This rule is therefore a progressive enhancement, not the fix: it paints a
+  ring in engines that do propagate focus-within, and costs nothing where they
+  don't. Ring measures 6.71:1 (--color-accent #4B44D9 on the #FFFFFF resource card).
+*/
+.embed:focus-within {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* --- Responsive table ---------------------------------------------------- */
+
+.rtable-wrap {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+.rtable__footnote {
+  margin-top: var(--space-2);
+  font-size: var(--fs-200);
+  color: var(--color-text-muted);
+}
+
+/*
+  Narrow (default, mobile-first): each row becomes a stacked card so nothing
+  scrolls sideways at 320px. The <thead> leaves the layout, so each cell
+  re-states its column name from data-label.
+*/
+.rtable,
+.rtable tbody,
+.rtable tr,
+.rtable th,
+.rtable td {
+  display: block;
+}
+
+.rtable thead {
+  display: none;
+}
+
+.rtable tr {
+  padding: var(--space-4);
+}
+
+.rtable tbody tr + tr {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.rtable__rowhead {
+  text-align: left;
+  font-size: var(--fs-400);
+  font-weight: var(--fw-bold);
+  margin-bottom: var(--space-2);
+}
+
+.rtable td {
+  font-size: var(--fs-300);
+  line-height: var(--lh-snug);
+}
+
+.rtable td + td {
+  margin-top: var(--space-2);
+}
+
+.rtable td::before {
+  content: attr(data-label);
+  display: block;
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-caption);
+}
+
+/* Wide: restore a real table layout. */
+@media (min-width: 40em) {
+  .rtable,
+  .rtable tbody,
+  .rtable tr,
+  .rtable th,
+  .rtable td {
+    display: revert;
+  }
+
+  .rtable thead {
+    display: revert;
+  }
+
+  .rtable thead th {
+    text-align: left;
+    font-size: var(--fs-100);
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-caption);
+    background: var(--color-neutral-50);
+  }
+
+  .rtable th,
+  .rtable td {
+    padding: var(--space-3) var(--space-4);
+    vertical-align: top;
+    font-size: var(--fs-300);
+  }
+
+  .rtable tbody tr + tr th,
+  .rtable tbody tr + tr td {
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .rtable tr {
+    padding: 0;
+  }
+
+  .rtable__rowhead {
+    font-size: var(--fs-300);
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+
+  .rtable td::before {
+    display: none;
+  }
+
+  .rtable td + td {
+    margin-top: 0;
+  }
+}
