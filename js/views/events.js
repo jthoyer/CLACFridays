@@ -25,15 +25,29 @@ import {
  * list; grouping by discipline (Track/Jumps/Throws/Bonus) reuses this
  * unchanged.
  *
- * Visual shape: each event is its own bordered/rounded `.event-card`, its
- * name reversed white-on-dark in a `.event-card__strip` header band above a
- * lighter `.event-card__body` band holding the tagline — same header-band-
- * over-body-band language as `.game-list__link` (js/views/games.js), so an
- * event card and a game card read as the same kind of thing. No numeral
- * badge — the name alone identifies the event. The `resourceSummary()` line
- * ("2 videos", "1 article") is deliberately NOT rendered here — it isn't
- * part of this card's design — but the data/helper is untouched and still
- * renders on the Event Detail page (js/views/eventDetail.js).
+ * Visual shape (state-first redesign, "Option A"): each event is its own
+ * bordered/rounded `.event-card`, its name reversed white-on-dark in a
+ * `.event-card__strip` header band — same header-band language as
+ * `.game-list__link` (js/views/games.js), so an event card and a game card
+ * still read as the same kind of thing. Below that, `.event-card__body` is a
+ * row holding the tagline and the per-card Tonight toggle side by side. When
+ * the event is in tonight's selection, `.event-card--selected` tints the
+ * whole card (border + body wash), not just the toggle, so a coach can tell
+ * what's already added from the card's silhouette alone, on top of the
+ * toggle's own label/glyph/border signals — see `tonightToggleButton()` in
+ * ui.js and STYLEGUIDE.md's "Event card" / "Per-card Tonight toggle"
+ * sections. No numeral badge — the name alone identifies the event. The
+ * `resourceSummary()` line ("2 videos", "1 article") is deliberately NOT
+ * rendered here — it isn't part of this card's design — but the data/helper
+ * is untouched and still renders on the Event Detail page
+ * (js/views/eventDetail.js).
+ *
+ * The toggle button sits in `.event-card__body`, a sibling of `.event-card__link`
+ * rather than a floating overlay — `.event-card__link` now wraps only the
+ * name strip (still the event's own >= 44px tap target to its detail page);
+ * a `<button>` still cannot legally be a descendant of `<a>` (see
+ * `tonightToggleButton()`'s doc comment), so it lives in the body row
+ * instead of the link.
  *
  * Exported for `styleguide.html`'s Event-card tile. That tile used to scrape
  * the first `.event-card` out of a full `eventsView()` render, which stopped
@@ -49,16 +63,16 @@ export function eventCardList(list) {
     .map((e) => {
       const pressed = tonight.isTonightEvent(e.slug);
       return `
-        <li class="event-card">
+        <li class="event-card${pressed ? ' event-card--selected' : ''}">
           <a class="event-card__link" href="#/events/${esc(e.slug)}">
             <span class="event-card__strip">
               <span class="event-card__name">${esc(e.name)} →</span>
             </span>
-            <span class="event-card__body">
-              <span class="event-card__tag">${esc(e.tagline)}</span>
-            </span>
           </a>
-          ${tonightToggleButton(e, pressed)}
+          <span class="event-card__body">
+            <span class="event-card__tag">${esc(e.tagline)}</span>
+            ${tonightToggleButton(e, pressed)}
+          </span>
         </li>`;
     })
     .join('');

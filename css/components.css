@@ -479,14 +479,26 @@
   text-decoration: underline;
 }
 
-/* --- Event list (card redesign) --------------------------------------------
-   Each event renders as its own bordered/rounded `.event-card` — same
-   header-band-over-body-band language as `.game-list__link` (js/views/
-   games.js): the name reverses white out of `--color-heading` in a full-
-   bleed `.event-card__strip`, directly above a lighter `.event-card__body`
-   band holding the tagline. `overflow: hidden` on the card's own link clips
-   both bands to its rounded corners. No numeral badge — the name alone
-   identifies the event. */
+/* --- Event list (state-first card redesign, "Option A") --------------------
+   Each event renders as its own bordered/rounded `.event-card` — the
+   border/radius/shadow/clip live on the `<li>` itself, not on the link,
+   because the link (`.event-card__link`) now wraps only the name strip; the
+   tagline + toggle row (`.event-card__body`) is a SIBLING of the link, not a
+   child of it — a <button> cannot be a descendant of <a> (the browser
+   silently reparents it out). See js/views/events.js and ui.js's
+   tonightToggleButton(). The name reverses white out of `--color-heading`
+   in a full-bleed `.event-card__strip` — same header-band language as
+   `.game-list__link` (js/views/games.js). `overflow: hidden` on `.event-card`
+   clips both bands to its rounded corners. No numeral badge — the name alone
+   identifies the event.
+
+   `.event-card--selected` (js/views/events.js, applied when the event is in
+   tonight's selection) tints the WHOLE card — border colour and the body
+   band's fill — so a coach can tell what's already added from the card
+   itself while scanning, not just from the small toggle. This is on top of,
+   not instead of, the toggle's own non-colour signals (glyph + border style,
+   see `.tonight-toggle` below) — colour is never the only signal (SC 1.4.1).
+   See STYLEGUIDE.md's "Event card" section for the full rationale. */
 
 .event-cards {
   list-style: none;
@@ -496,29 +508,26 @@
   gap: var(--space-3);
 }
 
-/* The <li> wraps the card's <a> and the toggle <button> as SIBLINGS — a
-   <button> cannot be a descendant of <a> (the browser silently reparents it
-   out). See js/views/events.js and ui.js's tonightToggleButton(). The toggle
-   floats over the card's top-right corner (positioned against this <li>)
-   rather than sitting beside the card in a flex row. */
 .event-card {
-  position: relative;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-interactive);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+.event-card--selected {
+  border-color: var(--color-success);
+}
+
+.event-card:hover {
+  box-shadow: var(--shadow-2);
 }
 
 .event-card__link {
   display: block;
-  min-height: var(--tap-min);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-interactive);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-1);
-  overflow: hidden;
   text-decoration: none;
   color: var(--color-text);
-}
-
-.event-card__link:hover {
-  box-shadow: var(--shadow-2);
 }
 
 .event-card__link:hover .event-card__name {
@@ -527,9 +536,7 @@
 
 .event-card__strip {
   display: block;
-  /* Extra right-hand padding keeps the name clear of the floating Tonight
-     toggle. */
-  padding: var(--space-3) calc(var(--tap-min) + var(--space-4)) var(--space-3) var(--space-4);
+  padding: var(--space-3) var(--space-4);
   background: var(--color-heading);
 }
 
@@ -541,15 +548,88 @@
   line-height: var(--lh-snug);
 }
 
+/* Row, not a stacked block, now that the toggle sits inline beside the
+   tagline instead of floating over the card's corner. */
 .event-card__body {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
 }
 
+/* `--color-success` on `--color-success-tint` is the same already-measured
+   5.82:1 pairing used elsewhere in this app (see tokens.css), not a new
+   contrast claim. */
+.event-card--selected .event-card__body {
+  background: var(--color-success-tint);
+}
+
 .event-card__tag {
-  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
   font-size: var(--fs-200);
   color: var(--color-text-muted);
+}
+
+.event-card--selected .event-card__tag {
+  color: var(--color-success);
+}
+
+/*
+  Per-card Tonight toggle — a labelled pill sitting inline in the card's
+  body row (state-first redesign, "Option A"), not the icon-only circle this
+  control used before. `min-height: var(--tap-min)` still guarantees the
+  44px tap-target floor even though the pill is no longer square; horizontal
+  padding gives it room for the glyph + visible "Add"/"Added" label.
+
+  Off: dashed grey border, "+" glyph, muted text, "Add" label. On: solid
+  --color-success fill, white "✓" glyph, "Added" label.
+
+  Pressed state is never colour-only (SC 1.4.1): border STYLE changes
+  (dashed -> solid) and the glyph changes (+ -> ✓), on top of the
+  background/text colour change and the visible label word itself
+  (Add -> Added) — see tonightToggleButton()'s doc comment in js/ui.js and
+  STYLEGUIDE.md's "Per-card Tonight toggle" section.
+
+  Fill is a solid --color-success (not a tint) so the white glyph/label read
+  clearly against it — 6.60:1 on white / 6.24:1 on canvas, well clear of the
+  4.5:1 floor (see tokens.css). Green, not the accent purple, reads as a
+  positive/"on" confirmation distinct from the app's link/brand colour.
+*/
+.tonight-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-4);
+  border: 2px dashed var(--color-border-interactive);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--fs-200);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+
+.tonight-toggle--active {
+  border-style: solid;
+  border-color: var(--color-success);
+  background: var(--color-success);
+  color: var(--color-success-on);
+}
+
+.tonight-toggle__glyph {
+  display: inline-block;
+  font-size: var(--fs-300);
+  line-height: 1;
+}
+
+.tonight-toggle__label {
+  display: inline-block;
+  line-height: 1;
 }
 
 /* --- Weekly-program picker (`programPicker()` in ui.js) -----------------
@@ -775,58 +855,6 @@ a.run-card:hover .run-card__name {
   color: var(--color-heading);
   font-size: var(--fs-400);
   font-weight: var(--fw-semibold);
-}
-
-.event-card > .tonight-toggle {
-  position: absolute;
-  top: var(--space-3);
-  right: var(--space-4);
-}
-
-/*
-  Per-card Tonight toggle — a 44x44 icon-only circle (--tap-min doubles as
-  the diameter here, since it IS the tap-target floor). Off: dashed grey
-  border, "+" glyph. On: solid --color-success fill, white "✓" glyph.
-
-  Pressed state is never colour-only (SC 1.4.1): border STYLE changes
-  (dashed -> solid) and the glyph changes (+ -> ✓), in addition to
-  aria-pressed and the background/text colour change. The visible "Add"/"On"
-  text label was dropped as part of this redesign, but both of the required
-  non-colour signals above are unchanged from before it — see
-  tonightToggleButton()'s doc comment in js/ui.js and STYLEGUIDE.md's
-  "Per-card Tonight toggle" section.
-
-  Fill is a solid --color-success (not a tint) so the white glyph reads
-  clearly against it — 6.60:1 on white / 6.24:1 on canvas, well clear of the
-  4.5:1 floor (see tokens.css). Green, not the accent purple, reads as a
-  positive/"on" confirmation distinct from the app's link/brand colour.
-*/
-.tonight-toggle {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: var(--tap-min);
-  height: var(--tap-min);
-  border: 2px dashed var(--color-border-interactive);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  cursor: pointer;
-}
-
-.tonight-toggle--active {
-  border-style: solid;
-  border-color: var(--color-success);
-  background: var(--color-success);
-  color: var(--color-success-on);
-}
-
-.tonight-toggle__glyph {
-  display: inline-block;
-  font-size: var(--fs-400);
-  font-weight: var(--fw-bold);
-  line-height: 1;
 }
 
 /* --- Definition list (quick facts, at-a-glance) --------------------------
