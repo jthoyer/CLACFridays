@@ -1714,14 +1714,40 @@ export const games = {
   // page (js/views/gameDetail.js's "Watch & Learn" section) wherever a game
   // has videoResources — moved there from the Games list page as part of the
   // Games-tab redesign (item 6/7): the list page no longer inlines any video.
-  // These strings must appear verbatim (§7.7 / AC49) so a coach can never
-  // mistake an official event-technique video for footage of this specific
-  // game.
+  //
+  // TWO VARIANTS, because a video attached to a game is one of two different
+  // things and the honest framing differs between them:
+  //
+  //   `technique`   — an official coaching video of the underlying EVENT.
+  //                   Its clarifier must appear verbatim (§7.7 / AC49) so a
+  //                   coach can never mistake it for footage of this game.
+  //                   Every video in the bank was this kind until real game
+  //                   footage arrived, which is why this used to be a single
+  //                   flat { heading, clarifier } object.
+  //   `gameFootage` — the video shows THIS game being played. The technique
+  //                   clarifier would be a false statement here, so this
+  //                   variant carries none at all and gameDetailView() must
+  //                   not fall back to the other variant's.
+  //
+  // Which variant a video gets is declared per entry, on the videoResource
+  // itself (`isGameFootage: true`), NOT inferred from the game or its
+  // category — one game can carry both kinds at once, so there is no single
+  // correct answer at game level.
   videoBlockCopy: {
-    heading: 'Technique this game rehearses',
-    clarifier:
-      'These are official coaching videos of the underlying event technique, ' +
-      'not footage of this game.'
+    technique: {
+      heading: 'Technique this game rehearses',
+      clarifier:
+        'These are official coaching videos of the underlying event technique, ' +
+        'not footage of this game.'
+    },
+    gameFootage: {
+      heading: 'Watch this game being played',
+      // Deliberately null, not an empty string: "this variant has no
+      // clarifier" must stay distinguishable from "someone forgot to write
+      // one", the same deliberately-absent-vs-forgotten distinction
+      // `eventSlugs: []` carries at AC36.
+      clarifier: null
+    }
   }
 };
 
@@ -1917,6 +1943,22 @@ export const tonightCopy = {
           return;
         }
         checkResourceRef(key, `${where}.videoResources[${i}]`, true);
+
+        // `isGameFootage` picks which videoBlockCopy variant gameDetailView()
+        // renders this entry under. A truthy non-boolean (e.g. the string
+        // 'false') would silently select the wrong honesty framing, so the
+        // type is checked here rather than coerced at render time. Absent is
+        // valid and means technique — the default every existing video wants.
+        if (
+          vr &&
+          typeof vr === 'object' &&
+          'isGameFootage' in vr &&
+          typeof vr.isGameFootage !== 'boolean'
+        ) {
+          problems.push(
+            `${where}.videoResources[${i}].isGameFootage must be a boolean when present`
+          );
+        }
       });
 
       if (!item.slug || typeof item.slug !== 'string') {
