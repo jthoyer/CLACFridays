@@ -552,11 +552,14 @@
         <article class="sg-tile">
           <div class="sg-tile__hd"><h3>Event card</h3><span class="sg-tile__spec">eventsView()</span></div>
           <p class="sg-tile__note">
-            Built by calling <code>eventsView()</code> from
-            <code>js/views/events.js</code> just now and taking its first
-            <code>.event-card</code> — including its per-card toggle, in
-            whatever state your browser's saved selection currently has it
-            (nothing on this page ever writes to that selection).
+            Built by calling <code>eventCardList()</code> from
+            <code>js/views/events.js</code> just now with the guide's first
+            event — including its per-card toggle, in whatever state your
+            browser's saved selection currently has it (nothing on this page
+            ever writes to that selection). Calls the card helper directly
+            rather than scraping a full <code>eventsView()</code> render,
+            which now has a second, card-less branch (see the weekly-program
+            tiles below).
           </p>
           <div class="sg-tile__stage" id="sg-event-card-demo"></div>
         </article>
@@ -564,10 +567,11 @@
         <article class="sg-tile">
           <div class="sg-tile__hd"><h3>Events tab: grouped by discipline</h3><span class="sg-tile__spec">eventsView()</span></div>
           <p class="sg-tile__note">
-            Built by calling the real <code>eventsView()</code> just now
-            and taking its category <code>&lt;h2&gt;</code> headings, in
-            order (Track / Jumps / Throws / Bonus) — the same four
-            <code>&lt;section&gt;</code>s the live Events tab renders.
+            Read straight from <code>eventCategories</code> in
+            <code>js/content.js</code>, in its own fixed order (Track /
+            Jumps / Throws / Bonus) — the same four
+            <code>&lt;section&gt;</code>s the live Events tab renders in
+            Everything mode.
           </p>
           <div class="sg-tile__stage" id="sg-event-categories-demo"></div>
         </article>
@@ -642,6 +646,35 @@
         </article>
 
         <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Weekly-program picker</h3><span class="sg-tile__spec">programPicker()</span></div>
+          <p class="sg-tile__note">
+            Two live calls to <code>programPicker()</code> from
+            <code>js/ui.js</code> — unset, and set to Program&nbsp;A /
+            Under&nbsp;10. Real <code>&lt;select&gt;</code>s with real
+            <code>&lt;label for&gt;</code>s: the closed control is restyled
+            (<code>appearance: none</code> plus a drawn chevron), the open
+            one stays the platform's own. Changing one here does nothing —
+            the delegated <code>change</code> handler lives on the app's
+            router outlet, which this page has no copy of.
+          </p>
+          <div class="sg-tile__stage" id="sg-programpicker-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Running order (weekly program)</h3><span class="sg-tile__spec">runningOrder() + programEmptyState()</span></div>
+          <p class="sg-tile__note">
+            Real output of <code>getRunningOrder()</code> passed to
+            <code>runningOrder()</code>. Under&nbsp;10 shows the two flag
+            bands (pack-up, and the no-guide flag on a block the club runs
+            but this guide has no page for); beside it,
+            <code>programEmptyState()</code>, which no real choice reaches
+            now that all six grids are loaded &mdash; it is shown here with a
+            program id that does not exist.
+          </p>
+          <div class="sg-tile__stage" id="sg-runningorder-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
           <div class="sg-tile__hd"><h3>Onboarding / edit picker</h3><span class="sg-tile__spec">openPicker() + tonightView()</span></div>
           <p class="sg-tile__note">
             The real picker form, produced by calling
@@ -680,6 +713,25 @@
             from every other page's navy heading.
           </p>
           <div class="sg-tile__stage sg-tile__stage--row" id="sg-gamedetail-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Watch &amp; Learn video framing</h3><span class="sg-tile__spec">games.videoBlockCopy</span></div>
+          <p class="sg-tile__note">
+            Both variants, read live out of <code>games.videoBlockCopy</code>
+            and rendered over the same resource card, so the only difference
+            on screen is the copy itself. A video attached to a game is either
+            footage of that game or an official video of the event technique
+            it rehearses, and only one honest framing fits each.
+            <code>gameDetailView()</code> picks the variant per entry from the
+            videoResource's own <code>isGameFootage</code> flag — never from
+            the game or its category — so one game can render both blocks at
+            once. The technique clarifier stays pinned verbatim (§7.7 / AC49);
+            the game-footage variant carries <code>clarifier: null</code> and
+            renders no note at all, because on real footage that sentence
+            would be false.
+          </p>
+          <div class="sg-tile__stage sg-tile__stage--row" id="sg-videoframing-demo"></div>
         </article>
 
         <article class="sg-tile">
@@ -748,6 +800,9 @@
       eventsAtAGlance,
       library,
       tonightCopy,
+      eventCategories,
+      weeklyProgram,
+      getRunningOrder,
       getResource
     } from './js/content.js';
     import {
@@ -757,12 +812,15 @@
       safetyCallout,
       resourceCard,
       modeSwitch,
+      programPicker,
+      runningOrder,
+      programEmptyState,
       tonightToggleButton,
       tonightCtaButton,
       tonightEmptyState
     } from './js/ui.js';
     import * as tonight from './js/tonight.js';
-    import { eventsView } from './js/views/events.js';
+    import { eventsView, eventCardList } from './js/views/events.js';
     import { gamesView } from './js/views/games.js';
     import { gameDetailView } from './js/views/gameDetail.js';
     import { openPicker, tonightView } from './js/views/tonight.js';
@@ -1088,9 +1146,14 @@
     // per-card toggle carries the same content-derived id the toggle demo
     // below also produces for the same event, so its ids are namespaced too
     // (see withUniqueIds above).
+    // Calls eventCardList() directly rather than scraping a full
+    // eventsView() render: with a weekly program chosen, eventsView()
+    // renders a running order and contains no .event-card at all, so the
+    // old scrape produced an empty tile for anyone whose saved state had
+    // one. See eventCardList()'s doc comment in js/views/events.js.
     {
       const tmp = document.createElement('div');
-      tmp.innerHTML = eventsView().html;
+      tmp.innerHTML = eventCardList(events.slice(0, 1));
       const card = tmp.querySelector('.event-card');
       if (card) {
         card.querySelectorAll('[id]').forEach((el) => {
@@ -1103,15 +1166,16 @@
       document.getElementById('sg-event-card-demo').appendChild(wrap);
     }
 
-    // Events tab: grouped by discipline — real output of eventsView(), just
-    // the four category <h2> headings (each section's own row list is
-    // already demoed above under "Event card").
+    // Events tab: grouped by discipline — the four category names, read
+    // straight from content.js's eventCategories in its own fixed order
+    // (each section's own row list is already demoed above under "Event
+    // card"). Read from the data rather than scraped from an eventsView()
+    // render for the same reason as the tile above.
     {
-      const tmp = document.createElement('div');
-      tmp.innerHTML = eventsView().html;
-      const headings = Array.from(tmp.querySelectorAll('.event-category-kicker')).map((h) => h.textContent);
       document.getElementById('sg-event-categories-demo').innerHTML =
-        `<ol class="bullets">${headings.map((h) => `<li>${esc(h)}</li>`).join('')}</ol>`;
+        `<ol class="bullets">${eventCategories
+          .map((c) => `<li>${esc(c.name)}</li>`)
+          .join('')}</ol>`;
     }
 
     // Games list link + Game Detail page — real output of gamesView() (one
@@ -1145,6 +1209,29 @@
 
       demo.appendChild(listWrap);
       demo.appendChild(detailWrap);
+    }
+
+    // Watch & Learn video framing — both games.videoBlockCopy variants, each
+    // over the SAME real resource card, so the tile isolates the one thing
+    // that differs: the heading, and whether a clarifier renders at all.
+    // Mirrors gameDetailView()'s own conditional rather than restating the
+    // copy, so this tile cannot drift from the page it documents.
+    {
+      const demo = document.getElementById('sg-videoframing-demo');
+      const sample = getResource('video-standing-start');
+      const block = (label, variant) => {
+        const copy = games.videoBlockCopy[variant];
+        return `
+          <div style="flex:1 1 14rem">
+            <span class="sg-demo-label">${esc(label)}</span>
+            <p class="section__kicker">${esc(copy.heading)}</p>
+            ${copy.clarifier ? `<p class="note">${esc(copy.clarifier)}</p>` : ''}
+            <ul class="resource-list">${resourceCard(sample, { compact: true, prefix: 'Standing Start' })}</ul>
+          </div>`;
+      };
+      demo.innerHTML =
+        block('gameFootage — no clarifier', 'gameFootage') +
+        block('technique — clarifier pinned verbatim', 'technique');
     }
 
     // Per-card Tonight toggle — both states, direct calls. Both states are
@@ -1200,6 +1287,38 @@
     document.getElementById('sg-modeswitch-demo').innerHTML = `
       <div><span class="sg-demo-label">mode: tonight</span>${withUniqueIds(modeSwitch('tonight'), 'mode-demo-tonight')}</div>
       <div><span class="sg-demo-label">mode: everything</span>${withUniqueIds(modeSwitch('everything'), 'mode-demo-everything')}</div>`;
+
+    // Weekly-program picker — both states, from two direct calls.
+    // programPicker() emits fixed ids (program-select / age-select), so two
+    // calls emit each id twice; namespace per call (see withUniqueIds).
+    document.getElementById('sg-programpicker-demo').innerHTML = `
+      <div><span class="sg-demo-label">no program chosen</span>${withUniqueIds(
+        programPicker({ programId: null, ageId: weeklyProgram.defaultAgeId }),
+        'prog-demo-unset'
+      )}</div>
+      <div><span class="sg-demo-label">Program A · Under 10</span>${withUniqueIds(
+        programPicker({ programId: 'A', ageId: '10' }),
+        'prog-demo-set'
+      )}</div>`;
+
+    // Running order — the real Under 10 night for Program A, plus one block
+    // from an older age group that has no page in this guide (so the
+    // no-guide flag is shown), and the no-grid empty state.
+    {
+      const u10 = getRunningOrder('A', weeklyProgram.defaultAgeId);
+      const u12 = getRunningOrder('A', '12');
+      const noGuideBlock = u12.blocks.filter((b) => !b.slug).slice(0, 1);
+      document.getElementById('sg-runningorder-demo').innerHTML = `
+        <div><span class="sg-demo-label">Program A · Under 10</span>${runningOrder(
+          u10.blocks
+        )}</div>
+        <div><span class="sg-demo-label">a block with no page in this guide</span>${runningOrder(
+          noGuideBlock
+        )}</div>
+        <div><span class="sg-demo-label">program with no grid loaded</span>${programEmptyState(
+          getRunningOrder('not-a-program', weeklyProgram.defaultAgeId)
+        )}</div>`;
+    }
 
     // Onboarding / edit picker — force the picker branch, disarm submit.
     {

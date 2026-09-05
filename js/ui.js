@@ -7,7 +7,7 @@
  * two implementations drift and the two surfaces silently disagree.
  */
 
-import { tonightCopy, getResource, getEvent } from './content.js';
+import { tonightCopy, weeklyProgram, getResource, getEvent } from './content.js';
 
 /** Escape text for safe interpolation into HTML (also covers attribute values). */
 export function esc(value) {
@@ -501,3 +501,177 @@ export function tonightEmptyState(message, action) {
     </div>`;
 }
 
+/**
+ * Weekly-program picker — the two <select>s at the top of the Events tab
+ * (js/views/events.js) that choose which of the club's rotating programs is
+ * on tonight and which age group to read off it.
+ *
+ * REAL <select>s, not a custom listbox or a row of chips. Six programs times
+ * ten age groups is too many for chips at a 320px width, and a native select
+ * opens the platform's own wheel/dropdown — big touch targets, keyboard and
+ * screen-reader support for free, and it works one-handed in the dark on the
+ * side of a track, which no hand-rolled listbox of ours would. `appearance:
+ * none` restyles the closed control only; the open picker stays native.
+ *
+ * Each select has a real <label for>, so the control is named without
+ * relying on the visible text beside it. Selection state is expressed with
+ * the `selected` ATTRIBUTE rather than set on the live node, because the
+ * router replaces the outlet's innerHTML on every repaint — there is no
+ * surviving DOM state to set (see router.js's "Two render paths").
+ *
+ * `data-action="set-program"` / `"set-age"` are dispatched by the ONE
+ * delegated `change` listener in interactions.js, matching how every other
+ * control in this app is wired (see that file's banner).
+ *
+ * The program select carries an explicit "Not set" option because clearing
+ * the choice has to be reachable: hand-editing tonight's events drops the
+ * program (see tonight.js's clearProgramForManualEdit()), and the coach
+ * needs the same exit by hand.
+ *
+ * @param {{programId: (string|null), ageId: string}} choice
+ */
+export function programPicker(choice) {
+  // `id` is a stable, fixed string (not generated) so interactions.js can
+  // re-find and re-focus this exact select after the outlet repaints — the
+  // same arrangement modeSwitch()'s buttons use.
+  const field = ({ id, action, label, options }) => `
+    <div class="program-picker__field">
+      <label class="program-picker__label" for="${esc(id)}">${esc(label)}</label>
+      <div class="program-picker__control">
+        <select class="program-picker__select" id="${esc(id)}" data-action="${esc(action)}">
+          ${options}
+        </select>
+        <span class="program-picker__chevron" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+        </span>
+      </div>
+    </div>`;
+
+  const option = (value, label, selected) =>
+    `<option value="${esc(value)}"${selected ? ' selected' : ''}>${esc(label)}</option>`;
+
+  const programOptions = [
+    option('', 'Not set', choice.programId == null),
+    ...weeklyProgram.programs.map((p) =>
+      option(p.id, p.name, p.id === choice.programId)
+    )
+  ].join('');
+
+  const ageOptions = weeklyProgram.ageGroups
+    .map((a) => option(a.id, a.name, a.id === choice.ageId))
+    .join('');
+
+  return `
+    <div class="program-picker">
+      ${field({
+        id: 'program-select',
+        action: 'set-program',
+        label: weeklyProgram.copy.programLabel,
+        options: programOptions
+      })}
+      ${field({
+        id: 'age-select',
+        action: 'set-age',
+        label: weeklyProgram.copy.ageLabel,
+        options: ageOptions
+      })}
+    </div>`;
+}
+
+/**
+ * Tonight's running order — the Events tab's Tonight view once a program is
+ * chosen (js/views/events.js). One card per block returned by content.js's
+ * getRunningOrder(); see that function for how consecutive slots merge.
+ *
+ * An <ol>, not a <ul>: these are a sequence in time, and the order is the
+ * information. `list-style: none` hides the markers — the time on each card
+ * is the label that matters, and "1." beside "6.00pm" would be noise.
+ *
+ * Card anatomy reuses `.event-card`'s language deliberately (dark reversed
+ * strip over a lighter body band) so a running-order card and an event card
+ * read as the same kind of object — see STYLEGUIDE.md. The additions are the
+ * time chip in the strip and the optional flag band under the body.
+ *
+ * Two shapes, decided by whether the block's code maps to a page in this
+ * guide:
+ *   - `slug` set    → the whole card is an <a> to that event's page.
+ *   - `slug` null   → a non-interactive card carrying `noGuideFlag`. The
+ *                     club runs Triple Jump and Javelin for older ages and
+ *                     this U10 guide has no page for either; dropping those
+ *                     blocks would show a coach reading another age group a
+ *                     night with silent holes in it.
+ *
+ * The flag bands sit OUTSIDE the <a> (siblings inside the <li>) so they
+ * never become part of the link's accessible name, while `.run-item`'s own
+ * border and `overflow: hidden` still clip everything into one card — the
+ * same "wrapper owns the frame" arrangement `.event-card` uses to keep its
+ * toggle <button> out of its <a>.
+ */
+export function runningOrder(blocks) {
+  const flag = (modifier, text) =>
+    `<p class="run-flag run-flag--${modifier}">${esc(text)}</p>`;
+
+  const inner = (block) => `
+    <span class="run-card__strip">
+      <span class="run-card__time">${esc(block.time)}</span>
+      <span class="run-card__name">${esc(block.name)}${block.slug ? ' →' : ''}</span>
+    </span>
+    <span class="run-card__body">
+      <span class="run-card__detail">${esc(block.detail)}</span>
+      ${block.rule ? `<span class="run-card__rule">${esc(block.rule)}</span>` : ''}
+    </span>`;
+
+  const items = blocks
+    .map((block) => {
+      const card = block.slug
+        ? `<a class="run-card" href="#/events/${esc(block.slug)}">${inner(block)}</a>`
+        : `<div class="run-card run-card--static">${inner(block)}</div>`;
+      return `
+        <li class="run-item${block.slug ? ' run-item--link' : ''}">
+          ${card}
+          ${block.slug ? '' : flag('no-guide', weeklyProgram.copy.noGuideFlag)}
+          ${block.packUp ? flag('pack-up', weeklyProgram.copy.packUpFlag) : ''}
+        </li>`;
+    })
+    .join('');
+
+  return `<ol class="run-list">${items}</ol>`;
+}
+
+/**
+ * The Events tab's message when a program IS chosen but has no running order
+ * to show. Distinct from tonightEmptyState() above, which covers "nothing is
+ * selected": here something was chosen and the guide has to say why it can't
+ * honour it, which is a different sentence and a different way out (change
+ * the picker, or read the club's own page).
+ *
+ * Not reachable from the picker today — every grid A–F is transcribed — but
+ * it stays because the club adds programs before we have their grids, and a
+ * saved choice can outlive a program that is renamed or dropped. Saying which
+ * of those happened, with a link to the source, beats an empty list.
+ *
+ * @param {{status: string, program: object|null, ageGroup: object|null}} order
+ */
+export function programEmptyState(order) {
+  const copy = weeklyProgram.copy;
+  const programName = order.program ? order.program.name : 'That program';
+  const ageName = order.ageGroup ? order.ageGroup.name : 'that age group';
+
+  const heading =
+    order.status === 'age-not-listed'
+      ? copy.missingAge(programName, ageName)
+      : copy.missingProgram(programName);
+
+  const note = order.status === 'age-not-listed' ? '' : copy.missingProgramNote;
+
+  return `
+    <div class="empty-state">
+      <p class="empty-state__title">${esc(heading)}</p>
+      ${note ? `<p>${esc(note)}</p>` : ''}
+      <a class="btn btn--ghost" href="${safeUrl(weeklyProgram.source.url)}"
+         target="_blank" rel="noopener noreferrer">
+        ${esc(copy.sourceLink)}
+        <span class="visually-hidden"> (opens in a new tab)</span>
+      </a>
+    </div>`;
+}

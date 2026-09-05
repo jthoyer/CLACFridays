@@ -11,7 +11,7 @@
  */
 
 import * as tonight from './tonight.js';
-import { tonightCopy } from './content.js';
+import { tonightCopy, weeklyProgram, getRunningOrder } from './content.js';
 import { openPicker, closePicker, pickerSaved } from './views/tonight.js';
 
 /** Force a repaint of the current route without navigating (no hash change). */
@@ -125,6 +125,61 @@ function handleClick(event) {
   }
 }
 
+/**
+ * Weekly-program picker (`programPicker()` in ui.js) — the Program and Age
+ * group <select>s at the top of the Events tab. One handler for both,
+ * dispatched by `data-action` exactly like every click above; bound on the
+ * outlet in bindInteractions() so it survives the router's repaints.
+ *
+ * Each select carries only ITS OWN half of the choice, so the other half is
+ * read back from tonight.js rather than from a second DOM node — the two
+ * controls never have to agree about who holds the state.
+ *
+ * Changing a select rewrites the whole list beneath it. That is a
+ * substantial change of context, and WCAG 3.2.2 (On Input) allows it only
+ * because it is the control's advertised purpose: the labels name it, the
+ * hint under the picker spells it out, and it is announced through the same
+ * live region every other Tonight-mode change uses. Focus is returned to the
+ * select the coach just used (never scrolled — this is a state-only
+ * repaint, see router.js's "Two render paths"), so they are not thrown to
+ * the top of a page that just changed under them.
+ */
+function handleProgramChange(select) {
+  const choice = tonight.getProgramChoice();
+  const isProgram = select.dataset.action === 'set-program';
+  // An empty value is the picker's explicit "Not set" option, which
+  // setProgramChoice() normalises to null (no program).
+  const programId = isProgram ? select.value || null : choice.programId;
+  const ageId = isProgram ? choice.ageId : select.value;
+  const focusId = select.id;
+
+  tonight.setProgramChoice(programId, ageId); // synchronously repaints
+
+  focusById(focusId, () => focusById('page-title', () => {}));
+
+  const next = tonight.getProgramChoice();
+  if (next.programId == null) {
+    announce(weeklyProgram.copy.clearedAnnouncement);
+    return;
+  }
+
+  const order = getRunningOrder(next.programId, next.ageId);
+  const programName = order.program ? order.program.name : '';
+  const ageName = order.ageGroup ? order.ageGroup.name : '';
+  announce(
+    order.status === 'ok'
+      ? weeklyProgram.copy.changedAnnouncement(programName, ageName, order.blocks.length)
+      : weeklyProgram.copy.unavailableAnnouncement(programName, ageName)
+  );
+}
+
+function handleChange(event) {
+  const select = event.target.closest(
+    '[data-action="set-program"], [data-action="set-age"]'
+  );
+  if (select) handleProgramChange(select);
+}
+
 function handleSubmit(event) {
   const form = event.target.closest('[data-tonight-picker]');
   if (!form) return;
@@ -154,4 +209,8 @@ function handleSubmit(event) {
 export function bindInteractions(outlet) {
   outlet.addEventListener('click', handleClick);
   outlet.addEventListener('submit', handleSubmit);
+  // 'change', not 'input': a native <select> fires both, and acting on
+  // 'input' would repaint the outlet mid-interaction on platforms that fire
+  // it while the picker is still open.
+  outlet.addEventListener('change', handleChange);
 }

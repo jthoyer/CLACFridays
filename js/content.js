@@ -746,6 +746,455 @@ export const eventCategories = [
 ];
 
 /* ------------------------------------------------------------------ */
+/* Weekly event program — Canterbury Athletics Club                    */
+/*                                                                     */
+/* The club publishes six rotating programs (A–F) as "Order of Events  */
+/* By Age" grids: 15-minute time slots down the side, age groups       */
+/* across the top, an abbreviated event code in each cell. That grid   */
+/* already answers the question the Tonight picker used to ask the     */
+/* coach to answer by hand ("which events are on tonight?"), and it    */
+/* answers two the picker never could — at what time, and at which     */
+/* field position.                                                     */
+/*                                                                     */
+/* PROVENANCE. All six grids (A–F) are transcribed cell-by-cell from    */
+/* the images published at the `source.url` page. Program A came from  */
+/* that page directly; B–F were supplied by the club as images,        */
+/* because on the live page their <img src> values point at            */
+/* http://centrewebsiteadmin.resultshq.com.au/... instead of the       */
+/* https://clac.org.au/... copies, so a browser blocks them and only   */
+/* Program A renders. Re-check against the club's page each season.    */
+/*                                                                     */
+/* A program whose grid is NOT available is declared `slots: null`.    */
+/* getRunningOrder() reports that as its own state rather than         */
+/* silently rendering an empty night. None are null today; the path is */
+/* kept for the next program the club adds before publishing it.       */
+/*                                                                     */
+/* SHAPE. `slots[ageId]` is an array of `[time, code]` (or             */
+/* `[time, code, 'pack-up']` where the published grid shades that cell */
+/* to mean "pack up field equipment"). `time` must appear in           */
+/* `slotOrder`; `code` must be a key of `codes`.                       */
+/*                                                                     */
+/* `codes` maps a published abbreviation to THIS guide's own event via */
+/* `slug`, so an event's name, tagline and key rule are never          */
+/* A handful of cells name TWO events ("100m / SP1, SP2"). Those carry */
+/* an `also` array: the card links to `slug`, and `also` keeps the     */
+/* other event in tonight's selection so the Games and Rules tabs      */
+/* don't quietly drop it.                                              */
+/* duplicated here — they stay in `events` / `eventsAtAGlance` and are */
+/* resolved at read time. `slug: null` means the club runs that event  */
+/* for that age but this U10 guide has no page for it (Triple Jump,    */
+/* Javelin); those carry their own `name` and render as a flagged      */
+/* row rather than being dropped, so a coach reading another age       */
+/* group's night doesn't see a silently short program.                 */
+/* ------------------------------------------------------------------ */
+
+export const weeklyProgram = {
+  source: {
+    name: 'Canterbury Athletics Club weekly event program',
+    url: 'https://clac.org.au/weekly-event-program/',
+    note:
+      'Minor changes to the program happen week to week and all timings are ' +
+      'approximate. Check your age group chat for the latest.'
+  },
+
+  /* Every 15-minute slot the published grids use, in order. The trailing
+     8.45 is not a slot any age is scheduled into — it exists so a block
+     that ENDS at 8.30 can name the time it runs until. */
+  slotOrder: [
+    '6.00', '6.15', '6.30', '6.45', '7.00', '7.15', '7.30', '7.45',
+    '8.00', '8.15', '8.30', '8.45', '9.00', '9.15'
+  ],
+
+  /* Column headings of the published grid, in its own left-to-right order.
+     Two columns cover more than one age ('14, 15' and '16-20'), so an id is
+     not always a single number — never parse these as integers. */
+  ageGroups: [
+    { id: '6', name: 'Under 6' },
+    { id: '7', name: 'Under 7' },
+    { id: '8', name: 'Under 8' },
+    { id: '9', name: 'Under 9' },
+    { id: '10', name: 'Under 10' },
+    { id: '11', name: 'Under 11' },
+    { id: '12', name: 'Under 12' },
+    { id: '13', name: 'Under 13' },
+    { id: '14-15', name: 'Under 14, 15' },
+    { id: '16-20', name: 'Under 16-20' }
+  ],
+
+  /* This guide is the Under 10 Boys manual, so U10 is what the picker
+     opens on. Must be one of `ageGroups`' ids (asserted below). */
+  defaultAgeId: '10',
+
+  programs: [
+    {
+      id: 'A',
+      name: 'Program A',
+      slots: {
+        '6': [['6.00', 'D1, D1A'], ['6.15', 'D1, D1A'], ['6.30', '50m'], ['6.45', '200m*']],
+        '7': [['6.00', '50m'], ['6.15', '200m'], ['6.30', 'SP3, SP3A'], ['6.45', 'SP3, SP3A', 'pack-up']],
+        '8': [['6.00', '200m'], ['6.15', '100m'], ['6.30', 'LJ2, LJ3'], ['6.45', 'LJ2, LJ3']],
+        '9': [['6.00', 'LJ2, LJ3'], ['6.15', 'LJ2, LJ3'], ['6.30', '800m'], ['6.45', '70m'], ['7.00', 'SP1, SP2'], ['7.15', 'SP1, SP2', 'pack-up']],
+        '10': [['6.00', 'D2 (G), D3 (B)'], ['6.15', 'D2 (G), D3 (B)'], ['6.30', 'HJ3, HJ4 (Sc)'], ['6.45', 'HJ3, HJ4 (Sc)'], ['7.00', '70m'], ['7.15', 'HJ3, HJ4 (Sc)'], ['7.30', '800m'], ['7.45', 'HJ3, HJ4 (Sc)', 'pack-up']],
+        '11': [['6.00', '1500m'], ['6.15', 'HJ1 (practice only)'], ['6.30', 'SP1, SP2'], ['6.45', 'SP1, SP2'], ['7.00', 'LJ2, LJ3'], ['7.15', 'LJ2, LJ3'], ['7.30', 'LJ2, LJ3'], ['7.45', '100m']],
+        '12': [['6.00', 'TJ1'], ['6.15', 'TJ1'], ['6.30', 'TJ1'], ['6.45', 'TJ1 or HJ1 (practice only)'], ['7.00', 'D2 (G), D3 (B)'], ['7.15', 'D2 (G), D3 (B)', 'pack-up'], ['7.30', '100m'], ['7.45', '1500m']],
+        '13': [['6.00', 'SP1, SP2'], ['6.15', 'SP1, SP2'], ['6.30', 'HJ1 (practice only)'], ['6.45', '200mH'], ['7.00', 'LJ1'], ['7.15', '1500m'], ['7.30', 'LJ1'], ['7.45', 'LJ1', 'pack-up'], ['8.00', '100m']],
+        '14-15': [['6.00', 'HJ1 (practice only)'], ['6.15', '1500m'], ['6.30', 'D2 (G), D3 (B)'], ['6.45', 'D2 (G), D3 (B)'], ['7.00', '300mH'], ['7.15', '300mH'], ['7.30', 'Relay practice', 'pack-up'], ['7.45', 'TJ2, TJ3'], ['8.00', 'TJ2, TJ3', 'pack-up'], ['8.15', '100m']],
+        '16-20': [['6.00', 'HJ2'], ['6.15', 'HJ2'], ['6.30', 'HJ2'], ['6.45', 'HJ2'], ['7.00', '1500m'], ['7.15', '100m'], ['7.30', '400mH (G)'], ['7.45', '400mH (B)'], ['8.00', '400mH (B)'], ['8.15', 'Jav 1 (Nth)'], ['8.30', 'Jav 1 (Nth)', 'pack-up']]
+      }
+    },
+    {
+      id: 'B',
+      name: 'Program B',
+      slots: {
+        '6': [['6.00', 'LJ2, LJ3'], ['6.15', 'LJ2, LJ3'], ['6.30', 'Vortex'], ['6.45', '70m'], ['7.00', '300m*']],
+        '7': [['6.00', 'D1, D1A'], ['6.15', 'D1, D1A'], ['6.30', '70m'], ['6.45', '500m']],
+        '8': [['6.00', '70m'], ['6.15', 'SP3'], ['6.30', 'SP3'], ['6.45', 'SP3', 'pack-up'], ['7.00', 'Tug of war'], ['7.15', '700m']],
+        '9': [['6.00', 'D2 (G), D3 (B)'], ['6.15', 'D2 (G), D3 (B)'], ['6.30', '200m'], ['6.45', 'HJ (Sc)'], ['7.00', '100m'], ['7.15', 'HJ (Sc)'], ['7.30', 'HJ (Sc)'], ['7.45', 'HJ (Sc)', 'pack-up']],
+        '10': [['6.00', 'SP1, SP2'], ['6.15', '100m / SP1, SP2'], ['6.30', 'LJ2, LJ3'], ['6.45', 'LJ2, LJ3'], ['7.00', '200m']],
+        '11': [['6.00', 'HJ1'], ['6.15', 'HJ1'], ['6.30', 'HJ1'], ['6.45', '200m'], ['7.00', 'Vortex', 'pack-up'], ['7.15', 'Jav 2'], ['7.30', '800m'], ['7.45', 'Jav 2'], ['8.00', 'Jav 2', 'pack-up']],
+        '12': [['6.00', 'LJ1'], ['6.15', 'LJ1'], ['6.30', 'LJ1'], ['6.45', 'LJ1'], ['7.00', 'SP1, SP2'], ['7.15', 'SP1, SP2'], ['7.30', '200m'], ['7.45', '800m']],
+        '13': [['6.00', 'HJ2'], ['6.15', 'HJ2'], ['6.30', '800m'], ['6.45', 'HJ2'], ['7.00', 'Relay practice'], ['7.15', '200m'], ['7.30', 'Jav 1 (Nth)'], ['7.45', 'Jav 1 (Nth)'], ['8.00', '3000m']],
+        '14-15': [['6.00', '200m'], ['6.15', '800m'], ['6.30', 'SP1, SP2'], ['6.45', 'SP1, SP2'], ['7.00', 'LJ2, LJ3'], ['7.15', 'LJ2, LJ3'], ['8.00', '3000m']],
+        '16-20': [['6.00', '800m'], ['6.15', '200m'], ['6.30', 'D2'], ['6.45', 'D2'], ['7.00', 'D2'], ['7.15', 'TJ1'], ['7.30', 'TJ1'], ['7.45', 'TJ1', 'pack-up'], ['8.00', '3000m']]
+      }
+    },
+    {
+      id: 'C',
+      name: 'Program C',
+      slots: {
+        '6': [['6.00', 'SP3, SP3A'], ['6.15', 'SP3, SP3A', 'pack-up'], ['6.30', '70m'], ['6.45', '100m']],
+        '7': [['6.00', '70m'], ['6.15', '100m'], ['6.30', 'LJ2, LJ3'], ['6.45', 'LJ2, LJ3'], ['7.00', 'LJ2, LJ3']],
+        '8': [['6.00', '400m*'], ['6.15', 'D1, D1A'], ['6.30', 'D1, D1A'], ['6.45', 'D1, D1A'], ['7.00', 'Vortex'], ['7.15', '60m H (45cm)']],
+        '9': [['6.00', 'SP1, SP2'], ['6.15', 'SP1, SP2'], ['6.30', 'HJ practice'], ['6.45', '400m'], ['7.00', '700m W'], ['7.15', 'LJ2, LJ3'], ['7.30', '60m H (45cm)'], ['7.45', 'LJ2, LJ3'], ['8.00', 'LJ2, LJ3', 'pack-up']],
+        '10': [['6.00', 'D2 (G), D3 (B)'], ['6.15', 'D2 (G), D3 (B)'], ['6.30', '1100m W'], ['6.45', 'HJ (Sc)'], ['7.00', 'HJ (Sc)'], ['7.15', '400m'], ['7.30', 'HJ (Sc)'], ['7.45', '60m H (60cm)'], ['8.00', 'HJ (Sc)', 'pack-up']],
+        '11': [['6.00', '400m'], ['6.15', '1100m W'], ['6.30', 'D2 (B), D3 (G)'], ['6.45', 'D2 (B), D3 (G)'], ['7.00', 'TJ1'], ['7.15', 'TJ1'], ['7.30', 'TJ1'], ['7.45', 'TJ1', 'pack-up'], ['8.00', '80m H (60cm)']],
+        '12': [['6.00', 'Vortex'], ['6.15', '400m'], ['6.30', 'Tug of war'], ['6.45', '1500m W'], ['7.00', 'HJ1, HJ2'], ['7.15', 'HJ1, HJ2'], ['7.30', 'HJ1, HJ2'], ['7.45', 'Jav 2 (Sth)'], ['8.00', 'Jav 2 (Sth)'], ['8.15', '80m H (68cm)']],
+        '13': [['6.00', 'TJ2, TJ3'], ['6.15', 'TJ2, TJ3'], ['6.30', '400m'], ['6.45', '1500m W'], ['7.00', 'D1, D2'], ['7.15', 'D1, D2', 'pack-up'], ['7.30', 'Vortex', 'pack-up'], ['7.45', 'Tug of war'], ['8.00', 'HJ practice'], ['8.15', 'HJ practice'], ['8.30', '80m H (G) (76cm)'], ['8.45', '90m H (B) (76cm)']],
+        '14-15': [['6.00', 'HJ1, HJ2'], ['6.15', 'HJ1, HJ2'], ['6.30', 'HJ1, HJ2'], ['6.45', 'HJ1, HJ2'], ['7.00', 'Tug of war'], ['7.15', '1500m W'], ['7.30', '400m'], ['7.45', 'Tug of war'], ['8.00', 'Jav 1 (Nth)'], ['8.15', 'Jav 1 (Nth)'], ['8.30', 'Jav 1 (Nth)', 'pack-up'], ['8.45', '90m H (G) (76cm)'], ['9.00', '100m H (B) (76cm)']],
+        '16-20': [['6.00', 'LJ1'], ['6.15', 'LJ1'], ['6.30', 'LJ1'], ['6.45', 'LJ1'], ['7.00', '400m'], ['7.15', '1500m W'], ['7.30', 'SP1, SP2'], ['7.45', 'SP1, SP2', 'pack-up'], ['8.00', 'Tug of war', 'pack-up'], ['8.15', 'HJ practice'], ['8.30', 'HJ practice'], ['8.45', 'HJ practice', 'pack-up'], ['9.00', '100m H (76cm)']]
+      }
+    },
+    {
+      id: 'D',
+      name: 'Program D',
+      slots: {
+        '6': [['6.00', '50m'], ['6.15', '200m*'], ['6.30', 'D1, D1A'], ['6.45', 'D1, D1A', 'pack-up']],
+        '7': [['6.00', '200m'], ['6.15', '50m'], ['6.30', 'SP3, SP3A'], ['6.45', 'SP3, SP3A']],
+        '8': [['6.00', 'HJ practice'], ['6.15', '200m'], ['6.30', 'LJ2, LJ3'], ['6.45', 'LJ2, LJ3'], ['7.00', '100m']],
+        '9': [['6.00', 'D1A, D3'], ['6.15', 'D1A, D3'], ['6.30', 'HJ (Sc)'], ['6.45', 'HJ (Sc)'], ['7.00', '800m'], ['7.15', 'HJ (Sc)'], ['7.30', 'HJ (Sc)', 'pack-up'], ['7.45', '70m']],
+        '10': [['6.00', 'SP1, SP2'], ['6.15', 'SP1, SP2'], ['6.30', '800m'], ['6.45', '70m'], ['7.00', 'LJ2, LJ3'], ['7.15', 'LJ2, LJ3']],
+        '11': [['6.00', 'LJ2, LJ3'], ['6.15', 'LJ2, LJ3'], ['6.30', 'SP1, SP2'], ['6.45', 'SP1, SP2'], ['7.00', 'Tug of war'], ['7.15', '100m'], ['7.30', '1500m']],
+        '12': [['6.00', '1500m'], ['6.15', 'HJ practice'], ['6.30', 'D2'], ['6.45', 'D2'], ['7.00', 'TJ1'], ['7.15', 'TJ1'], ['7.30', 'TJ1'], ['7.45', 'TJ1', 'pack-up'], ['8.00', '100m']],
+        '13': [['6.00', 'LJ1'], ['6.15', 'LJ1'], ['6.30', 'LJ1'], ['6.45', '200mH'], ['7.00', 'SP1, SP2', 'pack-up'], ['7.15', 'Tug of war'], ['7.30', '100m'], ['7.45', '1500m']],
+        '14-15': [['6.00', 'D1, D2'], ['6.15', 'D1, D2'], ['6.30', '100m'], ['6.45', 'HJ practice'], ['7.00', '300mH'], ['7.15', '1500m'], ['7.30', 'TJ2, TJ3'], ['7.45', 'TJ2, TJ3', 'pack-up']],
+        '16-20': [['6.00', 'HJ1'], ['6.15', 'HJ1'], ['6.30', 'HJ1'], ['6.45', '1500m'], ['7.00', 'HJ1', 'pack-up'], ['7.15', '400mH'], ['7.30', 'Jav 1 (Nth) / 400m H'], ['7.45', 'Jav 1 (Nth) / 400m H'], ['8.00', 'Jav 1 (Nth)', 'pack-up'], ['8.15', '100m']]
+      }
+    },
+    {
+      id: 'E',
+      name: 'Program E',
+      slots: {
+        '6': [['6.00', '70m'], ['6.15', '300m*'], ['6.30', 'LJ2, LJ3'], ['6.45', 'LJ2, LJ3']],
+        '7': [['6.00', 'HJ practice'], ['6.15', '70m'], ['6.30', 'D1A'], ['6.45', 'D1A', 'pack-up'], ['7.00', '500m*']],
+        '8': [['6.00', 'SP3'], ['6.15', 'SP3'], ['6.30', '700m'], ['6.45', '70m'], ['7.00', 'SP3', 'pack-up']],
+        '9': [['6.00', 'SP1, SP2'], ['6.15', 'SP1, SP2', 'pack-up'], ['6.30', '100m'], ['6.45', 'Tug of war'], ['7.00', '200m'], ['7.15', 'LJ2, LJ3'], ['7.30', 'LJ2, LJ3'], ['7.45', 'LJ2, LJ3']],
+        '10': [['6.00', 'D1 (G), D3 (B)'], ['6.15', 'D1 (G), D3 (B)'], ['6.30', 'D3'], ['6.45', 'HJ (Sc)'], ['7.00', '100m'], ['7.15', 'HJ (Sc)'], ['7.30', '200m'], ['7.45', 'HJ (Sc)'], ['8.00', 'HJ (Sc)', 'pack-up']],
+        '11': [['6.00', '200m'], ['6.15', 'HJ2'], ['6.30', 'HJ2'], ['6.45', 'HJ2'], ['7.00', 'HJ2'], ['7.15', 'Tug of war', 'pack-up'], ['7.30', 'Jav 2'], ['7.45', '800m'], ['8.00', 'Jav 2'], ['8.15', 'Jav 2']],
+        '12': [['6.00', 'LJ1'], ['6.15', 'LJ1'], ['6.30', 'LJ1'], ['6.45', 'SP1, SP2'], ['7.00', 'Tug of war'], ['7.15', '200m'], ['7.30', '800m']],
+        '13': [['6.00', 'HJ1'], ['6.15', '200m'], ['6.30', 'HJ1'], ['6.45', 'HJ1'], ['7.00', 'Jav 1'], ['7.15', '800m'], ['7.30', 'Jav 1'], ['7.45', 'Jav 1', 'pack-up'], ['8.00', '3000m']],
+        '14-15': [['6.00', 'LJ2, LJ3'], ['6.15', 'LJ2, LJ3'], ['6.30', '200m'], ['6.45', '800m'], ['7.00', 'SP1, SP2'], ['7.15', 'SP1, SP2', 'pack-up'], ['8.00', '3000m']],
+        '16-20': [['6.00', '800m / D2'], ['6.15', 'D2'], ['6.30', 'D2', 'pack-up'], ['6.45', '200m'], ['7.00', 'TJ1'], ['7.15', 'TJ1'], ['8.00', '3000m']]
+      }
+    },
+    {
+      id: 'F',
+      name: 'Program F',
+      slots: {
+        '6': [['6.00', 'SP3, SP3A'], ['6.15', 'SP3, SP3A', 'pack-up'], ['6.30', '70m'], ['6.45', '100m']],
+        '7': [['6.00', '70m'], ['6.15', '100m'], ['6.30', 'LJ2, LJ3'], ['6.45', 'LJ2, LJ3'], ['7.00', 'LJ2, LJ3']],
+        '8': [['6.00', 'D1, D1A'], ['6.15', 'D1, D1A'], ['6.30', '400m*'], ['6.45', 'HJ practice'], ['7.00', '60m H']],
+        '9': [['6.00', 'D2 (G), D3 (B)'], ['6.15', 'D2 (G), D3 (B)'], ['6.30', '400m'], ['6.45', '700m W'], ['7.00', 'HJ3, HJ4 (Sc)'], ['7.15', '60m H'], ['7.30', 'HJ3, HJ4 (Sc)'], ['7.45', 'HJ3, HJ4 (Sc)']],
+        '10': [['6.00', 'LJ2, LJ3'], ['6.15', 'LJ2, LJ3'], ['6.30', 'SP1, SP2'], ['6.45', 'SP1, SP2', 'pack-up'], ['7.00', '400m'], ['7.15', '1100m W'], ['7.30', '60m H']],
+        '11': [['6.00', '400m'], ['6.15', '1100m W'], ['6.30', 'D1, D2'], ['6.45', 'D1, D2'], ['7.00', 'Tug of war'], ['7.15', 'TJ2, TJ3'], ['7.30', 'TJ2, TJ3', 'pack-up'], ['7.45', '80m H']],
+        '12': [['6.00', 'HJ1'], ['6.15', 'HJ1'], ['6.30', 'HJ1'], ['6.45', '400m'], ['7.00', '1500m W'], ['7.15', 'Jav 1 (Nth)'], ['7.30', 'Jav 1 (Nth)'], ['7.45', 'Jav 1 (Nth)', 'pack-up'], ['8.00', '80m H']],
+        '13': [['6.00', 'TJ1'], ['6.15', 'TJ1'], ['6.30', 'TJ1'], ['6.45', 'TJ1'], ['7.00', 'D1, D2'], ['7.15', 'D1, D2', 'pack-up'], ['7.30', '400m'], ['7.45', '1500m W'], ['8.00', 'Tug of war', 'pack-up'], ['8.15', '80m H (G) / 90m H (B)']],
+        '14-15': [['6.00', '1500m W'], ['6.15', '400m'], ['6.30', 'HJ2'], ['6.45', 'HJ2'], ['7.00', 'HJ2'], ['7.15', 'HJ2'], ['7.30', 'Jav 2 (Sth)'], ['7.45', 'Jav 2 (Sth)'], ['8.00', 'Jav 2 (Sth)'], ['8.15', 'Jav 2 (Sth)', 'pack-up'], ['8.30', '90m H (G)'], ['8.45', '100m H (B)']],
+        '16-20': [['6.00', 'SP1, SP2'], ['6.15', 'SP1, SP2'], ['6.30', 'Tug of war'], ['6.45', 'Relay practice'], ['7.00', 'LJ1'], ['7.15', '400m'], ['7.30', '1500m W'], ['7.45', 'LJ1'], ['8.00', 'LJ1'], ['8.15', 'LJ1', 'pack-up'], ['8.30', 'Hurdles setup'], ['8.45', 'Hurdles setup'], ['9.00', '100m H']]
+      }
+    }
+  ],
+  /*
+   * Published abbreviation → this guide's event. `detail` spells the code
+   * out in words, because "D2 (G), D3 (B)" is unreadable to a first-season
+   * age manager and the club's own key is a separate paragraph on a
+   * separate page. Numbers after a field-event code are the FIELD POSITION
+   * (D1 = the Discus 1 field), which is why they survive into `detail`
+   * rather than being normalised away — "which discus circle" is the
+   * question a coach standing on the grass actually has.
+   */
+  codes: {
+    /* --- Discus ------------------------------------------------------- */
+    'D1, D1A': { slug: 'discus', detail: 'Discus 1, plus the extra circle' },
+    'D1, D2': { slug: 'discus', detail: 'Discus 1 and 2' },
+    'D1A': { slug: 'discus', detail: 'Discus 1, extra circle' },
+    'D1A, D3': { slug: 'discus', detail: 'Discus 1 (extra circle) and Discus 3' },
+    'D2': { slug: 'discus', detail: 'Discus 2' },
+    'D3': { slug: 'discus', detail: 'Discus 3' },
+    'D1 (G), D3 (B)': { slug: 'discus', detail: 'Discus 1 (girls) · Discus 3 (boys)' },
+    'D2 (G), D3 (B)': { slug: 'discus', detail: 'Discus 2 (girls) · Discus 3 (boys)' },
+    'D2 (B), D3 (G)': { slug: 'discus', detail: 'Discus 2 (boys) · Discus 3 (girls)' },
+
+    /* --- Shot put ----------------------------------------------------- */
+    'SP1, SP2': { slug: 'shot-put', detail: 'Shot Put 1 and 2' },
+    'SP3': { slug: 'shot-put', detail: 'Shot Put 3' },
+    'SP3, SP3A': { slug: 'shot-put', detail: 'Shot Put 3, plus the extra circle' },
+
+    /* --- Long jump ---------------------------------------------------- */
+    'LJ1': { slug: 'long-jump', detail: 'Long Jump 1' },
+    'LJ2, LJ3': { slug: 'long-jump', detail: 'Long Jump 2 and 3' },
+
+    /* --- High jump ---------------------------------------------------- */
+    'HJ1': { slug: 'high-jump', detail: 'High Jump 1' },
+    'HJ2': { slug: 'high-jump', detail: 'High Jump 2' },
+    'HJ1, HJ2': { slug: 'high-jump', detail: 'High Jump 1 and 2' },
+    'HJ1 (practice only)': { slug: 'high-jump', detail: 'High Jump 1 · practice only' },
+    'HJ practice': { slug: 'high-jump', detail: 'High Jump · practice, not scored' },
+    'HJ (Sc)': { slug: 'high-jump', detail: 'High Jump · scissor' },
+    'HJ3, HJ4 (Sc)': { slug: 'high-jump', detail: 'High Jump 3 and 4 · scissor' },
+
+    /* --- Sprints ------------------------------------------------------ */
+    '50m': { slug: 'sprints', detail: '50m' },
+    '70m': { slug: 'sprints', detail: '70m' },
+    '100m': { slug: 'sprints', detail: '100m' },
+    '200m': { slug: 'sprints', detail: '200m' },
+    '200m*': { slug: 'sprints', detail: '200m · pack start' },
+    '300m*': { slug: 'sprints', detail: '300m · pack start' },
+    '400m': { slug: 'sprints', detail: '400m · 1 lap' },
+    '400m*': { slug: 'sprints', detail: '400m · 1 lap · pack start' },
+    '500m': { slug: 'sprints', detail: '500m' },
+    '500m*': { slug: 'sprints', detail: '500m · pack start' },
+    /* One cell, two events: the group runs the 100m and goes back to the
+       shot put circles. `also` keeps Shot Put in tonight's selection even
+       though the card links to the timed track event. */
+    '100m / SP1, SP2': {
+      slug: 'sprints',
+      also: ['shot-put'],
+      detail: '100m, then back to Shot Put 1 and 2'
+    },
+
+    /* --- Middle distance ---------------------------------------------- */
+    '700m': { slug: 'middle-distance', detail: '700m' },
+    '800m': { slug: 'middle-distance', detail: '800m · 2 laps to finish' },
+    '1500m': { slug: 'middle-distance', detail: '1500m · 4 laps to finish' },
+    '3000m': { slug: 'middle-distance', detail: '3000m · 8 laps to finish' },
+    '800m / D2': {
+      slug: 'middle-distance',
+      also: ['discus'],
+      detail: '800m, or Discus 2'
+    },
+
+    /* --- Race walk ----------------------------------------------------- */
+    '700m W': { slug: 'race-walk', detail: '700m walk' },
+    '1100m W': { slug: 'race-walk', detail: '1100m walk · 3 laps to finish' },
+    '1500m W': { slug: 'race-walk', detail: '1500m walk · 4 laps to finish' },
+
+    /* --- Hurdles ------------------------------------------------------- */
+    '60m H': { slug: 'hurdles', detail: '60m hurdles' },
+    '60m H (45cm)': { slug: 'hurdles', detail: '60m hurdles · 45cm' },
+    '60m H (60cm)': { slug: 'hurdles', detail: '60m hurdles · 60cm' },
+    '80m H': { slug: 'hurdles', detail: '80m hurdles' },
+    '80m H (60cm)': { slug: 'hurdles', detail: '80m hurdles · 60cm' },
+    '80m H (68cm)': { slug: 'hurdles', detail: '80m hurdles · 68cm' },
+    '80m H (G) (76cm)': { slug: 'hurdles', detail: '80m hurdles (girls) · 76cm' },
+    '80m H (G) / 90m H (B)': {
+      slug: 'hurdles',
+      detail: '80m hurdles (girls) · 90m hurdles (boys)'
+    },
+    '90m H (G)': { slug: 'hurdles', detail: '90m hurdles (girls)' },
+    '90m H (B) (76cm)': { slug: 'hurdles', detail: '90m hurdles (boys) · 76cm' },
+    '90m H (G) (76cm)': { slug: 'hurdles', detail: '90m hurdles (girls) · 76cm' },
+    '100m H': { slug: 'hurdles', detail: '100m hurdles' },
+    '100m H (76cm)': { slug: 'hurdles', detail: '100m hurdles · 76cm' },
+    '100m H (B)': { slug: 'hurdles', detail: '100m hurdles (boys)' },
+    '100m H (B) (76cm)': { slug: 'hurdles', detail: '100m hurdles (boys) · 76cm' },
+    '200mH': { slug: 'hurdles', detail: '200m hurdles' },
+    '300mH': { slug: 'hurdles', detail: '300m hurdles' },
+    '400mH': { slug: 'hurdles', detail: '400m hurdles' },
+    '400mH (G)': { slug: 'hurdles', detail: '400m hurdles (girls)' },
+    '400mH (B)': { slug: 'hurdles', detail: '400m hurdles (boys)' },
+    'Jav 1 (Nth) / 400m H': {
+      slug: 'hurdles',
+      detail: 'Javelin 1 (north end), or 400m hurdles'
+    },
+
+    /* --- Relay --------------------------------------------------------- */
+    'Relay practice': { slug: 'relay', detail: 'Relay practice' },
+
+    /*
+     * Vortex. The club programs a vortex howler for the younger and middle
+     * age groups; this guide's own lead-up throw is the turbo javelin. They
+     * are not the same implement, so the card says so — but it points at the
+     * turbo-javelin page, because that is the throw being taught and the
+     * page is genuinely the right coaching material. Do not "tidy" this into
+     * a plain Turbo Javelin label.
+     */
+    'Vortex': {
+      slug: 'turbo-javelin',
+      detail: 'Vortex howler — same lead-up throw as turbo javelin'
+    },
+
+    /* --- No page in this U10 guide ------------------------------------- */
+    /* The club runs these; this guide has none of them. `name` is required
+       because there is no event record to read one from. Kept rather than
+       dropped, so a coach reading an older age group's night doesn't see a
+       program with silent holes in it. */
+    'TJ1': { slug: null, name: 'Triple Jump', detail: 'Triple Jump 1' },
+    'TJ2, TJ3': { slug: null, name: 'Triple Jump', detail: 'Triple Jump 2 and 3' },
+    'TJ1 or HJ1 (practice only)': {
+      slug: null,
+      name: 'Triple Jump or High Jump',
+      detail: 'Triple Jump 1, or High Jump 1 for practice'
+    },
+    /* Deliberately NOT mapped to 'turbo-javelin' — the club's "Jav" is the
+       real javelin, a different implement from this guide's lead-up skill. */
+    'Jav 1': { slug: null, name: 'Javelin', detail: 'Javelin 1' },
+    'Jav 2': { slug: null, name: 'Javelin', detail: 'Javelin 2' },
+    'Jav 1 (Nth)': { slug: null, name: 'Javelin', detail: 'Javelin 1, north end' },
+    'Jav 2 (Sth)': { slug: null, name: 'Javelin', detail: 'Javelin 2, south end' },
+    'Tug of war': { slug: null, name: 'Tug of war', detail: 'Tug of war' },
+    'Hurdles setup': {
+      slug: null,
+      name: 'Hurdles setup',
+      detail: 'Set the hurdles up for the next race'
+    }
+  },
+  copy: {
+    programLabel: 'Program',
+    ageLabel: 'Age group',
+    lead:
+      'Pick tonight’s program and your age group. The guide shows just those ' +
+      'events, in the order they run.',
+    runningOrderLead:
+      'Tonight’s events, in the order they run. Switch to Everything to see ' +
+      'the full guide.',
+    packUpFlag: 'Pack up field equipment after this',
+    noGuideFlag: 'Not in this guide — no coaching page yet',
+    /* No program is in this state today — every grid A–F is transcribed.
+       Kept for the next program the club runs before we have its grid. */
+    missingProgram: (name) => `${name} isn’t loaded yet.`,
+    missingProgramNote:
+      'That program hasn’t been copied across from the club’s grid yet.',
+    missingAge: (programName, ageName) =>
+      `${programName} has nothing listed for ${ageName}.`,
+    sourceLink: 'Open the club’s program page',
+
+    /*
+     * Spoken through the same `#tonight-status` live region every other
+     * Tonight-mode change uses (interactions.js's announce()). Changing
+     * either select rewrites the whole list under it — a substantial change
+     * of context — so it has to be announced, not just painted. Functions
+     * rather than strings because all three interpolate; same reason
+     * tonightCopy's toggle announcements are functions.
+     */
+    changedAnnouncement: (programName, ageName, count) =>
+      `${programName}, ${ageName}. ${count} event${count === 1 ? '' : 's'} in ` +
+      'tonight’s running order.',
+    unavailableAnnouncement: (programName, ageName) =>
+      `${programName}, ${ageName}. Nothing to show for that choice.`,
+    clearedAnnouncement:
+      'Program not set. Showing your own selection.'
+  }
+};
+
+/**
+ * Tonight's running order for one program + age group.
+ *
+ * Consecutive slots carrying the SAME code are merged into one block, so a
+ * high jump rotation that occupies 6.30, 6.45 reads as one "6.30–7.00pm"
+ * card rather than two identical cards — but a rotation the coach LEAVES
+ * and comes back to (U10 in Program A leaves high jump for the 70m at 7.00,
+ * then returns at 7.15) stays as two blocks, because that is genuinely two
+ * trips across the field.
+ *
+ * Never throws on unknown input: an unknown program or age id, or a program
+ * whose grid has not been transcribed, each returns its own `status` with an
+ * empty `blocks` array. Callers render the matching empty state rather than
+ * an empty night that looks like a real one.
+ *
+ * @param {string} programId  a `weeklyProgram.programs[].id`
+ * @param {string} ageId      a `weeklyProgram.ageGroups[].id`
+ * @returns {{status: string, program: object|null, ageGroup: object|null, blocks: object[]}}
+ *   status is one of 'ok' | 'unknown-program' | 'unknown-age' |
+ *   'program-not-loaded' | 'age-not-listed'.
+ */
+export function getRunningOrder(programId, ageId) {
+  const program = weeklyProgram.programs.find((p) => p.id === programId) || null;
+  const ageGroup = weeklyProgram.ageGroups.find((a) => a.id === ageId) || null;
+  const empty = (status) => ({ status, program, ageGroup, blocks: [] });
+
+  if (!program) return empty('unknown-program');
+  if (!ageGroup) return empty('unknown-age');
+  if (!program.slots) return empty('program-not-loaded');
+
+  const slots = program.slots[ageGroup.id];
+  if (!Array.isArray(slots) || slots.length === 0) return empty('age-not-listed');
+
+  const merged = [];
+  slots.forEach(([time, code, marker]) => {
+    const last = merged.length ? merged[merged.length - 1] : null;
+    if (last && last.code === code) {
+      last.end = time;
+      last.span += 1;
+      last.packUp = last.packUp || marker === 'pack-up';
+      return;
+    }
+    merged.push({ code, start: time, end: time, span: 1, packUp: marker === 'pack-up' });
+  });
+
+  const blocks = merged.map((block) => {
+    const entry = weeklyProgram.codes[block.code];
+    const event = entry.slug ? getEvent(entry.slug) : null;
+    const glance = entry.slug
+      ? eventsAtAGlance.rows.find((r) => r.slug === entry.slug)
+      : null;
+    // A merged block runs until the START of the slot AFTER its last one.
+    const until = weeklyProgram.slotOrder[weeklyProgram.slotOrder.indexOf(block.end) + 1];
+    return {
+      code: block.code,
+      slug: entry.slug,
+      // Second event named by the same cell, if any — see `also` in codes.
+      also: entry.also || [],
+      name: event ? event.name : entry.name,
+      detail: entry.detail,
+      // Column 2 of the at-a-glance table is the key U10 rule — read, never
+      // re-typed, so the two surfaces can't drift.
+      rule: glance ? glance.cells[2] : '',
+      time: block.span > 1 ? `${block.start}–${until}pm` : `${block.start}pm`,
+      packUp: block.packUp
+    };
+  });
+
+  return { status: 'ok', program, ageGroup, blocks };
+}
+
+/** Every guide event slug on one program + age group's night, de-duplicated
+ *  and in running order. This is what drives Tonight-mode filtering on the
+ *  Games and Rules tabs — see js/tonight.js's setProgramChoice(). Codes with
+ *  no page in this guide (Triple Jump, Javelin) contribute nothing. */
+export function getProgramEventSlugs(programId, ageId) {
+  const { blocks } = getRunningOrder(programId, ageId);
+  const slugs = [];
+  blocks.forEach((block) => {
+    if (block.slug) slugs.push(block.slug);
+    // A cell naming two events contributes both, even though the card links
+    // to only one of them — otherwise the Games and Rules tabs would filter
+    // that second event out of a night the club actually runs it on.
+    block.also.forEach((slug) => slugs.push(slug));
+  });
+  return [...new Set(slugs)];
+}
+
+/* ------------------------------------------------------------------ */
 /* Waiting-Period Games (PDF pages 19–21)                              */
 /*                                                                     */
 /* Each item carries a `slug` (route target for its detail page), a    */
@@ -1265,14 +1714,40 @@ export const games = {
   // page (js/views/gameDetail.js's "Watch & Learn" section) wherever a game
   // has videoResources — moved there from the Games list page as part of the
   // Games-tab redesign (item 6/7): the list page no longer inlines any video.
-  // These strings must appear verbatim (§7.7 / AC49) so a coach can never
-  // mistake an official event-technique video for footage of this specific
-  // game.
+  //
+  // TWO VARIANTS, because a video attached to a game is one of two different
+  // things and the honest framing differs between them:
+  //
+  //   `technique`   — an official coaching video of the underlying EVENT.
+  //                   Its clarifier must appear verbatim (§7.7 / AC49) so a
+  //                   coach can never mistake it for footage of this game.
+  //                   Every video in the bank was this kind until real game
+  //                   footage arrived, which is why this used to be a single
+  //                   flat { heading, clarifier } object.
+  //   `gameFootage` — the video shows THIS game being played. The technique
+  //                   clarifier would be a false statement here, so this
+  //                   variant carries none at all and gameDetailView() must
+  //                   not fall back to the other variant's.
+  //
+  // Which variant a video gets is declared per entry, on the videoResource
+  // itself (`isGameFootage: true`), NOT inferred from the game or its
+  // category — one game can carry both kinds at once, so there is no single
+  // correct answer at game level.
   videoBlockCopy: {
-    heading: 'Technique this game rehearses',
-    clarifier:
-      'These are official coaching videos of the underlying event technique, ' +
-      'not footage of this game.'
+    technique: {
+      heading: 'Technique this game rehearses',
+      clarifier:
+        'These are official coaching videos of the underlying event technique, ' +
+        'not footage of this game.'
+    },
+    gameFootage: {
+      heading: 'Watch this game being played',
+      // Deliberately null, not an empty string: "this variant has no
+      // clarifier" must stay distinguishable from "someone forgot to write
+      // one", the same deliberately-absent-vs-forgotten distinction
+      // `eventSlugs: []` carries at AC36.
+      clarifier: null
+    }
   }
 };
 
@@ -1468,6 +1943,22 @@ export const tonightCopy = {
           return;
         }
         checkResourceRef(key, `${where}.videoResources[${i}]`, true);
+
+        // `isGameFootage` picks which videoBlockCopy variant gameDetailView()
+        // renders this entry under. A truthy non-boolean (e.g. the string
+        // 'false') would silently select the wrong honesty framing, so the
+        // type is checked here rather than coerced at render time. Absent is
+        // valid and means technique — the default every existing video wants.
+        if (
+          vr &&
+          typeof vr === 'object' &&
+          'isGameFootage' in vr &&
+          typeof vr.isGameFootage !== 'boolean'
+        ) {
+          problems.push(
+            `${where}.videoResources[${i}].isGameFootage must be a boolean when present`
+          );
+        }
       });
 
       if (!item.slug || typeof item.slug !== 'string') {
@@ -1550,6 +2041,99 @@ export const tonightCopy = {
     if (!rowSlugCounts.has(slug)) {
       problems.push(`eventsAtAGlance.rows is missing a row for event slug '${slug}'`);
     }
+  });
+
+  /* --- weeklyProgram ---------------------------------------------------
+     getRunningOrder() reads `codes[code]` without guarding, and renders a
+     block's name/rule from the event that code's `slug` points at. A typo in
+     either — a slot naming a code that isn't in `codes`, or a code pointing
+     at an event slug that no longer exists — must blow up here, at load, in
+     one obvious message, rather than at whichever coach happens to pick that
+     program on the night. */
+  const slotSet = new Set(weeklyProgram.slotOrder);
+  const ageIds = new Set();
+
+  weeklyProgram.ageGroups.forEach((age, i) => {
+    if (!age.id || !age.name) {
+      problems.push(`weeklyProgram.ageGroups[${i}] needs both an id and a name`);
+    }
+    if (ageIds.has(age.id)) {
+      problems.push(`weeklyProgram.ageGroups has duplicate id '${age.id}'`);
+    }
+    ageIds.add(age.id);
+  });
+
+  if (!ageIds.has(weeklyProgram.defaultAgeId)) {
+    problems.push(
+      `weeklyProgram.defaultAgeId '${weeklyProgram.defaultAgeId}' is not an ageGroups id`
+    );
+  }
+
+  Object.keys(weeklyProgram.codes).forEach((code) => {
+    const entry = weeklyProgram.codes[code];
+    const where = `weeklyProgram.codes['${code}']`;
+    if (!entry.detail) {
+      problems.push(`${where} is missing a detail string`);
+    }
+    if (entry.slug == null) {
+      // No page in this guide — it must carry its own display name instead.
+      if (!entry.name) {
+        problems.push(`${where} has slug null so it must carry its own name`);
+      }
+    } else if (!knownSlugs.has(entry.slug)) {
+      problems.push(`${where} references unknown event slug '${entry.slug}'`);
+    }
+    (entry.also || []).forEach((slug) => {
+      if (!knownSlugs.has(slug)) {
+        problems.push(`${where}.also references unknown event slug '${slug}'`);
+      }
+    });
+  });
+
+  const programIds = new Set();
+  weeklyProgram.programs.forEach((program, i) => {
+    const where = `weeklyProgram.programs[${i}]`;
+    if (!program.id || !program.name) {
+      problems.push(`${where} needs both an id and a name`);
+    }
+    if (programIds.has(program.id)) {
+      problems.push(`weeklyProgram.programs has duplicate id '${program.id}'`);
+    }
+    programIds.add(program.id);
+
+    // slots: null is the deliberate "grid not transcribed yet" state, not an
+    // error — see the PROVENANCE note on weeklyProgram.
+    if (program.slots == null) return;
+
+    Object.keys(program.slots).forEach((ageId) => {
+      const at = `weeklyProgram.programs['${program.id}'].slots['${ageId}']`;
+      if (!ageIds.has(ageId)) {
+        problems.push(`${at} is not an ageGroups id`);
+      }
+      const slots = program.slots[ageId];
+      if (!Array.isArray(slots) || slots.length === 0) {
+        problems.push(`${at} must be a non-empty array of [time, code] pairs`);
+        return;
+      }
+      let previousIndex = -1;
+      slots.forEach(([time, code, marker], j) => {
+        if (!slotSet.has(time)) {
+          problems.push(`${at}[${j}] has time '${time}', which is not in slotOrder`);
+        } else {
+          const index = weeklyProgram.slotOrder.indexOf(time);
+          if (index <= previousIndex) {
+            problems.push(`${at}[${j}] time '${time}' is out of order or repeated`);
+          }
+          previousIndex = index;
+        }
+        if (!weeklyProgram.codes[code]) {
+          problems.push(`${at}[${j}] uses code '${code}', which is not in weeklyProgram.codes`);
+        }
+        if (marker !== undefined && marker !== 'pack-up') {
+          problems.push(`${at}[${j}] has unknown marker '${marker}' (only 'pack-up')`);
+        }
+      });
+    });
   });
 
   if (problems.length) {

@@ -76,6 +76,17 @@
   --color-accent-deep: #0A2540;  /* app bar fill — white text on it = 15.54:1 (reuses the Stripe heading navy as a dark shell surface) */
   --color-accent-on: #FFFFFF;    /* text on --color-accent — 6.71:1; on --color-accent-strong — 10.70:1 */
 
+  /* --- Reversed chip on a dark strip -------------------------------------
+     The time chip inside a running-order card's dark header band
+     (.run-card__time). A translucent white rather than another palette hex
+     so the chip tracks whatever strip it sits on instead of needing a
+     re-measured partner colour per surface. Its ONE surface today is
+     --color-heading (#0A2540), where it composites to #31485F; white text on
+     that measures 9.45:1, well clear of the 4.5:1 floor. If it is ever
+     placed on a lighter strip, re-measure — a translucent token cannot be
+     verified once and assumed everywhere. */
+  --color-strip-chip: rgba(255, 255, 255, 0.16);
+
   /* --- Success (green) — per-card Tonight toggle's active state, and the
      Event Detail "in tonight" CTA (js/views/eventDetail.js). Project-specific,
      not part of the Stripe palette (Stripe's own #24B47E fails AA — see the
