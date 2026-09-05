@@ -667,8 +667,9 @@
             <code>runningOrder()</code>. Under&nbsp;10 shows the two flag
             bands (pack-up, and the no-guide flag on a block the club runs
             but this guide has no page for); beside it,
-            <code>programEmptyState()</code> for a program whose grid
-            hasn't been transcribed yet.
+            <code>programEmptyState()</code>, which no real choice reaches
+            now that all six grids are loaded &mdash; it is shown here with a
+            program id that does not exist.
           </p>
           <div class="sg-tile__stage" id="sg-runningorder-demo"></div>
         </article>
@@ -712,6 +713,25 @@
             from every other page's navy heading.
           </p>
           <div class="sg-tile__stage sg-tile__stage--row" id="sg-gamedetail-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Watch &amp; Learn video framing</h3><span class="sg-tile__spec">games.videoBlockCopy</span></div>
+          <p class="sg-tile__note">
+            Both variants, read live out of <code>games.videoBlockCopy</code>
+            and rendered over the same resource card, so the only difference
+            on screen is the copy itself. A video attached to a game is either
+            footage of that game or an official video of the event technique
+            it rehearses, and only one honest framing fits each.
+            <code>gameDetailView()</code> picks the variant per entry from the
+            videoResource's own <code>isGameFootage</code> flag — never from
+            the game or its category — so one game can render both blocks at
+            once. The technique clarifier stays pinned verbatim (§7.7 / AC49);
+            the game-footage variant carries <code>clarifier: null</code> and
+            renders no note at all, because on real footage that sentence
+            would be false.
+          </p>
+          <div class="sg-tile__stage sg-tile__stage--row" id="sg-videoframing-demo"></div>
         </article>
 
         <article class="sg-tile">
@@ -1191,6 +1211,29 @@
       demo.appendChild(detailWrap);
     }
 
+    // Watch & Learn video framing — both games.videoBlockCopy variants, each
+    // over the SAME real resource card, so the tile isolates the one thing
+    // that differs: the heading, and whether a clarifier renders at all.
+    // Mirrors gameDetailView()'s own conditional rather than restating the
+    // copy, so this tile cannot drift from the page it documents.
+    {
+      const demo = document.getElementById('sg-videoframing-demo');
+      const sample = getResource('video-standing-start');
+      const block = (label, variant) => {
+        const copy = games.videoBlockCopy[variant];
+        return `
+          <div style="flex:1 1 14rem">
+            <span class="sg-demo-label">${esc(label)}</span>
+            <p class="section__kicker">${esc(copy.heading)}</p>
+            ${copy.clarifier ? `<p class="note">${esc(copy.clarifier)}</p>` : ''}
+            <ul class="resource-list">${resourceCard(sample, { compact: true, prefix: 'Standing Start' })}</ul>
+          </div>`;
+      };
+      demo.innerHTML =
+        block('gameFootage — no clarifier', 'gameFootage') +
+        block('technique — clarifier pinned verbatim', 'technique');
+    }
+
     // Per-card Tonight toggle — both states, direct calls. Both states are
     // rendered for the SAME event, so tonightToggleButton() returns the same
     // id twice; namespace each state separately (see withUniqueIds above).
@@ -1260,7 +1303,7 @@
 
     // Running order — the real Under 10 night for Program A, plus one block
     // from an older age group that has no page in this guide (so the
-    // no-guide flag is shown), and the not-transcribed empty state.
+    // no-guide flag is shown), and the no-grid empty state.
     {
       const u10 = getRunningOrder('A', weeklyProgram.defaultAgeId);
       const u12 = getRunningOrder('A', '12');
@@ -1272,8 +1315,8 @@
         <div><span class="sg-demo-label">a block with no page in this guide</span>${runningOrder(
           noGuideBlock
         )}</div>
-        <div><span class="sg-demo-label">program not transcribed yet</span>${programEmptyState(
-          getRunningOrder('B', weeklyProgram.defaultAgeId)
+        <div><span class="sg-demo-label">program with no grid loaded</span>${programEmptyState(
+          getRunningOrder('not-a-program', weeklyProgram.defaultAgeId)
         )}</div>`;
     }
 

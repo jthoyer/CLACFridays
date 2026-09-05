@@ -104,8 +104,10 @@ function disciplineSections(shownSlugs) {
  * Reached only when a program is chosen AND the mode switch says Tonight —
  * see eventsView() below for why that condition is not `tonight.isFiltering()`.
  * Any status other than 'ok' hands over to programEmptyState(), which
- * explains the specific reason (today: Programs B–F have not been
- * transcribed) rather than showing an empty night that looks like a real one.
+ * explains the specific reason rather than showing an empty night that looks
+ * like a real one. No status other than 'ok' is reachable from the picker
+ * today — every grid A–F is transcribed — but a stale saved choice or a
+ * program the club adds before we have its grid both land there.
  */
 function runningOrderSection(choice) {
   const order = getRunningOrder(choice.programId, choice.ageId);

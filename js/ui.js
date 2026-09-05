@@ -637,10 +637,10 @@ export function runningOrder(blocks) {
  * honour it, which is a different sentence and a different way out (change
  * the picker, or read the club's own page).
  *
- * 'program-not-loaded' is the case that actually happens today: Programs B–F
- * have not been transcribed because their images are broken on the club's
- * page (see weeklyProgram's PROVENANCE note). Saying that plainly, with a
- * link to the source, is more useful than an empty list.
+ * Not reachable from the picker today — every grid A–F is transcribed — but
+ * it stays because the club adds programs before we have their grids, and a
+ * saved choice can outlive a program that is renamed or dropped. Saying which
+ * of those happened, with a link to the source, beats an empty list.
  *
  * @param {{status: string, program: object|null, ageGroup: object|null}} order
  */

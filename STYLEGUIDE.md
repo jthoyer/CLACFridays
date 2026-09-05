@@ -608,9 +608,15 @@ When a program is chosen but there is nothing to show, `programEmptyState()`
 replaces the list. It is distinct from `tonightEmptyState()`: that one covers
 "nothing is selected", this one covers "you chose something and here is why
 the guide can't honour it", which is a different sentence and a different way
-out (change the picker, or open the club's own page). Today the case that
-actually fires is Programs B–F, whose grids have not been transcribed —
-see the PROVENANCE note on `weeklyProgram` in `content.js`.
+out (change the picker, or open the club's own page). No such case is
+reachable from the picker today — all six grids A–F are transcribed — but the
+state stays for a program the club adds before we have its grid, and for a
+saved choice that outlives a renamed or dropped program.
+
+**A cell can name two events** ("100m / SP1, SP2", "800m / D2",
+"Jav 1 (Nth) / 400m H"). Those codes carry an `also` array: the card links to
+`slug`, and `also` keeps the other event in tonight's selection, so the Games
+and Rules tabs don't quietly drop an event the club actually runs that night.
 
 ### Events tab: two branches (`js/views/events.js`)
 The Events tab now renders one of two bodies:
@@ -833,10 +839,32 @@ Line, Freeze Tag) renders no video section at all — deliberate, not
 forgotten, same "deliberately absent vs forgotten" distinction
 `assertContentLinkage()` already enforces elsewhere in this file. The
 honesty-framing copy that used to sit above the Games-list video block
-(`games.videoBlockCopy` — "Technique this game rehearses" + its clarifier
-line) moved here verbatim, so a coach still can't mistake an official
-event-technique video for footage of the specific game, now on the page
-where the video itself actually lives.
+(`games.videoBlockCopy`) moved here verbatim, so a coach still can't mistake
+an official event-technique video for footage of the specific game, now on
+the page where the video itself actually lives.
+
+`games.videoBlockCopy` carries **two variants**, because a video attached to
+a game is one of two different things and only one framing is honest for
+each. `technique` keeps the original "Technique this game rehearses" heading
+and its pinned clarifier — "These are official coaching videos of the
+underlying event technique, not footage of this game" — verbatim (§7.7 /
+AC49). `gameFootage` heads a block of real footage of the game being played
+and carries `clarifier: null`, rendering no note at all: on those videos the
+technique clarifier would be a false statement, and an empty note box would
+read as missing copy rather than as a deliberate absence (the same
+deliberately-absent-vs-forgotten distinction `eventSlugs: []` carries at
+AC36).
+
+Which variant a video gets is declared **per entry**, on the videoResource
+itself (`{ key, prefix, isGameFootage: true }`), never inferred from the game
+or its category — one game can legitimately carry both kinds at once, so
+there is no correct answer at game level. `gameDetailView()` therefore
+partitions `item.videoResources` and renders up to two blocks inside the one
+"Watch & Learn" section, game footage first, each under its own heading and
+its own clarifier. A group is never rendered under the other variant's copy.
+`assertContentLinkage()` type-checks `isGameFootage` where present, because a
+truthy non-boolean would silently select the wrong framing. Both variants are
+rendered side by side in `styleguide.html` ("Watch & Learn video framing").
 
 `content.js`'s `games` items each carry a `summary` (one sentence, shown on
 the list) and a `bullets` array (the full instructions, shown on this page)
