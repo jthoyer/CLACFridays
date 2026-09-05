@@ -1,9 +1,18 @@
-import { events, eventCategories, tonightCopy } from '../content.js';
+import {
+  events,
+  eventCategories,
+  tonightCopy,
+  weeklyProgram,
+  getRunningOrder
+} from '../content.js';
 import * as tonight from '../tonight.js';
 import {
   esc,
   modeSwitch,
   pageHeader,
+  programEmptyState,
+  programPicker,
+  runningOrder,
   tonightEmptyState,
   tonightToggleButton
 } from '../ui.js';
@@ -25,8 +34,17 @@ import {
  * ("2 videos", "1 article") is deliberately NOT rendered here — it isn't
  * part of this card's design — but the data/helper is untouched and still
  * renders on the Event Detail page (js/views/eventDetail.js).
+ *
+ * Exported for `styleguide.html`'s Event-card tile. That tile used to scrape
+ * the first `.event-card` out of a full `eventsView()` render, which stopped
+ * being reliable once this tab grew a second branch: with a weekly program
+ * chosen, `eventsView()` renders a running order and contains no
+ * `.event-card` at all, so the tile would silently render empty for any
+ * visitor whose saved state happened to have one. Calling this function
+ * directly is both deterministic and a truer demo — it is the exact markup
+ * the tile documents.
  */
-function eventCardList(list) {
+export function eventCardList(list) {
   const cards = list
     .map((e) => {
       const pressed = tonight.isTonightEvent(e.slug);
@@ -47,29 +65,24 @@ function eventCardList(list) {
   return `<ul class="event-cards">${cards}</ul>`;
 }
 
-export function eventsView() {
-  const mode = tonight.getMode();
-  const hasSelection = tonight.hasSelection();
-  const isTonight = tonight.isFiltering();
-  const shown = isTonight ? events.filter((e) => tonight.isTonightEvent(e.slug)) : events;
-  const shownSlugs = new Set(shown.map((e) => e.slug));
-
-  // AC34: mode === 'tonight' but nothing picked yet — isFiltering() is false
-  // (same existing rule as everywhere else) so the full list still shows,
-  // but the mode switch would otherwise read "Tonight" beside an unexplained
-  // full list. This note closes that gap.
-  const showEmptySelectionNote = mode === 'tonight' && !hasSelection;
-
-  // Events tab, grouped by discipline (content.js's eventCategories, in its
-  // fixed order: Track, Jumps, Throws, Bonus). Each category is its own
-  // <section>/<h2> containing only the events Tonight-mode filtering has
-  // left visible; a category left with zero visible events renders nothing
-  // at all — no empty section with a heading and nothing under it, same
-  // spirit as tonightEmptyState() below for the page as a whole.
+/**
+ * The full guide, grouped by discipline — what this tab has always shown,
+ * and still shows in Everything mode and in Tonight mode when the coach has
+ * hand-picked their events rather than choosing a program.
+ *
+ * Each category is its own <section>/<h2> containing only the events
+ * Tonight-mode filtering has left visible; a category left with zero visible
+ * events renders nothing at all — no empty section with a heading and
+ * nothing under it, same spirit as tonightEmptyState() for the page as a
+ * whole.
+ */
+function disciplineSections(shownSlugs) {
   let renderedFirst = false;
-  const sections = eventCategories
+  return eventCategories
     .map((cat) => {
-      const catEvents = events.filter((e) => cat.slugs.includes(e.slug) && shownSlugs.has(e.slug));
+      const catEvents = events.filter(
+        (e) => cat.slugs.includes(e.slug) && shownSlugs.has(e.slug)
+      );
       if (!catEvents.length) return '';
       const isFirst = !renderedFirst;
       renderedFirst = true;
@@ -82,8 +95,88 @@ export function eventsView() {
         </section>`;
     })
     .join('');
+}
 
-  const body = shown.length ? sections : tonightEmptyState(tonightCopy.emptyState);
+/**
+ * Tonight's running order, read off the club's published weekly program
+ * (content.js's `weeklyProgram`) for the chosen program + age group.
+ *
+ * Reached only when a program is chosen AND the mode switch says Tonight —
+ * see eventsView() below for why that condition is not `tonight.isFiltering()`.
+ * Any status other than 'ok' hands over to programEmptyState(), which
+ * explains the specific reason (today: Programs B–F have not been
+ * transcribed) rather than showing an empty night that looks like a real one.
+ */
+function runningOrderSection(choice) {
+  const order = getRunningOrder(choice.programId, choice.ageId);
+  const heading = order.program
+    ? `${order.program.name} · ${order.ageGroup ? order.ageGroup.name : ''}`.trim()
+    : 'Tonight';
+
+  return `
+    <section class="section" aria-labelledby="running-order">
+      <h2 class="event-category-kicker event-category-kicker--first" id="running-order">
+        ${esc(heading)}
+      </h2>
+      ${order.status === 'ok' ? runningOrder(order.blocks) : programEmptyState(order)}
+      ${
+        order.status === 'ok'
+          ? `<p class="note run-source">${esc(weeklyProgram.source.note)}</p>`
+          : ''
+      }
+    </section>`;
+}
+
+export function eventsView() {
+  const mode = tonight.getMode();
+  const choice = tonight.getProgramChoice();
+  const hasProgram = choice.programId != null;
+
+  /*
+   * Deliberately `mode === 'tonight'`, NOT `tonight.isFiltering()`.
+   * isFiltering() is false when the selection is empty, which is exactly the
+   * state a not-yet-transcribed program (B–F) leaves behind — and falling
+   * back to the full ten-event list there would silently ignore a choice the
+   * coach just made. When a program is chosen, this tab answers for that
+   * program, including when the answer is "that one isn't loaded".
+   */
+  const showRunningOrder = mode === 'tonight' && hasProgram;
+
+  const isFiltering = tonight.isFiltering();
+  const shown = isFiltering
+    ? events.filter((e) => tonight.isTonightEvent(e.slug))
+    : events;
+  const shownSlugs = new Set(shown.map((e) => e.slug));
+
+  /*
+   * AC34: mode === 'tonight' but nothing picked yet — isFiltering() is false
+   * (same existing rule as everywhere else) so the full list still shows,
+   * but the mode switch would otherwise read "Tonight" beside an unexplained
+   * full list. This note closes that gap. Suppressed when a program is
+   * chosen, because runningOrderSection() is already saying what tonight is.
+   */
+  const showEmptySelectionNote =
+    mode === 'tonight' && !tonight.hasSelection() && !hasProgram;
+
+  /*
+   * The two pre-existing leads are untouched: the picker explains itself
+   * with its own labels plus the hint below it, so there was no reason to
+   * rewrite copy that already reads correctly in those two states.
+   */
+  const lead = showRunningOrder
+    ? weeklyProgram.copy.runningOrderLead
+    : isFiltering
+      ? tonightCopy.events.filteredLead
+      : tonightCopy.events.everythingLead;
+
+  let body;
+  if (showRunningOrder) {
+    body = runningOrderSection(choice);
+  } else if (shown.length) {
+    body = disciplineSections(shownSlugs);
+  } else {
+    body = tonightEmptyState(tonightCopy.emptyState);
+  }
 
   return {
     title: 'Events',
@@ -91,8 +184,14 @@ export function eventsView() {
       ${pageHeader({
         kicker: 'Under 10 Boys',
         title: 'Events',
-        lead: isTonight ? tonightCopy.events.filteredLead : tonightCopy.events.everythingLead
+        lead
       })}
+      ${programPicker(choice)}
+      ${
+        hasProgram
+          ? ''
+          : `<p class="note program-picker__hint">${esc(weeklyProgram.copy.lead)}</p>`
+      }
       ${modeSwitch(mode)}
       ${
         showEmptySelectionNote

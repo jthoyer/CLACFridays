@@ -552,6 +552,231 @@
   color: var(--color-text-muted);
 }
 
+/* --- Weekly-program picker (`programPicker()` in ui.js) -----------------
+   Two native <select>s side by side at the top of the Events tab. Two
+   columns rather than stacked: both fit at 320px, and the pair reads as one
+   control ("which night is this?") instead of two unrelated fields.
+
+   `appearance: none` restyles the CLOSED control only — the open picker
+   stays the platform's own, which is the whole reason a <select> was chosen
+   over a custom listbox (see programPicker()'s doc comment). Because that
+   also removes the native arrow, `.program-picker__chevron` draws one back;
+   it is aria-hidden and pointer-events: none, so it can never take the tap
+   that belongs to the select underneath it.
+
+   `min-height: var(--tap-min)` keeps both controls on the 44px floor.
+   Focus is base.css's global :focus-visible ring — deliberately not
+   overridden here, so these controls carry the same ring as every other
+   focusable thing in the app. */
+
+.program-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.program-picker__label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  /* 4.84:1 on the app canvas at 12px bold — the same kicker/caption pairing
+     as .event-category-kicker, which documents the measurement. */
+  color: var(--color-text-caption);
+}
+
+.program-picker__control {
+  position: relative;
+}
+
+.program-picker__select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-height: var(--tap-min);
+  /* Right padding clears the chevron; it is not symmetric with the left on
+     purpose. */
+  padding: var(--space-2) var(--space-6) var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-heading);
+  font-family: inherit;
+  font-size: var(--fs-300);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.program-picker__chevron {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  transform: translateY(-50%);
+  display: block;
+  pointer-events: none;
+}
+
+.program-picker__chevron svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--color-text-muted);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* One-line explanation of what the picker does, shown only while no program
+   is chosen (js/views/events.js) — once a program is set, the running order
+   under it is a better explanation than any sentence. */
+.program-picker__hint {
+  margin-bottom: var(--space-5);
+}
+
+/* --- Running order (`runningOrder()` in ui.js) ----------------------------
+   Tonight's blocks, in the order they run. `.run-item` owns the frame
+   (border, radius, shadow, overflow) so the card's <a> and its flag <p>s can
+   be siblings and still clip into one rounded card — the same arrangement
+   `.event-card` uses to keep its toggle <button> out of its <a>.
+
+   Inside, the same header-band-over-body-band language as `.event-card`:
+   reversed white-on-navy strip, lighter body beneath. The one addition is
+   the time chip, which is the reason this card exists at all. */
+
+.run-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.run-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+.run-card {
+  display: block;
+  min-height: var(--tap-min);
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+/* Only a card that IS a link lifts on hover — a `.run-card--static` block
+   (one the club runs but this guide has no page for) must not advertise a
+   tap it can't honour. A modifier rather than :has(), which this app doesn't
+   assume support for. */
+.run-item--link:hover {
+  box-shadow: var(--shadow-2);
+}
+
+a.run-card:hover .run-card__name {
+  text-decoration: underline;
+}
+
+.run-card__strip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-heading);
+}
+
+.run-card__time {
+  flex: none;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-pill);
+  /* White on this chip composited over --color-heading = 9.45:1; see the
+     --color-strip-chip comment in tokens.css. */
+  background: var(--color-strip-chip);
+  color: var(--color-white);
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  white-space: nowrap;
+}
+
+.run-card__name {
+  flex-grow: 1;
+  color: var(--color-white);
+  font-size: var(--fs-400);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.run-card__body {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+}
+
+.run-card__detail {
+  display: block;
+  font-size: var(--fs-300);
+  font-weight: var(--fw-medium);
+  color: var(--color-text);
+}
+
+.run-card__rule {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--fs-200);
+  color: var(--color-text-caption);
+}
+
+/*
+  Flag bands at the foot of a running-order card. Both are plain labelled
+  text, never a colour-only signal (SC 1.4.1) — the sentence is what carries
+  the meaning and the tint only reinforces it, which is why the two flags
+  read differently even in greyscale.
+
+  --pack-up uses the safety/warning surface already established for callouts
+  (8.71:1, measured in tokens.css); --no-guide uses the neutral surface
+  instead (--color-text-muted on --color-neutral-100 = 6.10:1) because it is
+  an absence of content, not a caution.
+*/
+.run-flag {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-top: 1px solid var(--color-border-subtle);
+  font-size: var(--fs-200);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.run-flag--pack-up {
+  background: var(--color-warn-surface);
+  color: var(--color-warn-text);
+}
+
+.run-flag--no-guide {
+  background: var(--color-neutral-100);
+  color: var(--color-text-muted);
+  font-weight: var(--fw-medium);
+}
+
+/* The club's "timings are approximate" disclaimer, under the running order.
+   Deliberately quiet: it qualifies the list, it isn't a warning about it. */
+.run-source {
+  margin-top: var(--space-4);
+}
+
+/* Stronger first line inside `.empty-state`, for the program-not-loaded
+   message (`programEmptyState()` in ui.js) — that state has two paragraphs
+   and the heading one has to out-rank the explanation under it. */
+.empty-state__title {
+  color: var(--color-heading);
+  font-size: var(--fs-400);
+  font-weight: var(--fw-semibold);
+}
+
 .event-card > .tonight-toggle {
   position: absolute;
   top: var(--space-3);

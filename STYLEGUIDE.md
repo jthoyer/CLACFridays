@@ -33,7 +33,8 @@ Light mode only. No CSS framework, no build step.
 | `css/base.css` | Reset, document shell, landmarks, focus, typography defaults. |
 | `css/components.css` | Every reusable UI pattern. |
 | `js/ui.js` | The render helper for each pattern — one implementation each. |
-| `js/content.js` | Every word of guide copy. |
+| `js/content.js` | Every word of guide copy, plus the club's published weekly program grid (`weeklyProgram`) and the lookups over it. |
+| `js/tonight.js` | The only module that touches `localStorage`: tonight's selection, the Tonight/Everything mode, and the weekly-program choice. |
 | `styleguide.html` | **Derived, browsable rendering** of everything below — real swatches, real type samples, real component examples. Not a route in the app (see "Living styleguide page" below). |
 
 **Rule: components reference tokens, never literal hex values, with zero
@@ -122,6 +123,19 @@ every surface it lands on, not merely scraping 4.5:1.
 | `--color-success-tint` | `#E6F4EC` | Tinted surface — `.btn--ghost-success` hover | — |
 | `--color-success` | `#0E6B3A` | Active per-card Tonight toggle fill; Event Detail "in tonight" CTA border/text | 6.60:1 white, 6.24:1 canvas, 5.82:1 success-tint |
 | `--color-success-on` | `#FFFFFF` | Check glyph/text on `--color-success` fill | 6.60:1 |
+
+### Reversed chip on a dark strip
+
+| Token | Value | Use | Measured |
+| --- | --- | --- | --- |
+| `--color-strip-chip` | `rgba(255, 255, 255, 0.16)` | Time chip inside a running-order card's dark header band (`.run-card__time`) | composites to `#31485F` over `--color-heading`; white on it = 9.45:1 |
+
+A translucent white rather than another palette hex, so the chip tracks
+whatever strip it sits on instead of needing a re-measured partner colour per
+surface. That convenience comes with an obligation: a translucent token
+**cannot be measured once and assumed everywhere**. Its one surface today is
+`--color-heading` (`#0A2540`), where the ratio above holds. Put it on a
+lighter strip and re-measure before shipping.
 
 ### Safety / warning
 
@@ -501,6 +515,135 @@ on the just-pressed button.
 
 The **per-card Tonight toggle** (above) is a separate control with a separate
 rule: it never touches mode at all.
+
+### Weekly-program picker (`programPicker()` in `ui.js`)
+Two native `<select>`s side by side at the top of the Events tab —
+**Program** (A–F, plus an explicit "Not set") and **Age group** (the ten
+column headings of the club's published grid). Choosing a program fills
+tonight's selection from `content.js`'s `weeklyProgram` instead of making the
+coach tick ten checkboxes by hand, and carries two facts the hand-ticked list
+never could: the time each event runs and the field position it runs at.
+
+Native `<select>`s, not a custom listbox and not a row of chips. Six programs
+× ten age groups is far too many for chips at a 320px width, and a native
+select opens the platform's own picker — big touch targets, keyboard and
+screen-reader support for free, and it works one-handed in the dark beside a
+track. `appearance: none` restyles the **closed** control only; the open one
+stays native. Because that also removes the native arrow,
+`.program-picker__chevron` draws one back — `aria-hidden`, and
+`pointer-events: none` so it can never steal the tap belonging to the select
+underneath it. Each select has a real `<label for>`, so it is named without
+depending on the text that happens to sit beside it. Both sit on the 44px
+`--tap-min` floor. Focus is base.css's global `:focus-visible` ring, not
+overridden here.
+
+Contrast: label `--color-text-caption` at 12px bold on the canvas = 4.84:1
+(the same kicker/caption pairing as `.event-category-kicker`); select text
+`--color-heading` on `--color-surface` = 15.54:1; select border
+`--color-border-interactive` = 3.68:1; chevron stroke `--color-text-muted` =
+6.80:1 — all reused, already-measured pairings, no new colours.
+
+**On Input (SC 3.2.2).** Changing either select rewrites the whole list
+beneath it. That is a substantial change of context, and it is allowed here
+only because it is the control's advertised purpose: the labels name it, a
+one-line hint under the picker spells it out while nothing is chosen, and the
+change is announced through the same `#tonight-status` live region every
+other Tonight-mode change uses. Focus returns to the select the coach just
+used and the page never scrolls — a state-only repaint, see "Two render
+paths".
+
+Ids (`program-select`, `age-select`) are fixed strings, not generated, so
+`interactions.js` can re-find and re-focus the exact control after the outlet
+repaints — the same arrangement `modeSwitch()`'s buttons use. Both are
+dispatched by ONE delegated `change` listener on the router outlet
+(`data-action="set-program"` / `"set-age"`), matching how every other control
+in this app is wired. `change`, never `input`: a native select fires both,
+and acting on `input` would repaint mid-interaction on platforms that fire it
+while the picker is still open.
+
+### Running order (`runningOrder()` in `ui.js`)
+The Events tab's Tonight view once a program is chosen: one card per block
+returned by `content.js`'s `getRunningOrder()`, in the order the night runs.
+
+An `<ol>`, not a `<ul>` — these are a sequence in time and the order *is* the
+information. `list-style: none` hides the markers, because the time on each
+card is the label that matters and "1." beside "6.00pm" would be noise.
+
+`.run-item` (the `<li>`) owns the frame — border, `--radius-lg`,
+`--shadow-1`, `overflow: hidden` — so the card's `<a>` and its flag `<p>`s
+can be siblings and still clip into one rounded card. Same "wrapper owns the
+frame" arrangement `.event-card` uses to keep its toggle `<button>` out of
+its `<a>`, and for the same reason: the flags must not become part of the
+link's accessible name.
+
+Inside, the same header-band-over-body-band language as `.event-card` —
+reversed white-on-`--color-heading` strip over a lighter body — so a running
+order card and an event card read as the same kind of object. The one
+addition is `.run-card__time`, the chip that is the reason this card exists
+(see "Reversed chip on a dark strip" in Colour). The body carries the club's
+code spelled out in words (`Discus 2 (girls) · Discus 3 (boys)` — the numbers
+are **field positions** and are deliberately kept, because "which discus
+circle" is the question a coach standing on the grass actually has) over the
+key U10 rule, read from `eventsAtAGlance` rather than re-typed.
+
+Two card shapes, decided by whether the block's code maps to a page in this
+guide:
+
+- **`slug` set** — the whole card is an `<a>` to that event's detail page.
+- **`slug` null** — a non-interactive `.run-card--static`, flagged. The club
+  runs Triple Jump and Javelin for older age groups and this U10 guide has no
+  page for either; dropping those blocks would show a coach reading another
+  age group a night with silent holes in it.
+
+**Flag bands** (`.run-flag`) sit at the foot of a card. Both are plain
+labelled sentences, never a colour-only signal (SC 1.4.1) — the text carries
+the meaning and the tint only reinforces it, so the two still read
+differently in greyscale. `--pack-up` uses the safety/warning surface already
+established for callouts (`--color-warn-text` on `--color-warn-surface` =
+8.71:1); `--no-guide` uses the neutral surface instead
+(`--color-text-muted` on `--color-neutral-100` = 6.10:1), because it is an
+absence of content, not a caution.
+
+When a program is chosen but there is nothing to show, `programEmptyState()`
+replaces the list. It is distinct from `tonightEmptyState()`: that one covers
+"nothing is selected", this one covers "you chose something and here is why
+the guide can't honour it", which is a different sentence and a different way
+out (change the picker, or open the club's own page). Today the case that
+actually fires is Programs B–F, whose grids have not been transcribed —
+see the PROVENANCE note on `weeklyProgram` in `content.js`.
+
+### Events tab: two branches (`js/views/events.js`)
+The Events tab now renders one of two bodies:
+
+- **Running order** — when the mode switch says Tonight **and** a program is
+  chosen.
+- **Grouped by discipline** — every other time (Everything mode, or Tonight
+  mode with a hand-picked selection).
+
+The running-order condition is deliberately `mode === 'tonight'`, **not**
+`tonight.isFiltering()`. `isFiltering()` is false when the selection is
+empty, which is exactly the state a not-yet-transcribed program leaves
+behind; falling back to the full ten-event list there would silently ignore a
+choice the coach had just made. When a program is chosen this tab answers for
+that program — including when the answer is "that one isn't loaded".
+
+**One rule governs how the two ways of filling tonight coexist, and it lives
+in exactly one place** (`clearProgramForManualEdit()` in `js/tonight.js`,
+called from `setSelection()` and `toggleTonightEvent()`): **hand-editing
+tonight's events turns the program picker off.** Save from the picker, or tap
+a per-card toggle, and the program choice is dropped and the Program select
+returns to "Not set". Without that rule the two would silently diverge — the
+Events tab would keep showing the club's blocks while Games and Rules
+filtered against an edited selection. The age group is kept either way, so
+the picker doesn't forget it.
+
+`eventCardList()` is **exported** for `styleguide.html`. That tile used to
+scrape the first `.event-card` out of a full `eventsView()` render, which
+stopped being reliable the moment this tab grew a second, card-less branch:
+any visitor whose saved state had a program chosen got an empty tile. Calling
+the helper directly is deterministic and a truer demo of what the tile
+documents. The "grouped by discipline" tile reads `eventCategories` straight
+from `content.js` for the same reason.
 
 ### Onboarding / edit picker (`js/views/tonight.js`)
 Multi-select over the 10 events, rendered as an ordinary in-page view (a

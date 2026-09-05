@@ -16,7 +16,7 @@
  * only, it must never break the app. This is used pitch-side on a phone.
  */
 
-import { events } from './content.js';
+import { events, weeklyProgram, getProgramEventSlugs } from './content.js';
 
 const SELECTION_KEY = 'clac.tonight.v1';
 const MODE_KEY = 'clac.tonight.mode.v1';
@@ -130,6 +130,13 @@ function cleanSlugs(slugs) {
  * Everything, since hasSelection() is now false.
  */
 export function setSelection(slugs) {
+  // Saving from the picker is a hand-edit: it drops any program choice, so
+  // the Events tab stops rendering a running order that no longer matches
+  // this list. See clearProgramForManualEdit()'s banner at the end of this
+  // file. Called before the writes below so the single notify() at the end
+  // of this function covers both state changes.
+  clearProgramForManualEdit();
+
   const clean = cleanSlugs(slugs);
   selection = clean;
   safeSet(SELECTION_KEY, JSON.stringify(clean));
@@ -174,6 +181,9 @@ export function setSelection(slugs) {
  */
 export function toggleTonightEvent(slug) {
   const modeBeforeMutation = getMode();
+
+  // A per-card toggle is a hand-edit too — same rule as setSelection() above.
+  clearProgramForManualEdit();
 
   const next = selection.includes(slug)
     ? selection.filter((s) => s !== slug)
@@ -226,4 +236,139 @@ export function setMode(mode) {
  */
 export function isFiltering() {
   return getMode() === 'tonight' && hasSelection();
+}
+
+/* ==================================================================== */
+/* Weekly-program choice (Program A–F + age group)                      */
+/*                                                                      */
+/* The club publishes what every age group does on a given Friday       */
+/* (content.js's `weeklyProgram`). Choosing a program + age group is a  */
+/* second, DERIVED way to fill tonight's selection — two taps a week    */
+/* instead of hand-ticking ten checkboxes — and it carries two facts    */
+/* the hand-ticked list never could: the time each event runs, and the  */
+/* field position it runs at.                                           */
+/*                                                                      */
+/* ONE RULE governs how the two ways coexist, and it is enforced in     */
+/* exactly one place (clearProgramForManualEdit(), called from the two  */
+/* manual write paths below): HAND-EDITING TONIGHT'S EVENTS TURNS THE   */
+/* PROGRAM PICKER OFF. Save from the picker, or tap a per-card toggle,  */
+/* and the program choice is dropped — the coach has taken over, so the */
+/* Events tab goes back to rendering their list rather than a running   */
+/* order that no longer matches it. Without that rule the two would     */
+/* silently diverge: the Events tab would keep showing the club's six   */
+/* blocks while Games and Rules filtered against an edited selection.   */
+/*                                                                      */
+/* The age group is persisted even when no program is chosen, so the    */
+/* picker doesn't forget it between visits.                             */
+/* ==================================================================== */
+
+const PROGRAM_KEY = 'clac.program.v1';
+
+/** Normalise an arbitrary value to a real program id, or null. */
+function cleanProgramId(id) {
+  return weeklyProgram.programs.some((p) => p.id === id) ? id : null;
+}
+
+/** Normalise an arbitrary value to a real age-group id, falling back to the
+ *  guide's own age group rather than to nothing — an age is always set. */
+function cleanAgeId(id) {
+  return weeklyProgram.ageGroups.some((a) => a.id === id) ? id : weeklyProgram.defaultAgeId;
+}
+
+/**
+ * Parse the persisted choice. Same defensive posture as
+ * readSelectionFromStorage() above: corrupt JSON, an older schema, or ids
+ * that no longer exist in content.js (a program renamed, an age group
+ * dropped) must all degrade to "no program, default age", never throw.
+ */
+function readProgramFromStorage() {
+  const raw = safeGet(PROGRAM_KEY);
+  if (!raw) return { programId: null, ageId: weeklyProgram.defaultAgeId };
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { programId: null, ageId: weeklyProgram.defaultAgeId };
+  }
+  if (!parsed || typeof parsed !== 'object') {
+    return { programId: null, ageId: weeklyProgram.defaultAgeId };
+  }
+  return {
+    programId: cleanProgramId(parsed.programId),
+    ageId: cleanAgeId(parsed.ageId)
+  };
+}
+
+let programChoice = readProgramFromStorage();
+
+function persistProgramChoice() {
+  safeSet(PROGRAM_KEY, JSON.stringify(programChoice));
+}
+
+/**
+ * The current program/age choice. `programId` is null when no program is
+ * chosen (never chosen, explicitly cleared, or dropped by a manual edit);
+ * `ageId` is always a valid age-group id. Returned as a fresh object so a
+ * caller can't mutate the module's state by holding onto it.
+ */
+export function getProgramChoice() {
+  return { programId: programChoice.programId, ageId: programChoice.ageId };
+}
+
+/** Is a program currently driving tonight's selection? */
+export function hasProgramChoice() {
+  return programChoice.programId != null;
+}
+
+/**
+ * Choose a program and/or age group. Both arguments are normalised, so an
+ * unknown id can never be persisted.
+ *
+ * Choosing a PROGRAM is a deliberate "this is tonight" gesture, so it does
+ * what pressing Tonight on the mode switch does — sets and persists
+ * explicitMode = 'tonight' — and replaces the selection with the events that
+ * program runs for that age group. That includes replacing it with an EMPTY
+ * list when the program's grid hasn't been transcribed yet (Programs B–F, see
+ * weeklyProgram's PROVENANCE note): an empty night the views can explain is
+ * better than silently leaving the previous program's events filtering the
+ * Games and Rules tabs under a program name that never produced them.
+ *
+ * Clearing the program (programId null — the picker's "Not set" option)
+ * deliberately does NOT touch the selection or the mode. The coach is opting
+ * out of the derived list, not throwing away tonight's events; what's already
+ * selected stays selected and becomes theirs to hand-edit.
+ *
+ * Notifies exactly once, at the end, however many pieces of state moved.
+ */
+export function setProgramChoice(programId, ageId) {
+  programChoice = {
+    programId: cleanProgramId(programId),
+    ageId: cleanAgeId(ageId)
+  };
+  persistProgramChoice();
+
+  if (programChoice.programId) {
+    const slugs = cleanSlugs(
+      getProgramEventSlugs(programChoice.programId, programChoice.ageId)
+    );
+    selection = slugs;
+    safeSet(SELECTION_KEY, JSON.stringify(slugs));
+    explicitMode = 'tonight';
+    safeSet(MODE_KEY, 'tonight');
+  }
+
+  notify();
+}
+
+/**
+ * Drop the program choice because the coach hand-edited tonight's events —
+ * the ONE rule described in this section's banner. Keeps the age group (the
+ * picker shouldn't forget it) and never notifies: both callers notify once
+ * themselves, and a second event here would repaint the outlet twice and
+ * destroy the element interactions.js is about to re-focus.
+ */
+function clearProgramForManualEdit() {
+  if (programChoice.programId == null) return;
+  programChoice = { programId: null, ageId: programChoice.ageId };
+  persistProgramChoice();
 }

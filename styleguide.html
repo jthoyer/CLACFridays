@@ -552,11 +552,14 @@
         <article class="sg-tile">
           <div class="sg-tile__hd"><h3>Event card</h3><span class="sg-tile__spec">eventsView()</span></div>
           <p class="sg-tile__note">
-            Built by calling <code>eventsView()</code> from
-            <code>js/views/events.js</code> just now and taking its first
-            <code>.event-card</code> — including its per-card toggle, in
-            whatever state your browser's saved selection currently has it
-            (nothing on this page ever writes to that selection).
+            Built by calling <code>eventCardList()</code> from
+            <code>js/views/events.js</code> just now with the guide's first
+            event — including its per-card toggle, in whatever state your
+            browser's saved selection currently has it (nothing on this page
+            ever writes to that selection). Calls the card helper directly
+            rather than scraping a full <code>eventsView()</code> render,
+            which now has a second, card-less branch (see the weekly-program
+            tiles below).
           </p>
           <div class="sg-tile__stage" id="sg-event-card-demo"></div>
         </article>
@@ -564,10 +567,11 @@
         <article class="sg-tile">
           <div class="sg-tile__hd"><h3>Events tab: grouped by discipline</h3><span class="sg-tile__spec">eventsView()</span></div>
           <p class="sg-tile__note">
-            Built by calling the real <code>eventsView()</code> just now
-            and taking its category <code>&lt;h2&gt;</code> headings, in
-            order (Track / Jumps / Throws / Bonus) — the same four
-            <code>&lt;section&gt;</code>s the live Events tab renders.
+            Read straight from <code>eventCategories</code> in
+            <code>js/content.js</code>, in its own fixed order (Track /
+            Jumps / Throws / Bonus) — the same four
+            <code>&lt;section&gt;</code>s the live Events tab renders in
+            Everything mode.
           </p>
           <div class="sg-tile__stage" id="sg-event-categories-demo"></div>
         </article>
@@ -639,6 +643,34 @@
           <div class="sg-tile__hd"><h3>Tonight / Everything mode switch</h3><span class="sg-tile__spec">modeSwitch()</span></div>
           <p class="sg-tile__note">Two calls to <code>modeSwitch()</code>, one per state.</p>
           <div class="sg-tile__stage sg-tile__stage--row" id="sg-modeswitch-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Weekly-program picker</h3><span class="sg-tile__spec">programPicker()</span></div>
+          <p class="sg-tile__note">
+            Two live calls to <code>programPicker()</code> from
+            <code>js/ui.js</code> — unset, and set to Program&nbsp;A /
+            Under&nbsp;10. Real <code>&lt;select&gt;</code>s with real
+            <code>&lt;label for&gt;</code>s: the closed control is restyled
+            (<code>appearance: none</code> plus a drawn chevron), the open
+            one stays the platform's own. Changing one here does nothing —
+            the delegated <code>change</code> handler lives on the app's
+            router outlet, which this page has no copy of.
+          </p>
+          <div class="sg-tile__stage" id="sg-programpicker-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Running order (weekly program)</h3><span class="sg-tile__spec">runningOrder() + programEmptyState()</span></div>
+          <p class="sg-tile__note">
+            Real output of <code>getRunningOrder()</code> passed to
+            <code>runningOrder()</code>. Under&nbsp;10 shows the two flag
+            bands (pack-up, and the no-guide flag on a block the club runs
+            but this guide has no page for); beside it,
+            <code>programEmptyState()</code> for a program whose grid
+            hasn't been transcribed yet.
+          </p>
+          <div class="sg-tile__stage" id="sg-runningorder-demo"></div>
         </article>
 
         <article class="sg-tile sg-tile--wide">
@@ -748,6 +780,9 @@
       eventsAtAGlance,
       library,
       tonightCopy,
+      eventCategories,
+      weeklyProgram,
+      getRunningOrder,
       getResource
     } from './js/content.js';
     import {
@@ -757,12 +792,15 @@
       safetyCallout,
       resourceCard,
       modeSwitch,
+      programPicker,
+      runningOrder,
+      programEmptyState,
       tonightToggleButton,
       tonightCtaButton,
       tonightEmptyState
     } from './js/ui.js';
     import * as tonight from './js/tonight.js';
-    import { eventsView } from './js/views/events.js';
+    import { eventsView, eventCardList } from './js/views/events.js';
     import { gamesView } from './js/views/games.js';
     import { gameDetailView } from './js/views/gameDetail.js';
     import { openPicker, tonightView } from './js/views/tonight.js';
@@ -1088,9 +1126,14 @@
     // per-card toggle carries the same content-derived id the toggle demo
     // below also produces for the same event, so its ids are namespaced too
     // (see withUniqueIds above).
+    // Calls eventCardList() directly rather than scraping a full
+    // eventsView() render: with a weekly program chosen, eventsView()
+    // renders a running order and contains no .event-card at all, so the
+    // old scrape produced an empty tile for anyone whose saved state had
+    // one. See eventCardList()'s doc comment in js/views/events.js.
     {
       const tmp = document.createElement('div');
-      tmp.innerHTML = eventsView().html;
+      tmp.innerHTML = eventCardList(events.slice(0, 1));
       const card = tmp.querySelector('.event-card');
       if (card) {
         card.querySelectorAll('[id]').forEach((el) => {
@@ -1103,15 +1146,16 @@
       document.getElementById('sg-event-card-demo').appendChild(wrap);
     }
 
-    // Events tab: grouped by discipline — real output of eventsView(), just
-    // the four category <h2> headings (each section's own row list is
-    // already demoed above under "Event card").
+    // Events tab: grouped by discipline — the four category names, read
+    // straight from content.js's eventCategories in its own fixed order
+    // (each section's own row list is already demoed above under "Event
+    // card"). Read from the data rather than scraped from an eventsView()
+    // render for the same reason as the tile above.
     {
-      const tmp = document.createElement('div');
-      tmp.innerHTML = eventsView().html;
-      const headings = Array.from(tmp.querySelectorAll('.event-category-kicker')).map((h) => h.textContent);
       document.getElementById('sg-event-categories-demo').innerHTML =
-        `<ol class="bullets">${headings.map((h) => `<li>${esc(h)}</li>`).join('')}</ol>`;
+        `<ol class="bullets">${eventCategories
+          .map((c) => `<li>${esc(c.name)}</li>`)
+          .join('')}</ol>`;
     }
 
     // Games list link + Game Detail page — real output of gamesView() (one
@@ -1200,6 +1244,38 @@
     document.getElementById('sg-modeswitch-demo').innerHTML = `
       <div><span class="sg-demo-label">mode: tonight</span>${withUniqueIds(modeSwitch('tonight'), 'mode-demo-tonight')}</div>
       <div><span class="sg-demo-label">mode: everything</span>${withUniqueIds(modeSwitch('everything'), 'mode-demo-everything')}</div>`;
+
+    // Weekly-program picker — both states, from two direct calls.
+    // programPicker() emits fixed ids (program-select / age-select), so two
+    // calls emit each id twice; namespace per call (see withUniqueIds).
+    document.getElementById('sg-programpicker-demo').innerHTML = `
+      <div><span class="sg-demo-label">no program chosen</span>${withUniqueIds(
+        programPicker({ programId: null, ageId: weeklyProgram.defaultAgeId }),
+        'prog-demo-unset'
+      )}</div>
+      <div><span class="sg-demo-label">Program A · Under 10</span>${withUniqueIds(
+        programPicker({ programId: 'A', ageId: '10' }),
+        'prog-demo-set'
+      )}</div>`;
+
+    // Running order — the real Under 10 night for Program A, plus one block
+    // from an older age group that has no page in this guide (so the
+    // no-guide flag is shown), and the not-transcribed empty state.
+    {
+      const u10 = getRunningOrder('A', weeklyProgram.defaultAgeId);
+      const u12 = getRunningOrder('A', '12');
+      const noGuideBlock = u12.blocks.filter((b) => !b.slug).slice(0, 1);
+      document.getElementById('sg-runningorder-demo').innerHTML = `
+        <div><span class="sg-demo-label">Program A · Under 10</span>${runningOrder(
+          u10.blocks
+        )}</div>
+        <div><span class="sg-demo-label">a block with no page in this guide</span>${runningOrder(
+          noGuideBlock
+        )}</div>
+        <div><span class="sg-demo-label">program not transcribed yet</span>${programEmptyState(
+          getRunningOrder('B', weeklyProgram.defaultAgeId)
+        )}</div>`;
+    }
 
     // Onboarding / edit picker — force the picker branch, disarm submit.
     {
