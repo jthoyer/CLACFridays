@@ -367,6 +367,91 @@ export function modeSwitch(mode) {
 }
 
 /**
+ * Shared Tonight status strip — Events, Games and Rules. Not shown on the
+ * Tonight tab; its own summary heading already says this.
+ *
+ * Added because Games and Events dropped their own `modeSwitch()` (the
+ * Program and Age Group picker on Events/Tonight can set Tonight mode on
+ * its own now), which left Rules as the only page with any on-page way back
+ * to Everything — a coach on Events or Games had no control on the page in
+ * front of them. This strip closes that gap with one line of state plus one
+ * action, not a second full mode switch on every tab (that's exactly the
+ * redundancy the last two passes correctly removed).
+ *
+ * Two states, chosen by `isFiltering` (the same `tonight.isFiltering()`
+ * every other view already calls — this function stays state-free like the
+ * rest of ui.js, so it's passed in rather than re-derived here):
+ *
+ *   - Filtering: a <button data-action="set-mode" data-mode="everything">,
+ *     reusing the exact contract `modeSwitch()` already dispatches — no new
+ *     listener in interactions.js, this is a second element firing an event
+ *     the app already handles.
+ *   - Not filtering (Everything, or Tonight mode with nothing picked — both
+ *     read the same to a coach: nothing is currently filtered): a real
+ *     `<a href="#/tonight">`, because this is a navigation to a different
+ *     tab, not a state change on the current one — same distinction the
+ *     rest of this app already draws between links and action buttons.
+ *
+ * `choice` is `tonight.getProgramChoice()` — only its `programId`/`ageId`
+ * are used, resolved against `weeklyProgram` here (the same module
+ * `programPicker()` already reads), so a caller never has to resolve names
+ * itself. `count` is `tonight.getSelection().length`, always the true
+ * selection size — deliberately NOT whatever subset the calling page itself
+ * happens to be showing (Games filters by category, not by raw count; using
+ * that number here would describe this page's list, not tonight's actual
+ * selection).
+ *
+ * No `role="status"`/`aria-live` on this element: it lives inside the
+ * repainted `#view` outlet and is destroyed/recreated on every mode change,
+ * which is exactly the announcement race `index.html`'s persistent
+ * `#tonight-status` region exists to avoid (see its own comment) — adding a
+ * live region here would reintroduce that same bug. Instead this follows
+ * `modeSwitch()`'s own precedent: interactions.js moves focus back onto the
+ * control after the repaint, and the control's own new accessible name
+ * ("Show everything" button → "Set tonight" link, or vice versa) is what a
+ * screen reader announces, the same way `modeSwitch()`'s buttons already
+ * rely on focus landing back on a control whose state just changed.
+ */
+export function tonightStatusStrip({ isFiltering, choice, count }) {
+  const id = 'tonight-status-action';
+
+  if (!isFiltering) {
+    return `
+      <div class="tonight-status">
+        <p class="tonight-status__text">${esc(tonightCopy.status.everything)}</p>
+        <a class="tonight-status__action" id="${id}" href="#/tonight">
+          ${esc(tonightCopy.status.setTonightCta)}
+        </a>
+      </div>`;
+  }
+
+  const program = choice.programId
+    ? weeklyProgram.programs.find((p) => p.id === choice.programId)
+    : null;
+  const ageGroup = weeklyProgram.ageGroups.find((a) => a.id === choice.ageId);
+  const countText = tonightCopy.status.eventCount(count);
+
+  const text = program
+    ? `Showing <strong>${esc(program.name)}${
+        ageGroup ? ' · ' + esc(ageGroup.name) : ''
+      }</strong> — ${esc(countText)}`
+    : esc(tonightCopy.status.manualSelection(countText));
+
+  return `
+    <div class="tonight-status">
+      <p class="tonight-status__text">${text}</p>
+      <button
+        type="button"
+        class="tonight-status__action"
+        id="${id}"
+        data-action="set-mode"
+        data-mode="everything">
+        ${esc(tonightCopy.status.showEverythingCta)}
+      </button>
+    </div>`;
+}
+
+/**
  * Per-card Tonight toggle — the small in-card control on the Events list
  * (js/views/events.js) that adds/removes ONE event from tonight's selection
  * via js/tonight.js's toggleTonightEvent(), without touching the top mode

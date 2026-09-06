@@ -13,12 +13,14 @@ import {
   pageHeader,
   resourceCard,
   responsiveTable,
-  tonightEmptyState
+  tonightEmptyState,
+  tonightStatusStrip
 } from '../ui.js';
 
 export function rulesView() {
   const mode = tonight.getMode();
   const isTonight = tonight.isFiltering();
+  const choice = tonight.getProgramChoice();
 
   // ageGroupFacts is ALWAYS shown unfiltered — only eventsAtAGlance rows are
   // filtered by tonight's selection, per spec.
@@ -80,6 +82,14 @@ export function rulesView() {
     )
     .join('');
 
+  /*
+   * tonightStatusStrip() and modeSwitch() coexist below on purpose. Rules is
+   * still the only page with a working way to flip mode in place, and the
+   * strip adds what the bare switch doesn't say — which program (if any) and
+   * how many events, not just which of the two states is currently active.
+   * Events and Games show the strip with no switch of their own; Rules is
+   * the one page that shows both.
+   */
   return {
     title: 'Rules',
     html: `
@@ -102,6 +112,7 @@ export function rulesView() {
             eventsAtAGlance.heading
           )}</h2>
         </div>
+        ${tonightStatusStrip({ isFiltering: isTonight, choice, count: tonight.getSelection().length })}
         ${modeSwitch(mode)}
         ${glanceBlock}
       </section>

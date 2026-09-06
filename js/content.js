@@ -1802,6 +1802,23 @@ export const tonightCopy = {
   emptyState: 'No events picked yet for tonight.',
   chooseEventsCta: 'Choose tonight\'s events',
   editSelectionCta: 'Edit selection',
+  // The shared status strip (tonightStatusStrip() in ui.js) rendered on
+  // Events, Games and Rules — the one place a coach on any of those three
+  // tabs can see what's currently filtering the page and get back to
+  // Everything in one tap, without a trip to the Rules tab's mode switch.
+  // Not shown on the Tonight tab itself; its own summary heading already
+  // says this. Plain strings/functions here, same rule as the rest of this
+  // object — any bolding of the program/age name is composed in ui.js, not
+  // baked into the copy.
+  status: {
+    everything: 'Showing everything',
+    setTonightCta: 'Set tonight',
+    showEverythingCta: 'Show everything',
+    // Pluralised event count, e.g. "4 events" / "1 event" — shared by both
+    // phrasings below rather than duplicated in each.
+    eventCount: (count) => `${count} event${count === 1 ? '' : 's'}`,
+    manualSelection: (countText) => `${countText} picked for tonight`
+  },
   events: {
     // Same trim as weeklyProgram.copy.runningOrderLead above, same reason.
     filteredLead: 'Tonight’s events only.',

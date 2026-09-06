@@ -210,6 +210,62 @@
   text-align: center;
 }
 
+/* --- Shared Tonight status strip (tonightStatusStrip() in ui.js) --------
+   Events, Games and Rules — closes the "only Rules can get back to
+   Everything" gap left once Games and Events dropped their own copy of
+   .mode-switch above. Extends .note--flag's existing visual language
+   (accent-tint fill, accent-strong text — see that rule's own comment for
+   why the modifier must stay declared after .note) rather than inventing a
+   new colour; the action pill reuses .mode-switch__btn's own shape
+   (pill radius, --tap-min height, 1px border) so the two controls read as
+   the same family without being the same component. Text colour
+   --color-accent-strong on --color-accent-tint is the same 9.21:1 pairing
+   already measured for .note--flag, not a new contrast claim; the action's
+   --color-accent text on --color-surface white is the same 6.71:1 pairing
+   already measured under "Accent" in STYLEGUIDE.md's Colour section. */
+.tonight-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-accent-tint);
+  border-radius: var(--radius-md);
+}
+
+.tonight-status__text {
+  margin: 0;
+  color: var(--color-accent-strong);
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-300);
+}
+
+.tonight-status__text strong {
+  font-weight: var(--fw-bold);
+}
+
+.tonight-status__action {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-accent);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-200);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.tonight-status__action:hover {
+  background: var(--color-accent-tint);
+}
+
 /* --- Empty / near-empty Tonight-mode state --------------------------------
    Shown instead of a bare empty list when a filter yields nothing, so the
    page reads as a deliberate state rather than a broken one. */
