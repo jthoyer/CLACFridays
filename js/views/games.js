@@ -1,6 +1,6 @@
 import { games, tonightCopy } from '../content.js';
 import * as tonight from '../tonight.js';
-import { esc, pageHeader, pairsWithNote, tonightEmptyState } from '../ui.js';
+import { esc, pageHeader, pairsWithNote, tonightEmptyState, tonightStatusStrip } from '../ui.js';
 
 /**
  * One game's list-page entry: a card whose name renders as a black strip —
@@ -56,6 +56,7 @@ export function gamesView() {
   // underlying selection) — filtering still runs off it, just with no
   // on-page control to flip it here. tonight.isFiltering() is unchanged.
   const isTonight = tonight.isFiltering();
+  const choice = tonight.getProgramChoice();
 
   const visibleCategories = isTonight
     ? games.categories.filter(
@@ -98,6 +99,7 @@ export function gamesView() {
         title: games.heading
       })}
 
+      ${tonightStatusStrip({ isFiltering: isTonight, choice, count: tonight.getSelection().length })}
       ${
         isTonight
           ? `<p class="note">${esc(tonightCopy.games.filteredNote)}</p>`

@@ -12,7 +12,8 @@ import {
   programEmptyState,
   programPicker,
   runningOrder,
-  tonightEmptyState
+  tonightEmptyState,
+  tonightStatusStrip
 } from '../ui.js';
 
 /**
@@ -220,6 +221,7 @@ export function eventsView() {
           ? ''
           : `<p class="note program-picker__hint">${esc(weeklyProgram.copy.lead)}</p>`
       }
+      ${tonightStatusStrip({ isFiltering, choice, count: tonight.getSelection().length })}
       ${
         showEmptySelectionNote
           ? `<p class="note">${esc(tonightCopy.events.emptySelectionNote)}</p>`

@@ -645,8 +645,27 @@
 
         <article class="sg-tile">
           <div class="sg-tile__hd"><h3>Tonight / Everything mode switch</h3><span class="sg-tile__spec">modeSwitch()</span></div>
-          <p class="sg-tile__note">Two calls to <code>modeSwitch()</code>, one per state.</p>
+          <p class="sg-tile__note">Two calls to <code>modeSwitch()</code>, one per state. Rules is the only live page that still renders this.</p>
           <div class="sg-tile__stage sg-tile__stage--row" id="sg-modeswitch-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Shared Tonight status strip</h3><span class="sg-tile__spec">tonightStatusStrip()</span></div>
+          <p class="sg-tile__note">
+            Three real calls to <code>tonightStatusStrip()</code> from
+            <code>js/ui.js</code>, each with different input — not scraped
+            from a live view, since which one a coach sees depends on
+            <code>tonight.isFiltering()</code> and the Program/Age choice,
+            neither of which this page touches. Rendered on Events and Games
+            (Rules shows it too, alongside its own mode switch above — see
+            STYLEGUIDE.md for why that's not a redundancy); never on Tonight,
+            whose own summary heading already says this. The "Show
+            everything" button dispatches the same
+            <code>data-action="set-mode"</code> the switch above does — try
+            it on the live app, not here, since this page's outlet has no
+            router listening for it.
+          </p>
+          <div class="sg-tile__stage" id="sg-statusstrip-demo"></div>
         </article>
 
         <article class="sg-tile sg-tile--wide">
@@ -837,7 +856,8 @@
       programEmptyState,
       tonightToggleButton,
       tonightCtaButton,
-      tonightEmptyState
+      tonightEmptyState,
+      tonightStatusStrip
     } from './js/ui.js';
     import * as tonight from './js/tonight.js';
     import { eventsView, eventCardList } from './js/views/events.js';
@@ -1307,6 +1327,34 @@
     document.getElementById('sg-modeswitch-demo').innerHTML = `
       <div><span class="sg-demo-label">mode: tonight</span>${withUniqueIds(modeSwitch('tonight'), 'mode-demo-tonight')}</div>
       <div><span class="sg-demo-label">mode: everything</span>${withUniqueIds(modeSwitch('everything'), 'mode-demo-everything')}</div>`;
+
+    // Shared Tonight status strip — three states, from three direct calls.
+    // tonightStatusStrip() emits one fixed id (tonight-status-action) with
+    // no other element referencing it by attribute (unlike the Program and
+    // Age Group heading's aria-labelledby elsewhere on this page), so plain
+    // withUniqueIds() is enough here — nothing extra to re-point.
+    document.getElementById('sg-statusstrip-demo').innerHTML = `
+      <div style="margin-bottom:var(--space-3)">
+        <span class="sg-demo-label">not filtering (Everything, or Tonight with nothing picked)</span>
+        ${withUniqueIds(
+          tonightStatusStrip({ isFiltering: false, choice: { programId: null, ageId: weeklyProgram.defaultAgeId }, count: 0 }),
+          'status-demo-everything'
+        )}
+      </div>
+      <div style="margin-bottom:var(--space-3)">
+        <span class="sg-demo-label">filtering — hand-picked, no program</span>
+        ${withUniqueIds(
+          tonightStatusStrip({ isFiltering: true, choice: { programId: null, ageId: weeklyProgram.defaultAgeId }, count: 2 }),
+          'status-demo-manual'
+        )}
+      </div>
+      <div>
+        <span class="sg-demo-label">filtering — Program A · Under 10</span>
+        ${withUniqueIds(
+          tonightStatusStrip({ isFiltering: true, choice: { programId: 'A', ageId: '10' }, count: 4 }),
+          'status-demo-program'
+        )}
+      </div>`;
 
     // Weekly-program picker — both states, from two direct calls.
     // programPicker() emits fixed ids (program-select / age-select), so two

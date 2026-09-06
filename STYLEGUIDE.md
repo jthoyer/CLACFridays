@@ -519,10 +519,10 @@ Group picker (below) could drive the same underlying mode and selection
 from the Tonight tab instead — see "Games tab: no mode switch" and
 "Events tab: no mode switch, no per-card toggle" further down.
 `modeSwitch()` itself is unchanged; Games and Events simply stopped
-calling it. Getting from Tonight mode back to Everything, for a coach
-who is currently on Events or Games, now means a trip to Rules — the one
-remaining page with a switch — or picking "Not set" on the Program
-picker plus a fresh manual selection on the Tonight tab.
+calling it. Rules is the one page that still shows both this switch and
+the status strip (below) — see that section for why they coexist there
+rather than the switch being redundant now.
+
 Two real `<button>`s in a `<div role="group" aria-label="Show">`, each with
 `aria-pressed`. Not a bare styled `<div>`, and not a single on/off toggle
 button — a labelled two-state group reads its current state to a screen
@@ -544,6 +544,81 @@ on the just-pressed button.
 The **per-card Tonight toggle** (above) was a separate control with a
 separate rule — it never touched mode at all — but it has no current call
 site; see that section's own status note.
+
+### Shared Tonight status strip (`tonightStatusStrip()` in `ui.js`)
+Rendered on Events, Games and Rules — not Tonight, whose own summary heading
+already says this. Added because dropping Games' and Events' own
+`modeSwitch()` (above) left a real gap: a coach on either tab had no on-page
+way back to Everything, only a trip to Rules or "Not set" on the Program
+picker plus a fresh manual selection. This closes that gap with one line of
+state plus one action, deliberately **not** a second full mode switch on
+every tab — that would restore exactly the redundancy the last two passes
+correctly removed.
+
+**Two states**, chosen by `tonight.isFiltering()` (passed in, not
+re-derived — `ui.js` stays state-free like every other helper in it):
+
+- **Filtering** — `<button type="button" data-action="set-mode"
+  data-mode="everything">Show everything</button>`. Reuses the exact
+  `data-action`/`data-mode` contract `modeSwitch()` already dispatches, so
+  `interactions.js` needed no new listener — this is a second element firing
+  an event the app already handles. Text reads either "Showing **Program A ·
+  Under 10** — 4 events" (a program is chosen; name/age bolded, composed in
+  `ui.js` around `esc()`-escaped values, never baked into the copy string
+  itself — content.js holds no markup, same rule as everywhere else in it)
+  or "4 events picked for tonight" (a hand-picked selection, no program).
+- **Not filtering** (Everything, or Tonight mode with nothing picked yet —
+  both read the same to a coach: nothing is currently filtered) — a real
+  `<a href="#/tonight">Set tonight</a>`, not a button, because this is a
+  navigation to a different tab, not a state change on this one — the same
+  distinction this app already draws everywhere else between links and
+  action buttons. Text reads "Showing everything".
+
+Both states share one fixed id, `tonight-status-action`, on whichever
+element is currently rendered — same reasoning `program-select`/`age-select`
+already rely on (only one view is ever mounted in the outlet at once, so a
+fixed id can't collide with itself). This is *not* two elements sharing an id
+the way `mode-switch-tonight`/`mode-switch-everything` are two permanently
+co-present buttons with two different ids; here the whole control is
+replaced between renders, so `interactions.js`'s existing
+`focusById(modeBtn.id, …)` finds the newly-rendered element (button or link)
+at that same id after the repaint and lands focus there — no new
+focus-handling code needed.
+
+**No `role="status"`/`aria-live` on this element.** It lives inside the
+repainted `#view` outlet and is destroyed/recreated on every mode change —
+exactly the announcement race `index.html`'s persistent `#tonight-status`
+region exists to avoid (see that element's own comment: a live region only
+reliably announces a mutation once it's already in the accessibility tree,
+and recreating it on every repaint races the tree registration against the
+announcement itself). Adding a live region here would reintroduce that same
+bug. Instead this follows `modeSwitch()`'s own precedent: focus lands back on
+the control after the repaint, and the control's own new accessible name
+("Show everything" → "Set tonight", or the reverse) is what a screen reader
+announces — the same reliance `modeSwitch()`'s buttons already have on focus
+landing on a control whose state just changed, not a separate announcement.
+
+**Colour.** Background `--color-accent-tint`, text `--color-accent-strong` —
+the exact pairing `.note--flag` already uses (9.21:1, already measured under
+"Accent" in the Colour section above), not a new contrast claim. The action
+pill is `--color-accent` text and border on `--color-surface` white
+(6.71:1, same pairing `modeSwitch()`'s active button already measures) —
+reused, not invented. `min-height: var(--tap-min)`, pill radius matching
+`.mode-switch__btn`'s own shape, so the two controls read as the same family
+of "small action pill" without being the same component.
+
+`count` is always `tonight.getSelection().length` — the true selection
+size — never the calling page's own filtered count. Games in particular
+filters by *category*, not a 1:1 event count (see "Consistency of card/list
+patterns" if this guide grows a section on that), so its own visible list
+length would describe what that page happens to show, not what's actually
+selected for tonight; the strip's job is the latter.
+
+**Rules is the one page that shows both this strip and `modeSwitch()`.**
+Not a redundancy: Rules is still the only page with a working way to flip
+mode in place, and the strip adds what the bare switch alone doesn't say —
+which program (if any), and how many events — not just which of the two
+states is currently active.
 
 ### Weekly-program picker (`programPicker()` in `ui.js`)
 Two native `<select>`s side by side at the top of the Events tab —
@@ -651,9 +726,11 @@ and Rules tabs don't quietly drop an event the club actually runs that night.
 No mode switch and no per-card toggle on this tab any more — see "Event
 card" and "Per-card Tonight toggle" above. Choosing a program (below) is now
 the primary way this tab's own state changes; `tonight.getMode()` still
-governs which of the two bodies renders, it just no longer has an on-page
-control here to flip it directly — Rules keeps the one remaining switch. The
-Events tab renders one of two bodies:
+governs which of the two bodies renders. There is no full bidirectional
+switch here — Rules keeps the only one of those — but the shared status
+strip (see "Shared Tonight status strip" above) does give this tab its own
+one-tap way back to Everything, which is the direction that actually matters
+most from here. The Events tab renders one of two bodies:
 
 - **Running order** — when `tonight.getMode()` is `'tonight'` **and** a
   program is chosen.
@@ -835,11 +912,13 @@ onto the event-name link renders the same 3px solid `--color-accent` ring,
 
 ### Games tab: no mode switch
 The Games tab renders no `modeSwitch()` — filtering to tonight's games still
-runs off `tonight.isFiltering()` exactly as before, but the on/off control
-for it lives only on the Tonight tab now, via the Program and Age Group
-picker (see "Program and Age Group" under the Tonight tab's own section
-below) or the hand-ticked picker. One fewer identical-looking control
-repeated across three tabs; Events and Rules are unchanged.
+runs off `tonight.isFiltering()` exactly as before, but there is no full
+bidirectional switch on this tab; setting Tonight mode happens via the
+Program and Age Group picker (see "Program and Age Group" under the Tonight
+tab's own section below) or the hand-ticked picker. Getting back to
+Everything from here is the shared status strip's one-tap action (see
+"Shared Tonight status strip" above) — Games shows that strip like Events
+does, just with no switch alongside it the way Rules has.
 
 ### Games tab: category card (`.game-category-card`)
 Each category on the Games list (`js/views/games.js`) is wrapped in a
