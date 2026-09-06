@@ -26,7 +26,7 @@ import { rulesView } from './views/rules.js';
 import { tonightView } from './views/tonight.js';
 import { notFoundView } from './views/notFound.js';
 
-const SITE_NAME = 'U10 Boys Age Manager Guide';
+const SITE_NAME = 'Age Manager Guide';
 
 /** Parse `#/events/long-jump` → ['events', 'long-jump']. */
 export function parseHash(hash) {

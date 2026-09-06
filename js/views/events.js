@@ -198,7 +198,6 @@ export function eventsView() {
     title: 'Events',
     html: `
       ${pageHeader({
-        kicker: 'Under 10 Boys',
         title: 'Events',
         lead
       })}
