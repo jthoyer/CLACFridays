@@ -1,6 +1,6 @@
 # Style guide
 
-Design system for the **NSW Little Athletics — U10 Boys Age Manager Guide** web app.
+Design system for the **NSW Little Athletics — Age Manager Guide** web app.
 
 The audience is a volunteer parent standing pitch-side, in daylight, holding a
 phone in one hand. Every decision below is downstream of that: large-ish body
@@ -513,8 +513,12 @@ screen. Use these for any new action button rather than inventing a fourth
 variant.
 
 ### Tonight / Everything mode switch (`modeSwitch()` in `ui.js`)
-One implementation, used identically on Events, Games and Rules — the three
-pages can never disagree on what the switch looks like or how it behaves.
+One implementation, used identically on Events and Rules — the two pages
+can never disagree on what the switch looks like or how it behaves. The
+Games tab dropped its own copy of this switch once the Program and Age
+Group picker (below) could drive the same underlying mode and selection
+from the Tonight tab instead — see "Games tab: no mode switch" further
+down. `modeSwitch()` itself is unchanged; Games simply stopped calling it.
 Two real `<button>`s in a `<div role="group" aria-label="Show">`, each with
 `aria-pressed`. Not a bare styled `<div>`, and not a single on/off toggle
 button — a labelled two-state group reads its current state to a screen
@@ -604,7 +608,7 @@ addition is `.run-card__time`, the chip that is the reason this card exists
 code spelled out in words (`Discus 2 (girls) · Discus 3 (boys)` — the numbers
 are **field positions** and are deliberately kept, because "which discus
 circle" is the question a coach standing on the grass actually has) over the
-key U10 rule, read from `eventsAtAGlance` rather than re-typed.
+key rule, read from `eventsAtAGlance` rather than re-typed.
 
 Two card shapes, decided by whether the block's code maps to a page in this
 guide:
@@ -709,6 +713,26 @@ resolved too, and does not immediately reopen the form.
 All picker copy (legend, note, button labels, empty-state text) is sourced
 from `content.js`'s `tonightCopy` object, same rule as every other view.
 
+### Program and Age Group (`js/views/tonight.js`)
+The same `programPicker()` (see "Weekly-program picker" above) as the Events
+tab, now also rendered on the Tonight tab — above both of its own branches
+(the onboarding picker and the summary), so it is visible regardless of which
+one is showing. Heading is a real `<h2 class="section__title">` (the same
+class `renderSummary()`'s own "Tonight's events (n)" heading uses below it),
+not a second `pageHeader()` call — a view renders exactly one `<h1>`
+(accessibility rule 4), and `pageHeader()` always builds one.
+
+Choosing a program calls `tonight.setProgramChoice()`, the same function the
+Events tab's copy of this picker calls — it replaces tonight's selection and
+sets Tonight mode, so `renderSummary()` below picks up the result with no
+branch of its own for where the selection came from. The change handler is
+the same delegated `data-action="set-program"` / `"set-age"` listener in
+`interactions.js`, bound on the router outlet rather than any one view, so
+rendering the picker here needed no new wiring — only a new call site.
+
+The picker's own "Not set" hint (`weeklyProgram.copy.lead`) renders under it
+exactly as it does on the Events tab, when no program is chosen.
+
 ### Tonight tab: event card (event + key rule + games tonight)
 Each selected event renders as one bordered/rounded `.tonight-card`
 (`css/components.css`) built by `js/views/tonight.js`'s `renderSummary()` —
@@ -738,7 +762,7 @@ declares its own radius.
   `--color-accent-strong` text, 9.21:1 on tint — both pairings already
   measured under "Accent" in the Colour section above, reused unchanged
   here), read from `eventsAtAGlance.rows` in `content.js` (row matched by
-  `slug`, third cell — "Key U10 Rule") rather than duplicated.
+  `slug`, third cell — "Key Rule") rather than duplicated.
   `assertContentLinkage()` guarantees one row per event slug across all 10
   events, so every selected event has a match.
 - **"Games tonight" section** — rendered only when at least one game's
@@ -796,6 +820,14 @@ bounding-box height is >=44px at both widths. Neither link suppresses the
 app's global `:focus-visible` ring (`css/base.css`) — a real keyboard Tab
 onto the event-name link renders the same 3px solid `--color-accent` ring,
 2px offset, every other focusable control in the app uses.
+
+### Games tab: no mode switch
+The Games tab renders no `modeSwitch()` — filtering to tonight's games still
+runs off `tonight.isFiltering()` exactly as before, but the on/off control
+for it lives only on the Tonight tab now, via the Program and Age Group
+picker (see "Program and Age Group" under the Tonight tab's own section
+below) or the hand-ticked picker. One fewer identical-looking control
+repeated across three tabs; Events and Rules are unchanged.
 
 ### Games tab: category card (`.game-category-card`)
 Each category on the Games list (`js/views/games.js`) is wrapped in a

@@ -31,7 +31,7 @@ export function rulesView() {
         columns: eventsAtAGlance.columns,
         rows: rows.map((row) => row.cells),
         caption:
-          'Under 10 Boys events at a glance: event, distance or implement, and key U10 rule.',
+          'Events at a glance: event, distance or implement, and key rule.',
         footnote: eventsAtAGlance.footnote
       })
     : tonightEmptyState(tonightCopy.emptyState);
@@ -84,7 +84,6 @@ export function rulesView() {
     title: 'Rules',
     html: `
       ${pageHeader({
-        kicker: 'Under 10 Boys',
         title: 'Rules & reference',
         lead:
           'The age-group rules that shape every session, the full event list, and ' +

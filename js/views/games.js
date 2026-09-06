@@ -1,6 +1,6 @@
 import { games, tonightCopy } from '../content.js';
 import * as tonight from '../tonight.js';
-import { esc, modeSwitch, pageHeader, pairsWithNote, tonightEmptyState } from '../ui.js';
+import { esc, pageHeader, pairsWithNote, tonightEmptyState } from '../ui.js';
 
 /**
  * One game's list-page entry: a card whose name renders as a black strip —
@@ -51,7 +51,10 @@ function categoryColor(index) {
 }
 
 export function gamesView() {
-  const mode = tonight.getMode();
+  // No visible Tonight/Everything toggle on this tab (superseded by the
+  // Program and Age Group picker on the Tonight tab, which drives the same
+  // underlying selection) — filtering still runs off it, just with no
+  // on-page control to flip it here. tonight.isFiltering() is unchanged.
   const isTonight = tonight.isFiltering();
 
   const visibleCategories = isTonight
@@ -92,11 +95,9 @@ export function gamesView() {
     title: 'Games',
     html: `
       ${pageHeader({
-        kicker: 'Under 10 Boys',
         title: games.heading
       })}
 
-      ${modeSwitch(mode)}
       ${
         isTonight
           ? `<p class="note">${esc(tonightCopy.games.filteredNote)}</p>`

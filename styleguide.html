@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Living, rendered style guide for the NSW Little Athletics Under 10 Boys Age Manager Guide app — derived from STYLEGUIDE.md.">
+  <meta name="description" content="Living, rendered style guide for the NSW Little Athletics Age Manager Guide app — derived from STYLEGUIDE.md.">
   <meta name="color-scheme" content="light">
   <meta name="robots" content="noindex">
   <link rel="icon" href="data:,">
-  <title>Style Guide — NSW Little Athletics U10 Boys Age Manager Guide</title>
+  <title>Style Guide — NSW Little Athletics Age Manager Guide</title>
 
   <!--
     Relative paths only, same as index.html — this must work under a GitHub
@@ -443,7 +443,7 @@
       <div class="sg-topnav__in">
         <a class="sg-brand" href="#main">
           <span class="sg-brand__mark" aria-hidden="true"></span>
-          <span class="sg-brand__name">U10 Boys Age Manager Guide</span>
+          <span class="sg-brand__name">Age Manager Guide</span>
           <span class="sg-brand__sub">/ Style Guide</span>
         </a>
         <div class="sg-navlinks" id="sg-navlinks">
@@ -460,9 +460,9 @@
       <p class="sg-eyebrow">Reference · rendered from STYLEGUIDE.md</p>
       <h1 id="page-title" tabindex="-1">Style Guide</h1>
       <p class="sg-hero__lede">
-        Stripe-derived design system for the NSW Little Athletics U10 Boys
-        Age Manager Guide — every colour, type size and component the app
-        uses, in one place. Colour swatches read live from
+        Stripe-derived design system for the NSW Little Athletics Age Manager
+        Guide — every colour, type size and component the app uses, in one
+        place. Colour swatches read live from
         <code>css/tokens.css</code>, type samples render at their real size,
         and every component example is produced by calling the exact same
         <code>js/ui.js</code> helper the live app calls, not by hand-copied
@@ -685,6 +685,22 @@
             saved selection.
           </p>
           <div class="sg-tile__stage" id="sg-picker-demo"></div>
+        </article>
+
+        <article class="sg-tile sg-tile--wide">
+          <div class="sg-tile__hd"><h3>Program and Age Group (Tonight tab)</h3><span class="sg-tile__spec">tonightView()</span></div>
+          <p class="sg-tile__note">
+            The real section, extracted from a <code>tonightView()</code>
+            call the same way the picker tile above extracts
+            <code>.picker</code> — same <code>programPicker()</code> the
+            Events tab uses, under its own <code>&lt;h2
+            class="section__title"&gt;</code> heading rather than a second
+            page title. Selecting a program here calls the app's real
+            <code>tonight.setProgramChoice()</code>, so — like the picker
+            above — this demo does not touch your saved selection; it reads
+            whatever the styleguide page's own in-memory state happens to be.
+          </p>
+          <div class="sg-tile__stage" id="sg-programage-demo"></div>
         </article>
 
         <article class="sg-tile sg-tile--wide">
@@ -1262,7 +1278,7 @@
     document.getElementById('sg-table-demo').innerHTML = responsiveTable({
       columns: eventsAtAGlance.columns,
       rows: eventsAtAGlance.rows.slice(0, 3).map((r) => r.cells),
-      caption: 'Style guide sample: three rows of the Under 10 Boys events-at-a-glance table.'
+      caption: 'Style guide sample: three rows of the events-at-a-glance table.'
     });
 
     // Safety callout — a real event's verbatim safety text.
@@ -1331,6 +1347,35 @@
       if (form) {
         demo.appendChild(form);
         form.addEventListener('submit', (e) => e.preventDefault());
+      }
+    }
+
+    // Program and Age Group — extracted from the SAME tonightView() render
+    // as the picker demo just above (still in the picker branch; the
+    // section renders identically in either branch, see tonight.js), by its
+    // aria-labelledby id rather than by class, since `.program-picker` names
+    // the fields inside it, not the section around them.
+    //
+    // Its programPicker() emits the SAME fixed ids (program-select /
+    // age-select) as the Weekly-program picker tile above, and the section's
+    // own heading id (program-age-heading) is both set AND referenced (the
+    // section's own aria-labelledby). withUniqueIds() (used elsewhere on
+    // this page) only rewrites `id` attributes, not the aria-labelledby that
+    // points at one — using it here would rename the id and silently break
+    // that reference. Suffix both occurrences of each known id by hand
+    // instead, so the heading stays correctly labelled.
+    {
+      const html = tonightView().html;
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      const section = tmp.querySelector('[aria-labelledby="program-age-heading"]');
+      const demo = document.getElementById('sg-programage-demo');
+      if (section) {
+        let out = section.outerHTML;
+        ['program-age-heading', 'program-select', 'age-select'].forEach((id) => {
+          out = out.split(`"${id}"`).join(`"${id}--programage-demo"`);
+        });
+        demo.innerHTML = out;
       }
     }
 

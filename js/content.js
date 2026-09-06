@@ -232,7 +232,7 @@ export const resources = {
 /* ------------------------------------------------------------------ */
 
 export const ageGroupFacts = {
-  heading: 'Under 10 Age Group, at a Glance',
+  heading: 'Age Group, at a Glance',
   facts: [
     {
       label: 'Age definition',
@@ -283,8 +283,8 @@ export const ageGroupFacts = {
 /* ------------------------------------------------------------------ */
 
 export const eventsAtAGlance = {
-  heading: 'Under 10 Boys — Events at a Glance',
-  columns: ['Event', 'Distance / Implement', 'Key U10 Rule'],
+  heading: 'Events at a Glance',
+  columns: ['Event', 'Distance / Implement', 'Key Rule'],
   /*
    * Row order follows the PDF and matches the 10 events in `events` below —
    * but the row labels ('Sprints', 'Hurdles*', '4 x 100m Relay',

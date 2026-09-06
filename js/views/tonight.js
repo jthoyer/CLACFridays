@@ -1,6 +1,6 @@
-import { events, eventsAtAGlance, games, tonightCopy } from '../content.js';
+import { events, eventsAtAGlance, games, tonightCopy, weeklyProgram } from '../content.js';
 import * as tonight from '../tonight.js';
-import { esc, pageHeader, tonightEmptyState } from '../ui.js';
+import { esc, pageHeader, programPicker, tonightEmptyState } from '../ui.js';
 
 /**
  * Every game item across every category whose item-level `eventSlugs`
@@ -220,17 +220,52 @@ function renderSummary() {
     </section>`;
 }
 
+/**
+ * Program and Age Group — the same weekly-program picker as the Events tab
+ * (`programPicker()` in ui.js), now also offered here because choosing a
+ * program is the fastest way onto this page's own summary below: it calls
+ * tonight.setProgramChoice(), which replaces the selection and sets Tonight
+ * mode exactly as the hand-ticked picker's Save button does (see
+ * tonight.js's setProgramChoice() doc comment) — renderSummary() below reads
+ * that same selection either way and needs no branch of its own for it.
+ *
+ * The change handler is the existing delegated `data-action="set-program"` /
+ * `"set-age"` listener in interactions.js — bound on the outlet, not scoped
+ * to any one view — so rendering the picker here needs no new wiring.
+ *
+ * Heading follows this page's own `.section__title` pattern (the same one
+ * `renderSummary()` uses for "Tonight's events (n)" below), not `pageHeader`'s
+ * `<h1>` — a page renders exactly one `<h1>` (STYLEGUIDE rule 4), and this
+ * section sits under Tonight's, not beside it.
+ */
+function programAndAgeSection(choice) {
+  const hasProgram = choice.programId != null;
+  return `
+    <section class="section" aria-labelledby="program-age-heading">
+      <div class="section__head">
+        <h2 class="section__title" id="program-age-heading">Program and Age Group</h2>
+      </div>
+      ${programPicker(choice)}
+      ${
+        hasProgram
+          ? ''
+          : `<p class="note program-picker__hint">${esc(weeklyProgram.copy.lead)}</p>`
+      }
+    </section>`;
+}
+
 export function tonightView() {
   const showPicker = pickerOpen || (!tonight.hasSelection() && !pickerDismissed);
+  const choice = tonight.getProgramChoice();
 
   return {
     title: 'Tonight',
     html: `
       ${pageHeader({
-        kicker: 'Under 10 Boys',
         title: 'Tonight',
         lead: showPicker ? tonightCopy.view.pickerLead : tonightCopy.view.summaryLead
       })}
+      ${programAndAgeSection(choice)}
       ${showPicker ? renderPicker() : renderSummary()}`
   };
 }
