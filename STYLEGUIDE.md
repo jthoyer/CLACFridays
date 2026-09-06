@@ -297,33 +297,24 @@ as a Games-list card (`.game-list__link`), so an event and a game still read
 as the same kind of thing across tabs. The name reverses white out of
 `--color-heading` in a full-bleed `.event-card__strip`, with a trailing `→`
 appended directly inside the name text (see `js/views/events.js`). Below
-that, `.event-card__body` is a row holding the tagline and the per-card
-Tonight toggle side by side, rather than the toggle floating over the strip's
-corner. There is no numeral badge — the name alone identifies the event. The
-old `.event-card__meta` "2 videos"/"1 article" summary line is not rendered
-in this list — `resourceSummary()` and the underlying resource data are
-unchanged and still render on the Event Detail page
-(`js/views/eventDetail.js`).
+that, `.event-card__body` holds just the tagline. There is no numeral badge —
+the name alone identifies the event. The old `.event-card__meta` "2
+videos"/"1 article" summary line is not rendered in this list —
+`resourceSummary()` and the underlying resource data are unchanged and still
+render on the Event Detail page (`js/views/eventDetail.js`).
 
-**Whole-card selected state.** When the event is in tonight's selection,
-`js/views/events.js` adds `.event-card--selected`, which tints the border to
-`--color-success` and washes `.event-card__body` in `--color-success-tint`
-(the tagline text switches to `--color-success` on that tint — the same
-already-measured 5.82:1 pairing used elsewhere in this app, not a new
-contrast claim). The point is that a coach scanning the list can tell what's
-already added from the card's silhouette alone, not only from the toggle —
-the toggle's own label/glyph/border signals (below) are unchanged and still
-carry the state on their own, so colour is never the only signal (SC 1.4.1)
-even before the card-level tint is considered.
-
-Tapping the name strip opens the event's detail page; tapping the toggle
-pill in the body row adds/removes it from tonight — two separate, clearly
-separated tap targets instead of one large card-wide link with a toggle
-floating on top of a corner of it. `.event-card__link` (the `<a>`) now wraps
-only the name strip, not the whole card: the strip's own padding keeps its
-rendered height comfortably over `--tap-min` (44px) without an explicit
-`min-height` rule. The toggle sits in `.event-card__body`, a sibling of
-`.event-card__link` — a `<button>` still cannot be a descendant of `<a>`.
+**No per-card control or selected state any more.** `.event-card__body` used
+to also hold the per-card Tonight toggle, and a card in tonight's selection
+used to render `.event-card--selected` — a whole-card colour tint (border +
+body wash + tagline colour). Both are gone: the toggle's removal (see
+"Per-card Tonight toggle" below for why) left the tint with no accompanying
+non-colour signal, which would have made it the exact colour-only
+distinction SC 1.4.1 forbids, so it went with the toggle rather than staying
+behind as a new accessibility gap. `.event-card__link` (the `<a>`) still
+wraps only the name strip, not the whole card — that was never about the
+toggle, it's because a `<button>` cannot legally be a descendant of `<a>`,
+and the strip's own padding still comfortably clears `--tap-min` (44px) on
+its own.
 
 ### Events tab: grouped by discipline (`eventCategories` in `content.js`)
 The Events list is no longer one flat list of 10 rows — it's four
@@ -354,10 +345,19 @@ references must be real, and it must partition all 10 events exactly — one
 category each, no more, no fewer, no duplicates — so a typo or a forgotten
 event fails loudly at load instead of silently vanishing from the Events tab.
 
-### Per-card Tonight toggle (`tonightToggleButton()` in `ui.js`)
-Each event card on the Events tab carries exactly one toggle control, letting
-a coach add or remove that single event from tonight's selection without
-opening the picker or leaving the list.
+### Per-card Tonight toggle (`tonightToggleButton()` in `ui.js`) — no longer used
+**Status: unused.** The Events tab dropped this control (see "Event card"
+above) once the Program and Age Group picker could set tonight's selection
+without it; `tonightToggleButton()` has no current call site anywhere in the
+app, and `.tonight-toggle*` (css/components.css) has no current caller
+either. Neither was deleted — both are kept, unreferenced, in case a future
+page wants a per-item toggle again — so this whole section now documents a
+past design rather than a live one. Everything below described the control
+while it still had a call site.
+
+Each event card on the Events tab used to carry exactly one toggle control,
+letting a coach add or remove that single event from tonight's selection
+without opening the picker or leaving the list.
 
 **Control choice (rule 8 justification):** a real `<button type="button">`
 with `aria-pressed="true"`/`"false"` — not `role="switch"`, not
@@ -430,9 +430,9 @@ non-colour state signals SC 1.4.1 requires are unchanged across every one of
 these shapes: (1) border style, dashed → solid, and (2) the glyph, `+` → `✓`;
 the label word (Add → Added) and the `aria-label` change (see above) are
 additional signals on top of those two, not a replacement for them. This
-toggle is only used on the Events list (`tonightToggleButton()` has exactly
-one call site, `js/views/events.js`); no other view shares this exact
-control, so this shape change has no effect anywhere else in the app.
+toggle was only ever used on the Events list; no other view shared this
+exact control, and it now has no call site at all — see this section's
+status note at the top.
 
 ### Event Detail "Add to tonight" CTA (`tonightCtaButton()` in `ui.js`)
 A full-width primary button on the Event Detail page, placed after "Watch &
@@ -513,12 +513,16 @@ screen. Use these for any new action button rather than inventing a fourth
 variant.
 
 ### Tonight / Everything mode switch (`modeSwitch()` in `ui.js`)
-One implementation, used identically on Events and Rules — the two pages
-can never disagree on what the switch looks like or how it behaves. The
-Games tab dropped its own copy of this switch once the Program and Age
+One implementation, used on Rules — now the only page that renders it.
+Games dropped its own copy first, then Events, once the Program and Age
 Group picker (below) could drive the same underlying mode and selection
-from the Tonight tab instead — see "Games tab: no mode switch" further
-down. `modeSwitch()` itself is unchanged; Games simply stopped calling it.
+from the Tonight tab instead — see "Games tab: no mode switch" and
+"Events tab: no mode switch, no per-card toggle" further down.
+`modeSwitch()` itself is unchanged; Games and Events simply stopped
+calling it. Getting from Tonight mode back to Everything, for a coach
+who is currently on Events or Games, now means a trip to Rules — the one
+remaining page with a switch — or picking "Not set" on the Program
+picker plus a fresh manual selection on the Tonight tab.
 Two real `<button>`s in a `<div role="group" aria-label="Show">`, each with
 `aria-pressed`. Not a bare styled `<div>`, and not a single on/off toggle
 button — a labelled two-state group reads its current state to a screen
@@ -537,8 +541,9 @@ State-change behaviour: clicking a mode-switch button re-renders the page
 moving focus to the page heading — see "Two render paths" below. Focus stays
 on the just-pressed button.
 
-The **per-card Tonight toggle** (above) is a separate control with a separate
-rule: it never touches mode at all.
+The **per-card Tonight toggle** (above) was a separate control with a
+separate rule — it never touched mode at all — but it has no current call
+site; see that section's own status note.
 
 ### Weekly-program picker (`programPicker()` in `ui.js`)
 Two native `<select>`s side by side at the top of the Events tab —
@@ -643,10 +648,15 @@ saved choice that outlives a renamed or dropped program.
 and Rules tabs don't quietly drop an event the club actually runs that night.
 
 ### Events tab: two branches (`js/views/events.js`)
-The Events tab now renders one of two bodies:
+No mode switch and no per-card toggle on this tab any more — see "Event
+card" and "Per-card Tonight toggle" above. Choosing a program (below) is now
+the primary way this tab's own state changes; `tonight.getMode()` still
+governs which of the two bodies renders, it just no longer has an on-page
+control here to flip it directly — Rules keeps the one remaining switch. The
+Events tab renders one of two bodies:
 
-- **Running order** — when the mode switch says Tonight **and** a program is
-  chosen.
+- **Running order** — when `tonight.getMode()` is `'tonight'` **and** a
+  program is chosen.
 - **Grouped by discipline** — every other time (Everything mode, or Tonight
   mode with a hand-picked selection).
 
@@ -660,12 +670,14 @@ that program — including when the answer is "that one isn't loaded".
 **One rule governs how the two ways of filling tonight coexist, and it lives
 in exactly one place** (`clearProgramForManualEdit()` in `js/tonight.js`,
 called from `setSelection()` and `toggleTonightEvent()`): **hand-editing
-tonight's events turns the program picker off.** Save from the picker, or tap
-a per-card toggle, and the program choice is dropped and the Program select
-returns to "Not set". Without that rule the two would silently diverge — the
-Events tab would keep showing the club's blocks while Games and Rules
-filtered against an edited selection. The age group is kept either way, so
-the picker doesn't forget it.
+tonight's events turns the program picker off.** Saving from the Tonight
+tab's picker, or tapping the Event Detail page's "Add to tonight" CTA (the
+one remaining caller of `toggleTonightEvent()`, now that the Events list's
+own per-card toggle is gone), drops the program choice and returns the
+Program select to "Not set". Without that rule the two would silently
+diverge — the Events tab would keep showing the club's blocks while Games
+and Rules filtered against an edited selection. The age group is kept
+either way, so the picker doesn't forget it.
 
 `eventCardList()` is **exported** for `styleguide.html`. That tile used to
 scrape the first `.event-card` out of a full `eventsView()` render, which
