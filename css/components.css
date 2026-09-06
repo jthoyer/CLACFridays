@@ -480,25 +480,36 @@
 }
 
 /* --- Event list (state-first card redesign, "Option A") --------------------
+   `.event-card--selected` and every `.tonight-toggle*` rule below are UNUSED
+   by any current view — js/views/events.js stopped emitting the selected
+   class and the toggle once the Program and Age Group picker could set
+   tonight's selection without either (see STYLEGUIDE.md's "Event card" and
+   "Per-card Tonight toggle" sections). Kept, not deleted, in case a future
+   page wants a per-item toggle again; the rationale below describes the
+   design as it existed with a live caller.
+
    Each event renders as its own bordered/rounded `.event-card` — the
    border/radius/shadow/clip live on the `<li>` itself, not on the link,
-   because the link (`.event-card__link`) now wraps only the name strip; the
-   tagline + toggle row (`.event-card__body`) is a SIBLING of the link, not a
-   child of it — a <button> cannot be a descendant of <a> (the browser
-   silently reparents it out). See js/views/events.js and ui.js's
-   tonightToggleButton(). The name reverses white out of `--color-heading`
-   in a full-bleed `.event-card__strip` — same header-band language as
-   `.game-list__link` (js/views/games.js). `overflow: hidden` on `.event-card`
-   clips both bands to its rounded corners. No numeral badge — the name alone
-   identifies the event.
+   because the link (`.event-card__link`) wraps only the name strip; the
+   body (`.event-card__body`) is a SIBLING of the link, not a child of it —
+   a <button> cannot be a descendant of <a> (the browser silently reparents
+   it out), which is why this split exists even now that the body holds no
+   button. See js/views/events.js and ui.js's tonightToggleButton(). The name
+   reverses white out of `--color-heading` in a full-bleed `.event-card__strip`
+   — same header-band language as `.game-list__link` (js/views/games.js).
+   `overflow: hidden` on `.event-card` clips both bands to its rounded
+   corners. No numeral badge — the name alone identifies the event.
 
-   `.event-card--selected` (js/views/events.js, applied when the event is in
-   tonight's selection) tints the WHOLE card — border colour and the body
-   band's fill — so a coach can tell what's already added from the card
-   itself while scanning, not just from the small toggle. This is on top of,
-   not instead of, the toggle's own non-colour signals (glyph + border style,
-   see `.tonight-toggle` below) — colour is never the only signal (SC 1.4.1).
-   See STYLEGUIDE.md's "Event card" section for the full rationale. */
+   `.event-card--selected` (js/views/events.js, formerly applied when the
+   event was in tonight's selection) tinted the WHOLE card — border colour
+   and the body band's fill — so a coach could tell what's already added
+   from the card itself while scanning, not just from the small toggle. That
+   was on top of, not instead of, the toggle's own non-colour signals (glyph
+   + border style, see `.tonight-toggle` below) — colour was never the only
+   signal (SC 1.4.1). Once the toggle went, so did this: a card-wide tint
+   with no accompanying non-colour signal would have BEEN a colour-only
+   distinction, not merely lost one. See STYLEGUIDE.md's "Event card" section
+   for the full rationale. */
 
 .event-cards {
   list-style: none;
@@ -548,8 +559,9 @@
   line-height: var(--lh-snug);
 }
 
-/* Row, not a stacked block, now that the toggle sits inline beside the
-   tagline instead of floating over the card's corner. */
+/* A row (not a stacked block) for historical reasons — it used to also hold
+   the per-card toggle inline beside the tagline; now it holds only the
+   tagline, but the flex row still lays out correctly with one child. */
 .event-card__body {
   display: flex;
   align-items: center;

@@ -1074,9 +1074,10 @@ export const weeklyProgram = {
     lead:
       'Pick tonight’s program and your age group. The guide shows just those ' +
       'events, in the order they run.',
-    runningOrderLead:
-      'Tonight’s events, in the order they run. Switch to Everything to see ' +
-      'the full guide.',
+    // No longer says "Switch to Everything…" — the Events tab dropped its
+    // own mode switch; getting back to Everything now happens on the Rules
+    // tab, not here (see js/views/events.js's eventsView() doc comment).
+    runningOrderLead: 'Tonight’s events, in the order they run.',
     packUpFlag: 'Pack up field equipment after this',
     noGuideFlag: 'Not in this guide — no coaching page yet',
     /* No program is in this state today — every grid A–F is transcribed.
@@ -1802,7 +1803,8 @@ export const tonightCopy = {
   chooseEventsCta: 'Choose tonight\'s events',
   editSelectionCta: 'Edit selection',
   events: {
-    filteredLead: 'Tonight’s events only. Switch to Everything to see the full list.',
+    // Same trim as weeklyProgram.copy.runningOrderLead above, same reason.
+    filteredLead: 'Tonight’s events only.',
     everythingLead:
       'Ten events, each with a quick-facts snapshot, beginner → intermediate ' +
       'progression, common faults, a safety note and its video or article.',

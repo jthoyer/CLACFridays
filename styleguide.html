@@ -554,12 +554,13 @@
           <p class="sg-tile__note">
             Built by calling <code>eventCardList()</code> from
             <code>js/views/events.js</code> just now with the guide's first
-            event — including its per-card toggle, in whatever state your
-            browser's saved selection currently has it (nothing on this page
-            ever writes to that selection). Calls the card helper directly
-            rather than scraping a full <code>eventsView()</code> render,
-            which now has a second, card-less branch (see the weekly-program
-            tiles below).
+            event. No per-card toggle and no selected-state tint — both were
+            dropped from this card once the Program and Age Group picker
+            could set tonight's selection without them (see STYLEGUIDE.md's
+            "Event card" section). Calls the card helper directly rather
+            than scraping a full <code>eventsView()</code> render, which now
+            has a second, card-less branch (see the weekly-program tiles
+            below).
           </p>
           <div class="sg-tile__stage" id="sg-event-card-demo"></div>
         </article>
@@ -577,16 +578,19 @@
         </article>
 
         <article class="sg-tile">
-          <div class="sg-tile__hd"><h3>Per-card Tonight toggle</h3><span class="sg-tile__spec">tonightToggleButton()</span></div>
+          <div class="sg-tile__hd"><h3>Per-card Tonight toggle — no longer used</h3><span class="sg-tile__spec">tonightToggleButton()</span></div>
           <p class="sg-tile__note">
-            Both states, produced by two direct calls to
-            <code>tonightToggleButton()</code> from <code>js/ui.js</code> —
-            a 44&times;44 icon-only circle. The accessible name
-            (<code>aria-label</code>) is identical in both; the glyph
-            (+ / &check;) and border style (dashed / solid) are the two
-            required non-colour signals that change (the fill also changes
-            to a solid <code>--color-success</code> green when on, but
-            colour is never the only signal — see STYLEGUIDE.md).
+            <code>tonightToggleButton()</code> has no current call site — the
+            Events tab dropped it (see the Event card tile above) once the
+            Program and Age Group picker could set tonight's selection
+            without it. Kept, unreferenced, rather than deleted; demoed here
+            so its design isn't lost if a future page wants a per-item
+            toggle again. Both states below, from two direct calls: the
+            accessible name (<code>aria-label</code>) is identical in both;
+            the glyph (+ / &check;) and border style (dashed / solid) are
+            the two required non-colour signals that change (the fill also
+            changes to a solid <code>--color-success</code> green when on,
+            but colour is never the only signal — see STYLEGUIDE.md).
           </p>
           <div class="sg-tile__stage sg-tile__stage--row" id="sg-toggle-demo"></div>
         </article>
