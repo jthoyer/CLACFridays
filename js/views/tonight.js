@@ -119,7 +119,14 @@ function renderPicker() {
 
 function renderSummary() {
   const selection = tonight.getSelection();
-  const selectedEvents = events.filter((e) => selection.includes(e.slug));
+  // Order by `selection`, not by the catalog's fixed Track/Jumps/Throws/Bonus
+  // order: when a program drove the selection (tonight.js's
+  // setProgramChoice()), `selection` is already in the program's chronological
+  // running order, and this list should read as tonight's actual running
+  // order rather than silently reshuffling back to the catalog's order.
+  const selectedEvents = selection
+    .map((slug) => events.find((e) => e.slug === slug))
+    .filter(Boolean);
 
   if (selectedEvents.length === 0) {
     return tonightEmptyState(
