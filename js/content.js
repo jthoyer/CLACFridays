@@ -131,6 +131,144 @@ export const resources = {
       'and adapt it to a turbo jav for this age group.'
   },
 
+  /*
+   * Funetics (UK Athletics) and PhysEdGames — 18 waiting-period-games videos
+   * surfaced by the games-bank research. Registered here as the resource map
+   * only (backlog Rank 49); every youtubeId was resolved against the YouTube
+   * oEmbed API on 5 September 2026 (title + channel confirmed), not yet
+   * watched for content — see backlog Rank 57. None of these are linked from
+   * a game item's `videoResources` yet; that linkage, and each one's
+   * `isGameFootage` flag, is separate backlog work (Ranks 50, 51, 54).
+   */
+  'video-fun-quick-start': {
+    kind: 'video',
+    youtubeId: 'NuHv4wDK14c',
+    title: 'Quick Start',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-rock-paper-scissors': {
+    kind: 'video',
+    youtubeId: 'HAx5wVXjMSs',
+    title: 'Rock, Paper, Scissors',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-jump-the-stream': {
+    kind: 'video',
+    youtubeId: 'stl259diZH8',
+    title: 'Jump the Stream',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-jump-higher-than': {
+    kind: 'video',
+    youtubeId: '-FWxphZTG9Q',
+    title: 'I can Jump Higher than',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-throw-golf': {
+    kind: 'video',
+    youtubeId: 'c-tn5bTzLk0',
+    title: 'Throw Golf',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-ball-relay': {
+    kind: 'video',
+    youtubeId: 'Hx3StuDtpxo',
+    title: 'Ball Relay',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-dragons-treasure': {
+    kind: 'video',
+    youtubeId: 'xD7SvGbZGz8',
+    title: 'Dragons Treasure',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-nutty-squirrels': {
+    kind: 'video',
+    youtubeId: 'WFaoEe9xxK8',
+    title: 'Nutty Squirrels',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-target-jump': {
+    kind: 'video',
+    youtubeId: 'HEzsM5sLvdw',
+    title: 'Target Jump',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-standing-triple-jump': {
+    kind: 'video',
+    youtubeId: 'idm5DuQqf7I',
+    title: 'Standing Triple Jump',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-feed-the-animals': {
+    kind: 'video',
+    youtubeId: 'uXwiYC5J790',
+    title: 'Feed the Animals',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-speed-bounce': {
+    kind: 'video',
+    youtubeId: '3cKdMXvBDnQ',
+    title: 'Speed Bounce',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-there-and-back': {
+    kind: 'video',
+    youtubeId: 'tKGmk9B6EeA',
+    title: 'There and Back',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-hskt': {
+    kind: 'video',
+    youtubeId: 'RKQQdzh7NXs',
+    title: 'Head, Shoulders, Knees & Toes',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  // The two below illustrate games that already exist in this guide's bank
+  // (Standing Long Jump / Target Throw — see backlog Rank 51), not new ones.
+  'video-fun-standing-long-jump': {
+    kind: 'video',
+    youtubeId: 'FiBONNWYxeI',
+    title: 'Standing Long Jump',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-fun-target-throw': {
+    kind: 'video',
+    youtubeId: 'bWqe40rBVOI',
+    title: 'Target Throw',
+    source: 'Funetics (UK Athletics)',
+    note: 'Official Funetics demonstration video for a waiting-period game.'
+  },
+  'video-peg-10-second-tag': {
+    kind: 'video',
+    youtubeId: 'lURdg-cgLXc',
+    title: 'Gym Games - 10 Second Tag',
+    source: 'PhysEdGames',
+    note: 'Official PhysEdGames demonstration video for a waiting-period game.'
+  },
+  'video-peg-everybodys-it': {
+    kind: 'video',
+    youtubeId: '4ohNNSKIRQQ',
+    title: "Physed Games - Everybody's It",
+    source: 'PhysEdGames',
+    note: 'Official PhysEdGames demonstration video for a waiting-period game.'
+  },
+
   'article-relay-changes': {
     kind: 'article',
     url: 'https://coachingyoungathletes.com/2016/10/27/how-to-teach-kids-circular-relay-baton-changes/',
@@ -1782,6 +1920,24 @@ export const library = {
     ['article-relay-games', 'Baton Down the Line'],
     ['article-hurdles-shuttle', 'Hurdles Shuttle Relay'],
     ['article-3-words', 'Waiting-Period Games'],
+    ['video-fun-quick-start', 'Quick Start'],
+    ['video-fun-rock-paper-scissors', 'Rock, Paper, Scissors'],
+    ['video-fun-jump-the-stream', 'Jump the Stream'],
+    ['video-fun-jump-higher-than', 'I can Jump Higher than'],
+    ['video-fun-throw-golf', 'Throw Golf'],
+    ['video-fun-ball-relay', 'Ball Relay'],
+    ['video-fun-dragons-treasure', 'Dragons Treasure'],
+    ['video-fun-nutty-squirrels', 'Nutty Squirrels'],
+    ['video-fun-target-jump', 'Target Jump'],
+    ['video-fun-standing-triple-jump', 'Standing Triple Jump'],
+    ['video-fun-feed-the-animals', 'Feed the Animals'],
+    ['video-fun-speed-bounce', 'Speed Bounce'],
+    ['video-fun-there-and-back', 'There and Back'],
+    ['video-fun-hskt', 'Head, Shoulders, Knees & Toes'],
+    ['video-fun-standing-long-jump', 'Standing Long Jump'],
+    ['video-fun-target-throw', 'Target Throw'],
+    ['video-peg-10-second-tag', 'Gym Games - 10 Second Tag'],
+    ['video-peg-everybodys-it', "Physed Games - Everybody's It"],
     ['article-laa-video-hub', 'Reference'],
     ['article-laa-rules', 'Reference'],
     ['article-cya-blog', 'Reference']
