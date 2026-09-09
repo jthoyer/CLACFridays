@@ -335,6 +335,41 @@ export const resources = {
     source: 'Coaching Young Athletes',
     note: 'The source collection that Baton Down the Line comes from.'
   },
+  'article-drop-the-ribbon': {
+    kind: 'article',
+    url: 'https://coachingyoungathletes.com/2020/11/30/a-sprinting-game-that-will-make-kids-run-really-fast/',
+    title: 'A Sprinting Game That Will Make Kids Run Really Fast',
+    source: 'Darren Wensor, Coaching Young Athletes',
+    note: 'The source game that Drop the Ribbon is adapted from.'
+  },
+  'article-funetics': {
+    kind: 'article',
+    url: 'https://funetics.co.uk/for-parents/funetics-activity-videos/',
+    title: 'funetics Activity Videos',
+    source: 'England Athletics funetics',
+    note: 'The source hub for all 14 Funetics games added at backlog Rank 50.'
+  },
+  'article-hurdles-really-fun': {
+    kind: 'article',
+    url: 'https://coachingyoungathletes.com/2019/02/11/how-to-make-hurdles-really-fun-for-kids/',
+    title: 'How To Make Hurdles Really Fun For Kids',
+    source: 'Darren Wensor, Coaching Young Athletes',
+    note: 'The source game that Pool Noodle Hurdles is adapted from.'
+  },
+  'article-hurdles-top-ideas': {
+    kind: 'article',
+    url: 'https://coachingyoungathletes.com/2019/06/24/2-top-hurdles-ideas-that-will-get-kids-going/',
+    title: '2 Top Hurdles Ideas That Will Get Kids Going',
+    source: 'Darren Wensor, Coaching Young Athletes',
+    note: 'The source collection that Secret Agent Chase and Shoot the Target are adapted from.'
+  },
+  'article-hurdles-best-new-ideas': {
+    kind: 'article',
+    url: 'https://coachingyoungathletes.com/2019/11/13/best-new-athletics-ideas-that-will-make-your-lesson-a-winner/',
+    title: 'Best New Athletics Ideas That Will Make Your Lesson A Winner',
+    source: 'Darren Wensor, Coaching Young Athletes',
+    note: 'The source collection that Sprints Over Mini Hurdles and Hurdles Circular Circuit are adapted from.'
+  },
   'article-hurdles-shuttle': {
     kind: 'article',
     url: 'https://coachingyoungathletes.com/2015/07/08/games-that-kids-love-the-hurdles-shuttle-relay/',
@@ -1348,6 +1383,18 @@ export function getProgramEventSlugs(programId, ageId) {
 
 export const games = {
   heading: 'Waiting-Period Games',
+  /*
+   * `teachTime` and `minPlayers` (backlog Rank 56) are optional per-item
+   * fields answering the question a helper actually has on the night: which
+   * of two games is quicker to explain, and how many kids does it need. No
+   * source publishes either figure — every value in this file is the
+   * author's estimate, not a measured one. `estimateNote` is that honesty
+   * disclaimer, rendered once by the Games tab (js/views/games.js) rather
+   * than repeated on every pill, the same "label it, don't guess-dress-as-
+   * fact" standard the video framing above already holds itself to.
+   */
+  estimateNote:
+    'Teach-time and player-count pills are the author’s estimate, not yet timed on a real Friday night.',
   categories: [
     {
       id: 'reaction-start',
@@ -1360,6 +1407,8 @@ export const games = {
           name: 'Cone Clean-Up Race',
           slug: 'cone-clean-up-race',
           gear: 'Cones',
+          teachTime: '~1 min',
+          minPlayers: 4,
           summary:
             'A cone-collection relay against the clock that sneaks in standing-start ' +
             'reps between rounds.',
@@ -1384,6 +1433,8 @@ export const games = {
           name: 'Hoop Monster',
           slug: 'hoop-monster',
           gear: 'Hoops',
+          teachTime: '~1 min',
+          minPlayers: 6,
           summary:
             'A game of musical hoops that doubles as a waiting-turn management system ' +
             'and rehearses reactive sprinting.',
@@ -1399,6 +1450,8 @@ export const games = {
           name: 'Red Light, Green Light',
           slug: 'red-light-green-light',
           gear: 'Cones',
+          teachTime: '~30 sec',
+          minPlayers: 3,
           summary:
             'A stop-start reaction game that channels the classic call-and-response ' +
             'game into sprint-start discipline.',
@@ -1409,6 +1462,91 @@ export const games = {
           ],
           eventSlugs: ['sprints'],
           videoResources: [{ key: 'video-standing-start', prefix: 'Standing Start' }]
+        },
+        {
+          // Backlog Rank 53: the guide names "no maximum-effort urgency" as
+          // a fault (see the sprints event's beginner/intermediate lists
+          // above) but had no game for it until now.
+          name: 'Drop the Ribbon',
+          slug: 'drop-the-ribbon',
+          gear: 'One ribbon per athlete, whistle, stopwatch',
+          teachTime: '~1 min',
+          minPlayers: 2,
+          summary:
+            'A three-round sprint game where athletes chase their own best effort, ' +
+            'then race from a start line handicapped by how hard they tried.',
+          bullets: [
+            'Round 1 – Drop the Ribbon: on the whistle, sprint for 6 seconds and drop the ribbon as far from the line as possible, then jog back.',
+            'Round 2 – Beat the Ribbon: sprint 6 seconds again, trying to pass where your own ribbon landed.',
+            'Round 3 – Race from the Ribbon: each athlete starts from where their ribbon landed and sprints back to the line – the ribbon positions handicap the field, so finishes come out close regardless of who is fastest.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-drop-the-ribbon',
+          eventSlugs: ['sprints'],
+          videoResources: [{ key: 'video-standing-start', prefix: 'Standing Start' }]
+        },
+        {
+          // Backlog Rank 50 — Funetics game #1 (write order). Real footage
+          // of the game itself, not a technique video (see the mixed-list
+          // handling on Standing Jump Challenge / Target Hoops above).
+          name: 'Quick Start',
+          slug: 'quick-start',
+          gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 2,
+          summary:
+            'A partnered reaction game that rewards whoever leaves the line first on a ' +
+            'random signal.',
+          bullets: [
+            'Athletes pair up on a start line in a standing-start position, facing a short sprint.',
+            'A partner or coach calls the go signal at an unpredictable moment; first to react and cross a short marked distance wins the round.',
+            'Rehearses reacting to the signal rather than anticipating it – the exact discipline a legal standing start needs.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['sprints'],
+          videoResources: [{ key: 'video-fun-quick-start', prefix: 'Quick Start', isGameFootage: true }]
+        },
+        {
+          // Backlog Rank 50 — Funetics game #2.
+          name: 'Rock, Paper, Scissors',
+          slug: 'rock-paper-scissors',
+          gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 2,
+          summary:
+            'A best-of-three showdown where the loser of each round chases the winner ' +
+            'over a short sprint.',
+          bullets: [
+            'Pair athletes up facing each other on a centre line and play rock, paper, scissors.',
+            'The winner turns and sprints for a safe zone a short distance away; the loser chases and tries to tag them before they get there.',
+            'Turns a reaction game everyone already knows into a genuine sprint-start rep, disguised as play.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['sprints'],
+          videoResources: [{ key: 'video-fun-rock-paper-scissors', prefix: 'Rock, Paper, Scissors', isGameFootage: true }]
+        },
+        {
+          // Backlog Rank 50 — Funetics game #14 (last in write order, kept
+          // in this category with the other reaction games).
+          name: 'Head, Shoulders, Knees & Toes',
+          slug: 'head-shoulders-knees-toes',
+          gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 2,
+          summary:
+            'A singing-game start that turns a familiar nursery rhyme into unpredictable ' +
+            'sprint-start reps.',
+          bullets: [
+            'Athletes line up on a start line and sing "Head, Shoulders, Knees and Toes" together, touching each body part as they go.',
+            'The coach randomly calls "go" at any point in the song instead of at the end – athletes sprint the instant they hear it.',
+            'Because the go point is unpredictable, athletes can’t anticipate it – exactly the "wait for it" discipline the standing start needs.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['sprints'],
+          videoResources: [{ key: 'video-fun-hskt', prefix: 'Head, Shoulders, Knees & Toes', isGameFootage: true }]
         }
       ]
     },
@@ -1422,6 +1560,8 @@ export const games = {
           name: 'Pace Partners',
           slug: 'pace-partners',
           gear: 'Stopwatch',
+          teachTime: '~30 sec',
+          minPlayers: 'pairs',
           summary:
             'A partnered pacing game where one athlete sets a steady speed and the ' +
             'other learns to match it.',
@@ -1437,6 +1577,8 @@ export const games = {
           name: 'Traffic Light Pace',
           slug: 'traffic-light-pace',
           gear: 'Cones',
+          teachTime: '~1 min',
+          minPlayers: 4,
           summary:
             'A colour-coded jogging game that trains athletes to change pace on ' +
             'command without losing form.',
@@ -1451,6 +1593,8 @@ export const games = {
           name: 'Breathing Ladder',
           slug: 'breathing-ladder',
           gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 3,
           summary:
             'A jog-and-count game that grooves rhythmic breathing under mild fatigue.',
           bullets: [
@@ -1464,6 +1608,8 @@ export const games = {
           name: 'Straight-Leg Statues',
           slug: 'straight-leg-statues',
           gear: null,
+          teachTime: '~1 min',
+          minPlayers: 3,
           summary:
             'A freeze-and-check game that grooves the straight-leg-at-contact rule ' +
             'with zero speed pressure.',
@@ -1479,6 +1625,8 @@ export const games = {
           name: 'Hip Roll Follow-the-Leader',
           slug: 'hip-roll-follow-the-leader',
           gear: null,
+          teachTime: '~1 min',
+          minPlayers: 3,
           summary:
             'A follow-the-leader walking game that exaggerates the hip roll behind ' +
             'legal race-walk speed.',
@@ -1493,6 +1641,8 @@ export const games = {
           name: 'Silent Judge',
           slug: 'silent-judge',
           gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 'pairs',
           summary:
             'A peer-judging game that trains athletes to spot the loss-of-contact ' +
             'fault themselves.',
@@ -1502,6 +1652,26 @@ export const games = {
             'Builds the same self-awareness a real race-walk judge rewards – athletes learn to feel the fault before it happens.'
           ],
           eventSlugs: ['race-walk']
+        },
+        {
+          // Backlog Rank 50 — Funetics game #13.
+          name: 'There and Back',
+          slug: 'there-and-back',
+          gear: 'Cones',
+          teachTime: '~1 min',
+          minPlayers: 2,
+          summary:
+            'A shuttle-pacing game that rewards a controlled, repeatable effort over ' +
+            'several trips, not one fast lap.',
+          bullets: [
+            'Mark a short out-and-back course with a cone at each end.',
+            'Athletes jog out and back repeatedly at a pace they believe they can hold for every trip, not just the first.',
+            'Anyone who slows sharply on a later trip has gone off too fast – exactly the even-pacing lesson the 400m/800m needs.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['middle-distance'],
+          videoResources: [{ key: 'video-fun-there-and-back', prefix: 'There and Back', isGameFootage: true }]
         }
       ]
     },
@@ -1515,6 +1685,8 @@ export const games = {
           name: 'Step-Over Puddles',
           slug: 'step-over-puddles',
           gear: 'Low hurdles',
+          teachTime: '~30 sec',
+          minPlayers: 2,
           summary:
             'A walk-through hurdle mobility game that uses imaginary puddles to ' +
             'groove the lead-leg action.',
@@ -1530,6 +1702,8 @@ export const games = {
           name: 'Rhythm Claps',
           slug: 'rhythm-claps',
           gear: 'Low hurdles',
+          teachTime: '~1 min',
+          minPlayers: 4,
           summary:
             'A clap-along hurdling game that grooves a consistent stride pattern ' +
             'between flights.',
@@ -1538,6 +1712,99 @@ export const games = {
             'Athletes aim to match one clap per stride, landing on the same beat at each hurdle to find a consistent rhythm.',
             'Turns “settle on an odd stride count” into something athletes can feel and hear, not just think about.'
           ],
+          eventSlugs: ['hurdles']
+        },
+        {
+          // Backlog Rank 52: Hurdles had only 2 items, both walk-through
+          // drills — nothing a child asks to play again. No video exists
+          // for any of these five (bullets-only entries).
+          name: 'Pool Noodle Hurdles',
+          slug: 'pool-noodle-hurdles',
+          gear: 'Pool noodles',
+          teachTime: '~30 sec',
+          minPlayers: 2,
+          summary:
+            'A hurdling game with nothing sharp to trip on, so hesitation and fear ' +
+            'disappear and rhythm arrives instead.',
+          bullets: [
+            'Lay pool noodles across the hurdle line instead of real hurdles, spaced for a comfortable stride pattern.',
+            'Athletes run the line at full effort – a noodle can’t injure anyone it’s clipped, so there’s nothing to hold back for.',
+            'Removes the fear factor that slows a beginner’s approach, letting rhythm and confidence come first.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-hurdles-really-fun',
+          eventSlugs: ['hurdles']
+        },
+        {
+          name: 'Secret Agent Chase',
+          slug: 'secret-agent-chase',
+          gear: 'Noodles + hurdles',
+          teachTime: '~1 min',
+          minPlayers: 2,
+          summary:
+            'A chase game dressed up as a spy mission that puts hurdling technique ' +
+            'under light pressure.',
+          bullets: [
+            'One athlete ("the agent") runs the hurdle course; a "guard" holding a pool noodle chases from behind.',
+            'The agent must keep clean hurdle technique while trying to stay ahead – panicked, sloppy strides are slower, not safer.',
+            'Adds just enough pressure to test technique honestly, without the stakes of a straight race.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-hurdles-top-ideas',
+          eventSlugs: ['hurdles']
+        },
+        {
+          name: 'Shoot the Target',
+          slug: 'shoot-the-target',
+          gear: 'Mini hurdles + upright noodle',
+          teachTime: '~1 min',
+          minPlayers: 1,
+          summary:
+            'A lead-leg accuracy game that gives "drive the knee" an actual target to ' +
+            'aim at.',
+          bullets: [
+            'Stand an upright pool noodle just beyond a mini hurdle, roughly where the lead knee should reach at its highest point.',
+            'Athletes hurdle and try to make their lead knee or toes brush the upright noodle on the way over.',
+            'Turns an abstract coaching cue into something concrete to hit, rather than something to imagine.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-hurdles-top-ideas',
+          eventSlugs: ['hurdles']
+        },
+        {
+          name: 'Sprints Over Mini Hurdles',
+          slug: 'sprints-over-mini-hurdles',
+          gear: 'Mini hurdles',
+          teachTime: '~1 min',
+          minPlayers: 1,
+          summary:
+            'A randomly-spaced hurdle sprint that kills stutter-stepping because no ' +
+            'stride pattern can be memorised in advance.',
+          bullets: [
+            'Set 5–6 mini hurdles at irregular, unpredictable gaps along a 20m lane.',
+            'Athletes sprint the lane, adjusting stride length on the move since no fixed rhythm will work twice.',
+            'Forces athletes to read and adapt in real time, rather than counting steps to a hurdle they already know is coming.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-hurdles-best-new-ideas',
+          eventSlugs: ['hurdles']
+        },
+        {
+          name: 'Hurdles Circular Circuit',
+          slug: 'hurdles-circular-circuit',
+          gear: 'Mini hurdles',
+          teachTime: '~1 min',
+          minPlayers: 2,
+          summary:
+            'A ring of hurdles run in both directions, so athletes choose where the ' +
+            'next obstacle lands.',
+          bullets: [
+            'Arrange mini hurdles in a loop rather than a straight lane.',
+            'Athletes run the circuit clockwise, then anticlockwise, hurdling each obstacle from a different approach each time.',
+            'Adapts technique to a changing approach rather than one memorised straight-line run.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-hurdles-best-new-ideas',
           eventSlugs: ['hurdles']
         }
       ]
@@ -1552,6 +1819,8 @@ export const games = {
           name: 'Step-and-Stick Ladder',
           slug: 'step-and-stick-ladder',
           gear: 'Markers',
+          teachTime: '~1 min',
+          minPlayers: 2,
           summary:
             'A marker ladder into the long jump pit that grooves a consistent run-up ' +
             'stride pattern.',
@@ -1567,6 +1836,8 @@ export const games = {
           name: 'Standing Jump Challenge',
           slug: 'standing-jump-challenge',
           gear: 'Markers',
+          teachTime: '~30 sec',
+          minPlayers: 2,
           summary:
             'A two-feet-to-two-feet distance game that builds the arm swing and soft ' +
             'landing before any run-up exists.',
@@ -1575,12 +1846,19 @@ export const games = {
             'Mark each athlete’s best landing spot and let them try to beat it over 3–4 attempts.',
             'Builds the exact arm-swing and landing habits the beginner progression starts with, with no run-up to manage.'
           ],
-          eventSlugs: ['long-jump']
+          eventSlugs: ['long-jump'],
+          // Real footage of this exact game (backlog Rank 51) — a clean add,
+          // since this item had no videoResources before.
+          videoResources: [
+            { key: 'video-fun-standing-long-jump', prefix: 'Standing Jump Challenge', isGameFootage: true }
+          ]
         },
         {
           name: 'Take-Off Foot Finder',
           slug: 'take-off-foot-finder',
           gear: 'Markers',
+          teachTime: '~30 sec',
+          minPlayers: 2,
           summary:
             'A short-approach game that helps athletes lock in their natural take-off ' +
             'foot before formalising a run-up.',
@@ -1595,6 +1873,8 @@ export const games = {
           name: 'Scissor Steps (no bar)',
           slug: 'scissor-steps-no-bar',
           gear: 'High jump mat',
+          teachTime: '~30 sec',
+          minPlayers: 'pairs',
           summary:
             'A no-bar, no-pressure drill for grooving the high jump approach angle and ' +
             'take-off leg.',
@@ -1609,6 +1889,8 @@ export const games = {
           name: 'Angle Approach Race',
           slug: 'angle-approach-race',
           gear: 'Markers',
+          teachTime: '~30 sec',
+          minPlayers: 2,
           summary:
             'A marked-angle running game that grooves the 30–40 degree approach line ' +
             'before any bar is added.',
@@ -1623,6 +1905,8 @@ export const games = {
           name: 'Kick and Land',
           slug: 'kick-and-land',
           gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 2,
           summary:
             'A standing drill game that isolates the outside-leg take-off and ' +
             'inside-leg kick before adding a run-in.',
@@ -1632,6 +1916,106 @@ export const games = {
             'A slow-motion, no-run-in way to bank leg-action reps between turns at the real bar.'
           ],
           eventSlugs: ['high-jump']
+        },
+        {
+          // Backlog Rank 50 — Funetics game #3.
+          name: 'Jump the Stream',
+          slug: 'jump-the-stream',
+          gear: '2 markers',
+          teachTime: '~1 min',
+          minPlayers: 1,
+          summary:
+            'A widening-gap jump game where athletes chase their own best distance one ' +
+            'small step at a time.',
+          bullets: [
+            'Lay two markers a short distance apart as the "stream" banks; athletes jump from two feet to two feet, clearing the gap.',
+            'Widen the gap slightly after each successful clear, so every athlete finds their own limit rather than competing directly against others.',
+            'Builds the same two-feet-to-two-feet landing habit as Standing Jump Challenge, with a visual target instead of a tape measure.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['long-jump'],
+          videoResources: [{ key: 'video-fun-jump-the-stream', prefix: 'Jump the Stream', isGameFootage: true }]
+        },
+        {
+          // Backlog Rank 50 — Funetics game #9.
+          name: 'Target Jump',
+          slug: 'target-jump',
+          gear: 'Markers',
+          teachTime: '~30 sec',
+          minPlayers: 1,
+          summary:
+            'A short-run-up accuracy game that rewards landing on a marked spot, not ' +
+            'just jumping far.',
+          bullets: [
+            'Lay a marker a few strides from the pit as a target landing zone.',
+            'Athletes take a short run-up and try to land as close to the marker as possible, not simply as far as they can.',
+            'Shifts the goal from raw distance to a controlled, repeatable take-off – useful once the standing-jump basics are solid.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['long-jump'],
+          videoResources: [{ key: 'video-fun-target-jump', prefix: 'Target Jump', isGameFootage: true }]
+        },
+        {
+          // Backlog Rank 50 — Funetics game #10.
+          name: 'Standing Triple Jump',
+          slug: 'standing-triple-jump',
+          gear: 'Markers',
+          teachTime: '~1 min',
+          minPlayers: 1,
+          summary:
+            'A three-hop-and-a-jump distance game that builds on the standing long ' +
+            'jump once the landing habit is solid.',
+          bullets: [
+            'From a standing start, athletes perform hop, hop, then a final two-footed jump for distance.',
+            'Mark each athlete’s landing spot and let them try to beat it over a few attempts.',
+            'A natural next step once Standing Jump Challenge feels easy – more explosive, still with no run-up to manage.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['long-jump'],
+          videoResources: [{ key: 'video-fun-standing-triple-jump', prefix: 'Standing Triple Jump', isGameFootage: true }]
+        },
+        {
+          // Backlog Rank 50 — Funetics game #12.
+          name: 'Speed Bounce',
+          slug: 'speed-bounce',
+          gear: 'One low object',
+          teachTime: '~30 sec',
+          minPlayers: 1,
+          summary:
+            'A rapid two-footed bounding game over a low object that builds jump-ready ' +
+            'leg power.',
+          bullets: [
+            'Place one low object (a rolled mat, a line of cones, a pool noodle) on the ground.',
+            'Athletes bounce back and forth over it on two feet, as many times as possible in a set time.',
+            'Builds the quick, springy take-off power that both long jump and high jump rely on, with almost no setup.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['long-jump'],
+          videoResources: [{ key: 'video-fun-speed-bounce', prefix: 'Speed Bounce', isGameFootage: true }]
+        },
+        {
+          // Backlog Rank 50 — Funetics game #4.
+          name: 'I Can Jump Higher Than',
+          slug: 'i-can-jump-higher-than',
+          gear: 'Marker',
+          teachTime: '~1 min',
+          minPlayers: 2,
+          summary:
+            'A confidence-building jump-off-two-feet game that turns "how high can you ' +
+            'jump" into a friendly, escalating challenge.',
+          bullets: [
+            'Hold a marker (a hand, a pool noodle, a soft object) at a low height; athletes take turns jumping up to touch or clear it.',
+            'Raise the marker slightly each round as athletes succeed, letting each find their own current best height.',
+            'A playful, bar-free way to build jump confidence before the real scissor technique and a crossbar are introduced.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['high-jump'],
+          videoResources: [{ key: 'video-fun-jump-higher-than', prefix: 'I Can Jump Higher Than', isGameFootage: true }]
         }
       ]
     },
@@ -1645,6 +2029,8 @@ export const games = {
           name: 'Target Hoops',
           slug: 'target-hoops',
           gear: 'Hoops',
+          teachTime: '~1 min',
+          minPlayers: 2,
           summary:
             'A target-accuracy throwing game that rewards control over raw power.',
           bullets: [
@@ -1655,7 +2041,13 @@ export const games = {
           sourcePrefix: 'Adapted from',
           resource: 'article-throwing-game',
           eventSlugs: ['shot-put', 'discus', 'turbo-javelin'],
+          // Mixed list (backlog Rank 51): real footage of this game alongside
+          // the three technique videos it already carried. gameDetailView()
+          // (js/views/gameDetail.js) partitions by `isGameFootage` and
+          // renders each group under its own honesty-framed heading, so the
+          // two kinds never share one clarifier.
           videoResources: [
+            { key: 'video-fun-target-throw', prefix: 'Target Hoops', isGameFootage: true },
             { key: 'video-shot-put', prefix: 'Shot Put' },
             { key: 'video-discus', prefix: 'Discus' },
             { key: 'video-javelin', prefix: 'Turbo Javelin' }
@@ -1665,6 +2057,8 @@ export const games = {
           name: 'Neck Push Line',
           slug: 'neck-push-line',
           gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 'pairs',
           summary:
             'A close-range, no-throw game that grooves the shot’s “push, don’t throw” ' +
             'action.',
@@ -1680,6 +2074,8 @@ export const games = {
           name: 'Grid Put',
           slug: 'grid-put',
           gear: 'Markers',
+          teachTime: '~1 min',
+          minPlayers: 2,
           summary:
             'A scoring-zone put game that rewards a full, balanced finish over raw ' +
             'distance.',
@@ -1694,6 +2090,8 @@ export const games = {
           name: 'Sandwich Freeze',
           slug: 'sandwich-freeze',
           gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 'pairs',
           summary:
             'A grip-and-hold game that locks in the “discus sandwich” starting ' +
             'position before any throwing begins.',
@@ -1709,6 +2107,8 @@ export const games = {
           name: 'Spin Check',
           slug: 'spin-check',
           gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 1,
           summary:
             'A short-range release game that trains a clean, flat spin off the index ' +
             'finger.',
@@ -1723,6 +2123,8 @@ export const games = {
           name: 'Cricket Arm Check',
           slug: 'cricket-arm-check',
           gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 1,
           summary:
             'A no-implement mimic game that locks in the overarm throwing action ' +
             'before any turbo jav is picked up.',
@@ -1738,6 +2140,8 @@ export const games = {
           name: 'Fan Zone Distance',
           slug: 'fan-zone-distance',
           gear: 'Markers',
+          teachTime: '~1 min',
+          minPlayers: 2,
           summary:
             'A marshalled distance game that rewards a safe, confident overarm ' +
             'release in a single throwing direction.',
@@ -1747,6 +2151,47 @@ export const games = {
             'Keeps throws safe and single-direction while still making distance progress feel like a game.'
           ],
           eventSlugs: ['turbo-javelin']
+        },
+        {
+          // Backlog Rank 50 — Funetics game #5. Works for any throwing
+          // event, same as Target Hoops, so eventSlugs covers all three.
+          name: 'Throw Golf',
+          slug: 'throw-golf',
+          gear: 'Ball + targets',
+          teachTime: '~2 min',
+          minPlayers: 2,
+          summary:
+            'A par-course throwing game that rewards fewest throws to hit each target, ' +
+            'not raw distance.',
+          bullets: [
+            'Set out a short "course" of targets (hoops, buckets, cones) at varying distances, like golf holes.',
+            'Athletes take turns throwing at each target in order, counting how many throws it takes to hit it before moving to the next.',
+            'Lowest total throws across the course wins – rewards accuracy and a controlled release over raw power, like Target Hoops.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['shot-put', 'discus', 'turbo-javelin'],
+          videoResources: [{ key: 'video-fun-throw-golf', prefix: 'Throw Golf', isGameFootage: true }]
+        },
+        {
+          // Backlog Rank 50 — Funetics game #11.
+          name: 'Feed the Animals',
+          slug: 'feed-the-animals',
+          gear: 'Bean bags + buckets',
+          teachTime: '~1 min',
+          minPlayers: 2,
+          summary:
+            'A "feeding" accuracy game where each successful throw lands a bean bag in ' +
+            'a bucket, not just past a line.',
+          bullets: [
+            'Set out buckets ("hungry animals") at varying distances from a throwing line.',
+            'Athletes take turns throwing bean bags, trying to "feed" each animal by landing a bag inside its bucket.',
+            'Same target-accuracy skill as Target Hoops and Throw Golf, in a framing younger athletes take to instantly.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['shot-put', 'discus', 'turbo-javelin'],
+          videoResources: [{ key: 'video-fun-feed-the-animals', prefix: 'Feed the Animals', isGameFootage: true }]
         }
       ]
     },
@@ -1774,6 +2219,8 @@ export const games = {
           name: 'Baton Down the Line',
           slug: 'baton-down-the-line',
           gear: 'Baton',
+          teachTime: '~30 sec',
+          minPlayers: 4,
           summary:
             'A hand-to-hand baton relay with zero running, ideal for a tight waiting area.',
           bullets: [
@@ -1791,6 +2238,8 @@ export const games = {
           name: 'Zone Tag',
           slug: 'zone-tag',
           gear: 'Cones',
+          teachTime: '~1 min',
+          minPlayers: 2,
           summary:
             'A go-mark reaction game that teaches receivers exactly when to start ' +
             'moving in the take-over zone.',
@@ -1805,6 +2254,8 @@ export const games = {
           name: 'Hurdles Shuttle Relay',
           slug: 'hurdles-shuttle-relay',
           gear: 'Hurdles',
+          teachTime: '~1 min',
+          minPlayers: 4,
           summary:
             'A shuttle relay over low hurdles that combines hurdle rhythm with relay-tag fun.',
           bullets: [
@@ -1815,6 +2266,26 @@ export const games = {
           resource: 'article-hurdles-shuttle',
           eventSlugs: ['hurdles', 'relay'],
           videoResources: [{ key: 'video-hurdles', prefix: 'Hurdles' }]
+        },
+        {
+          // Backlog Rank 50 — Funetics game #6.
+          name: 'Ball Relay',
+          slug: 'ball-relay',
+          gear: 'Ball',
+          teachTime: '~1 min',
+          minPlayers: 4,
+          summary:
+            'A hand-to-hand ball-passing relay that rehearses a clean, controlled ' +
+            'exchange without a real baton.',
+          bullets: [
+            'Teams line up single-file, an arm’s length apart, facing the same direction.',
+            'On "go", a ball is passed hand-to-hand overhead or between the legs down the line and back; first team to finish wins the round.',
+            'Same non-visual exchange practice as Baton Down the Line, with a ball as a forgiving, low-stakes stand-in for the real baton.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: ['relay'],
+          videoResources: [{ key: 'video-fun-ball-relay', prefix: 'Ball Relay', isGameFootage: true }]
         }
       ]
     },
@@ -1826,6 +2297,12 @@ export const games = {
       // selection, so this flag is checked instead of special-casing the id
       // string anywhere in view code.
       alwaysShow: true,
+      // Backlog Rank 54 (+ two more from Rank 50): growing this category
+      // from 1 game must not read as permission to run one every night —
+      // the guide's whole premise is 90% skills-first. games.js renders
+      // this once, under the kicker, rather than repeating the point on
+      // every item.
+      note: 'More games here doesn’t mean more turns a night — the 10% is still 10%.',
       items: [
         {
           name: 'Freeze Tag',
@@ -1833,6 +2310,8 @@ export const games = {
           // No gear: needs nothing but players, so no pill renders (see
           // gameListItem() in js/views/games.js).
           gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 4,
           summary:
             'A classic no-skill-agenda tag game, kept short and used sparingly.',
           bullets: [
@@ -1845,6 +2324,84 @@ export const games = {
           // this game is explicitly "pure fun, no drills attached", so there
           // is no honest technique video to attach (AC47).
           eventSlugs: []
+        },
+        {
+          // Backlog Rank 54. Unlike Freeze Tag, nobody stands still waiting
+          // to be unfrozen — the tagger rotates every 10 seconds, so the
+          // whole group keeps moving. Real footage of this exact game.
+          name: '10 Second Tag',
+          slug: '10-second-tag',
+          gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 6,
+          summary:
+            'A rotating-tagger game where nobody sits out and nobody stays "it" long ' +
+            'enough to get bored.',
+          bullets: [
+            'One tagger chases the group for 10 seconds only; anyone tagged joins the group again straight away.',
+            'Every 10 seconds the coach calls a new tagger – whoever was tagged most recently, or simply the next name in line.',
+            'Keeps everyone moving throughout, including the waiting line, unlike a game where a frozen or "out" player stands still.'
+          ],
+          eventSlugs: [],
+          videoResources: [{ key: 'video-peg-10-second-tag', prefix: '10 Second Tag', isGameFootage: true }]
+        },
+        {
+          // Backlog Rank 54. No leader to nominate and nothing to explain
+          // about who chases whom — the whole group is "it" simultaneously.
+          name: "Everybody's It",
+          slug: 'everybodys-it',
+          gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 6,
+          summary:
+            'A no-leader tag game where every player is both chaser and target at once.',
+          bullets: [
+            'On "go", every athlete tries to tag everyone else while avoiding being tagged themselves – there is no single designated tagger.',
+            'A tagged athlete does one quick task (e.g. touch the ground, spin around) then rejoins immediately.',
+            'Nothing to set up and nothing to explain beyond "tag, and don’t get tagged" – burns two minutes flat between events.'
+          ],
+          eventSlugs: [],
+          videoResources: [{ key: 'video-peg-everybodys-it', prefix: "Everybody's It", isGameFootage: true }]
+        },
+        {
+          // Backlog Rank 50 — Funetics game #7.
+          name: "Dragon's Treasure",
+          slug: 'dragons-treasure',
+          gear: 'Small objects',
+          teachTime: '~1 min',
+          minPlayers: 6,
+          summary:
+            'A guard-and-steal game where one "dragon" defends a hoard while everyone ' +
+            'else tries to sneak a piece away.',
+          bullets: [
+            'Scatter small objects ("treasure") in a circle with one athlete standing guard as the dragon.',
+            'Other athletes try to creep in and steal a piece of treasure without being tagged by the dragon.',
+            'A tagged thief becomes the next dragon – pure fun, no drills attached, same as Freeze Tag.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: [],
+          videoResources: [{ key: 'video-fun-dragons-treasure', prefix: "Dragon's Treasure", isGameFootage: true }]
+        },
+        {
+          // Backlog Rank 50 — Funetics game #8.
+          name: 'Nutty Squirrels',
+          slug: 'nutty-squirrels',
+          gear: 'Bean bags + hoops',
+          teachTime: '~1 min',
+          minPlayers: 6,
+          summary:
+            'A gather-and-stash game where "squirrels" race to collect the most bean ' +
+            'bags into their own hoop.',
+          bullets: [
+            'Scatter bean bags ("nuts") in the middle of the space, with a hoop for each athlete around the edge.',
+            'On "go", athletes run out one bag at a time and drop it in their own hoop, racing the clock or each other.',
+            'Same never-stand-still energy as 10 Second Tag – nobody waits in a queue or stands frozen mid-round.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-funetics',
+          eventSlugs: [],
+          videoResources: [{ key: 'video-fun-nutty-squirrels', prefix: 'Nutty Squirrels', isGameFootage: true }]
         }
       ]
     }
