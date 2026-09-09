@@ -168,5 +168,11 @@ export function startRouter({ outlet, tabs }) {
    */
   window.addEventListener('tonight:change', paint);
 
+  // Same state-only-repaint treatment as 'tonight:change' above, for the
+  // Games tab's own category filter (gamesFilter.js) — a different concern
+  // from Tonight mode, so it gets its own event rather than overloading
+  // 'tonight:change' for an unrelated piece of state.
+  window.addEventListener('games:filterchange', paint);
+
   render();
 }

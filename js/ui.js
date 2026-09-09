@@ -664,6 +664,51 @@ export function programPicker(choice) {
 }
 
 /**
+ * Games tab category filter — a single native <select> that narrows the
+ * list to one category at a time (js/gamesFilter.js owns the state).
+ *
+ * Same "real <select>, not chips or a custom listbox" reasoning as
+ * programPicker() above: seven categories is too many for a chip row at
+ * 320px, and a native select gets big touch targets and platform
+ * keyboard/screen-reader support for free. Deliberately its own
+ * `.category-filter` component rather than reusing `.program-picker`'s BEM
+ * classes — visually similar, but a different control with different state,
+ * and giving it its own name keeps the two from silently coupling later.
+ *
+ * `data-action="set-game-category"` is dispatched by the one delegated
+ * `change` listener in interactions.js, same wiring as every other control.
+ *
+ * @param {string|null} selectedId the current category filter, or null for
+ *   "All categories"
+ * @param {{id: string, name: string}[]} categories
+ */
+export function categoryFilterPicker(selectedId, categories) {
+  const option = (value, label, selected) =>
+    `<option value="${esc(value)}"${selected ? ' selected' : ''}>${esc(label)}</option>`;
+
+  const options = [
+    option('', 'All categories', selectedId == null),
+    ...categories.map((c) => option(c.id, c.name, c.id === selectedId))
+  ].join('');
+
+  return `
+    <div class="category-filter">
+      <label class="category-filter__label" for="game-category-select">Filter by category</label>
+      <div class="category-filter__control">
+        <select
+          class="category-filter__select"
+          id="game-category-select"
+          data-action="set-game-category">
+          ${options}
+        </select>
+        <span class="category-filter__chevron" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+        </span>
+      </div>
+    </div>`;
+}
+
+/**
  * Tonight's running order — the Events tab's Tonight view once a program is
  * chosen (js/views/events.js). One card per block returned by content.js's
  * getRunningOrder(); see that function for how consecutive slots merge.

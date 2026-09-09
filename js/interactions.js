@@ -11,7 +11,8 @@
  */
 
 import * as tonight from './tonight.js';
-import { tonightCopy, weeklyProgram, getRunningOrder } from './content.js';
+import * as gamesFilter from './gamesFilter.js';
+import { tonightCopy, weeklyProgram, getRunningOrder, games } from './content.js';
 import { openPicker, closePicker, pickerSaved } from './views/tonight.js';
 
 /** Force a repaint of the current route without navigating (no hash change). */
@@ -86,6 +87,17 @@ function handleClick(event) {
     closePicker();
     repaint();
     focusById('open-picker-btn');
+    return;
+  }
+
+  // Games tab category filter's "Show all categories" recovery action
+  // (js/views/games.js's empty-state block) — the always-correct fix when a
+  // chosen category renders nothing, whatever the reason.
+  const clearCategoryBtn = event.target.closest('[data-action="clear-game-category"]');
+  if (clearCategoryBtn) {
+    gamesFilter.setCategoryFilter(null); // synchronously repaints via the router's listener
+    focusById('game-category-select');
+    announce('Showing all categories.');
     return;
   }
 
@@ -173,11 +185,34 @@ function handleProgramChange(select) {
   );
 }
 
+/**
+ * Games tab category filter — a single <select> (js/ui.js's
+ * categoryFilterPicker()). Same "focus stays on the control that changed"
+ * treatment as handleProgramChange() below, and the same live-region
+ * announcement pattern the rest of this file uses (see handleSubmit()'s
+ * plain inline strings — no content.js copy exists for this yet either).
+ */
+function handleGameCategoryChange(select) {
+  const focusId = select.id;
+  const category = games.categories.find((c) => c.id === select.value);
+
+  gamesFilter.setCategoryFilter(select.value || null); // synchronously repaints
+
+  focusById(focusId, () => focusById('page-title', () => {}));
+  announce(category ? `Showing ${category.name} only.` : 'Showing all categories.');
+}
+
 function handleChange(event) {
-  const select = event.target.closest(
+  const programSelect = event.target.closest(
     '[data-action="set-program"], [data-action="set-age"]'
   );
-  if (select) handleProgramChange(select);
+  if (programSelect) {
+    handleProgramChange(programSelect);
+    return;
+  }
+
+  const categorySelect = event.target.closest('[data-action="set-game-category"]');
+  if (categorySelect) handleGameCategoryChange(categorySelect);
 }
 
 function handleSubmit(event) {
