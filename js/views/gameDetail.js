@@ -108,6 +108,8 @@ export function gameDetailView(slug) {
 
       ${pairsWithNote(item.eventSlugs, 'game__pairs')}
       ${item.gear ? `<p class="gear-pill">${esc(item.gear)}</p>` : ''}
+      ${item.teachTime ? `<p class="estimate-pill">Teach: ${esc(item.teachTime)}</p>` : ''}
+      ${item.minPlayers ? `<p class="estimate-pill">Players: ${esc(String(item.minPlayers))}</p>` : ''}
 
       <section class="section section--spaced" aria-labelledby="what-to-do">
         <h2 class="section__title" id="what-to-do">What to do</h2>

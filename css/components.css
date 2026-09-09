@@ -1334,6 +1334,14 @@ a.run-card:hover .run-card__name {
   text-transform: uppercase;
 }
 
+/* Optional per-category framing note (backlog Rank 54) — plain body copy,
+   not shouty like the kicker above, since it's a caution rather than a
+   label. */
+.game-category-card__note {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-100);
+}
+
 .game-category-card__body {
   padding: var(--space-4);
 }
@@ -1467,6 +1475,28 @@ a.run-card:hover .run-card__name {
    name strip above. */
 .game-list__body > .gear-pill:first-child {
   margin-top: 0;
+}
+
+/* Teach-time / min-players pill (backlog Rank 56) — deliberately muted,
+   not the accent colour `.gear-pill` uses, so an estimated figure never
+   reads with the same visual confidence as the factual gear requirement
+   sitting right beside it. Text still carries the meaning on its own
+   ("Teach: ~1 min", "Players: pairs"), so colour is a tone cue only. */
+.estimate-pill {
+  display: inline-block;
+  margin-top: var(--space-2);
+  margin-left: var(--space-2);
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-border-subtle);
+  color: var(--color-text-muted);
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+}
+
+.game-list__body > .estimate-pill:first-child {
+  margin-top: 0;
+  margin-left: 0;
 }
 
 /* --- Resource cards (Watch & Learn) -------------------------------------- */

@@ -29,6 +29,8 @@ function gameListItem(item) {
         </span>
         <span class="game-list__body">
           ${item.gear ? `<span class="gear-pill">${esc(item.gear)}</span>` : ''}
+          ${item.teachTime ? `<span class="estimate-pill">Teach: ${esc(item.teachTime)}</span>` : ''}
+          ${item.minPlayers ? `<span class="estimate-pill">Players: ${esc(String(item.minPlayers))}</span>` : ''}
           <span class="game-list__summary">${esc(item.summary)}</span>
           ${pairsWithNote(item.eventSlugs, 'game-list__pairs')}
         </span>
@@ -75,6 +77,7 @@ export function gamesView() {
           <div class="game-category-card__head">
             <h2 class="game-category-card__name" id="cat-${esc(cat.id)}">${esc(cat.name)}</h2>
             <p class="game-category-card__kicker">${esc(cat.kicker)}</p>
+            ${cat.note ? `<p class="game-category-card__note">${esc(cat.note)}</p>` : ''}
           </div>
           <div class="game-category-card__body">
             <ul class="game-list">
@@ -105,6 +108,7 @@ export function gamesView() {
           ? `<p class="note">${esc(tonightCopy.games.filteredNote)}</p>`
           : ''
       }
+      <p class="note">${esc(games.estimateNote)}</p>
 
       ${categoriesBlock}`
   };
