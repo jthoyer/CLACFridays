@@ -1,6 +1,6 @@
 /**
- * gamesFilter.js — the ONE place that owns the Games tab's category filter
- * and free-text search.
+ * gamesFilter.js — the ONE place that owns the Games tab's category filter,
+ * free-text search, and "starred only" toggle.
  *
  * Same shape as tonight.js: a module-singleton, every read/write wrapped in
  * try/catch (Safari Private Mode, a full quota, or a locked-down embed can
@@ -10,15 +10,20 @@
  * tonight.js because it is a different concern — narrowing which of the
  * Games tab's own categories/items are visible, not which events are on
  * tonight's program — and tonight.js's file banner already claims ownership
- * of Tonight-mode storage specifically.
+ * of Tonight-mode storage specifically. Also kept distinct from
+ * favourites.js: that module owns WHICH games are starred (identity, shared
+ * with the per-card toggle), this module only owns whether the Games tab is
+ * currently narrowed to them (a view preference) — the two would tangle two
+ * different concerns into one module if merged.
  *
- * The category filter is seeded from localStorage (a standing preference —
- * "just show me Throwing Games" is worth remembering across visits). The
- * search query deliberately is NOT persisted: it starts empty on every load,
- * same as any other site's search box — a leftover query from last session
- * silently narrowing tonight's list, with no visible reminder beyond the box
- * itself, would read as a bug ("where did all the games go?"), not a saved
- * preference.
+ * The category filter and "starred only" toggle are both seeded from
+ * localStorage (standing preferences — "just show me Throwing Games" or
+ * "just show me my starred games" are both worth remembering across
+ * visits). The search query deliberately is NOT persisted: it starts empty
+ * on every load, same as any other site's search box — a leftover query
+ * from last session silently narrowing tonight's list, with no visible
+ * reminder beyond the box itself, would read as a bug ("where did all the
+ * games go?"), not a saved preference.
  */
 
 import { games } from './content.js';
@@ -94,4 +99,29 @@ export function getSearchQuery() {
 export function setSearchQuery(value) {
   searchQuery = typeof value === 'string' ? value : '';
   notify();
+}
+
+const STARRED_ONLY_KEY = 'clac.games.starredOnly.v1';
+
+let starredOnly = safeGet(STARRED_ONLY_KEY) === '1';
+
+/** Whether the Games tab is currently narrowed to starred games only. */
+export function getStarredOnly() {
+  return starredOnly;
+}
+
+/** Flip the "starred only" toggle. Returns the new state. */
+export function toggleStarredOnly() {
+  starredOnly = !starredOnly;
+  if (starredOnly) {
+    safeSet(STARRED_ONLY_KEY, '1');
+  } else {
+    try {
+      window.localStorage.removeItem(STARRED_ONLY_KEY);
+    } catch {
+      // Best-effort — an in-memory clear still happened above.
+    }
+  }
+  notify();
+  return starredOnly;
 }

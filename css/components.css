@@ -941,6 +941,50 @@
   stroke-linecap: round;
 }
 
+/* --- Games tab "starred only" toggle (`starredOnlyToggle()` in ui.js) ----
+   Same dashed/hollow -> solid/filled pill shape as `.tonight-toggle` above,
+   reused here for a tab-level toggle rather than a per-card one. "On" reuses
+   `.favourite-toggle--active`'s exact colour pairing (`--color-warn-border`
+   border, `--color-warn-surface-alt` fill, `--color-warn-text` icon/text) so
+   "starred" reads as one colour concept across the whole tab. */
+
+.starred-only-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  margin-bottom: var(--space-4);
+  padding: 0 var(--space-4);
+  border: 2px dashed var(--color-border-interactive);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--fs-300);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+}
+
+.starred-only-toggle svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.starred-only-toggle--active {
+  border-style: solid;
+  border-color: var(--color-warn-border);
+  background: var(--color-warn-surface-alt);
+  color: var(--color-warn-text);
+}
+
+.starred-only-toggle--active svg {
+  fill: currentColor;
+}
+
 /* --- Running order (`runningOrder()` in ui.js) ----------------------------
    Tonight's blocks, in the order they run. `.run-item` owns the frame
    (border, radius, shadow, overflow) so the card's <a> and its flag <p>s can

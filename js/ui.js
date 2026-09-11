@@ -803,6 +803,49 @@ export function gamesSearchInput(value) {
 }
 
 /**
+ * Games tab "starred only" toggle — narrows every visible category to games
+ * the coach has favourited (js/favourites.js), via js/gamesFilter.js's
+ * toggleStarredOnly(). A fourth, independent narrowing composed with AND
+ * alongside Tonight-mode filtering, the category filter and search
+ * (js/views/games.js) — starring a game doesn't change what's visible on
+ * its own, this toggle is what turns that into a filter.
+ *
+ * A labelled pill button, same dashed/hollow -> solid/filled shape as
+ * `.tonight-toggle` (STYLEGUIDE's "Per-card Tonight toggle" section) reused
+ * here for a tab-level rather than per-card toggle. "On" uses the same
+ * `--color-warn-border`/`--color-warn-surface-alt` pairing
+ * `favouriteToggleButton()`'s active state uses, so "starred" reads as one
+ * consistent colour concept across the tab rather than two different toggle
+ * languages for the same idea. `aria-pressed` carries the state; the star
+ * glyph itself flips hollow -> filled as the SC 1.4.1 non-colour signal,
+ * identical shape to `favouriteToggleButton()`'s glyph (same path data, so
+ * the two visibly match).
+ *
+ * No `aria-label` — the visible label text already fully states the action,
+ * so the accessible name comes from it directly rather than risking the two
+ * drifting apart (SC 2.5.3 is automatically satisfied this way, not just
+ * worked around).
+ *
+ * @param {boolean} pressed  whether the Games tab is currently narrowed to
+ *   starred games only
+ */
+export function starredOnlyToggle(pressed) {
+  const label = pressed ? 'Showing starred games only' : 'Show starred games only';
+  return `
+    <button
+      type="button"
+      class="starred-only-toggle${pressed ? ' starred-only-toggle--active' : ''}"
+      id="starred-only-toggle"
+      data-action="toggle-starred-only"
+      aria-pressed="${pressed}">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+      </svg>
+      <span class="starred-only-toggle__label">${esc(label)}</span>
+    </button>`;
+}
+
+/**
  * Tonight's running order — the Events tab's Tonight view once a program is
  * chosen (js/views/events.js). One card per block returned by content.js's
  * getRunningOrder(); see that function for how consecutive slots merge.

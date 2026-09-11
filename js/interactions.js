@@ -114,6 +114,34 @@ function handleClick(event) {
     return;
   }
 
+  // Games tab "starred only" toggle (ui.js's starredOnlyToggle()) — narrows
+  // the list to favourited games. toggleStarredOnly() returns the new state
+  // directly (same reasoning as the per-card favourite toggle below: no
+  // separate "read before toggling" needed).
+  const starredOnlyBtn = event.target.closest('[data-action="toggle-starred-only"]');
+  if (starredOnlyBtn) {
+    const toggleId = starredOnlyBtn.id;
+    const nowStarredOnly = gamesFilter.toggleStarredOnly(); // synchronously repaints
+
+    focusById(toggleId, () => focusById('page-title', () => {}));
+    announce(nowStarredOnly ? 'Showing starred games only.' : 'Showing all games.');
+    return;
+  }
+
+  // "Show all games" empty-state recovery action (js/views/games.js) for
+  // when "starred only" renders nothing — a distinct data-action from the
+  // toggle above (not just reused) so focus can land on the STANDING pill
+  // control after the transient empty-state button it was clicked from
+  // disappears in the repaint, same pattern as "clear-game-category" above
+  // landing focus on the standing category select rather than itself.
+  const clearStarredOnlyBtn = event.target.closest('[data-action="clear-starred-only"]');
+  if (clearStarredOnlyBtn) {
+    gamesFilter.toggleStarredOnly(); // only rendered while starred-only is on, so this always turns it off
+    focusById('starred-only-toggle');
+    announce('Showing all games.');
+    return;
+  }
+
   // Per-card Tonight toggle (Events list). See tonight.js's
   // toggleTonightEvent() for why this deliberately never calls setMode() —
   // mode is pinned to whatever it already was, so this control can never
