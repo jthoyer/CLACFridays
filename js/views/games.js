@@ -9,6 +9,7 @@ import {
   gamesSearchInput,
   pageHeader,
   pairsWithNote,
+  starredOnlyToggle,
   tonightEmptyState,
   tonightStatusStrip
 } from '../ui.js';
@@ -126,8 +127,18 @@ export function gamesView() {
     return haystack.includes(normalizedQuery);
   };
 
+  // A fourth, independent narrowing: "starred only" (js/gamesFilter.js),
+  // matched against favourites.js's own favourited-slug state rather than
+  // anything on the item itself — starring is a separate concern (see
+  // favourites.js's file banner) that this toggle turns into a filter.
+  const starredOnly = gamesFilter.getStarredOnly();
+  const matchesStarred = (item) => !starredOnly || favourites.isFavourite(item.slug);
+
   const categoriesWithMatches = visibleCategories
-    .map((cat) => ({ cat, items: cat.items.filter(matchesSearch) }))
+    .map((cat) => ({
+      cat,
+      items: cat.items.filter((item) => matchesSearch(item) && matchesStarred(item))
+    }))
     .filter(({ items }) => items.length > 0);
 
   const categories = categoriesWithMatches
@@ -150,13 +161,14 @@ export function gamesView() {
     )
     .join('');
 
-  // Three distinct empty states, not one generic one — each names the exact,
+  // Four distinct empty states, not one generic one — each names the exact,
   // always-correct fix for what actually emptied the list, checked in order
   // from most specific/recent action to least: a search with no hits is
-  // fixed by clearing the search, a category with no hits (search aside) is
-  // fixed by showing all categories, and "no program/age selected yet" (the
-  // pre-existing Tonight-mode case) is fixed by picking events on the
-  // Tonight tab instead.
+  // fixed by clearing the search, "starred only" with no hits (search aside)
+  // is fixed by showing all games again, a category with no hits (both
+  // aside) is fixed by showing all categories, and "no program/age selected
+  // yet" (the pre-existing Tonight-mode case) is fixed by picking events on
+  // the Tonight tab instead.
   let categoriesBlock;
   if (categoriesWithMatches.length) {
     categoriesBlock = categories;
@@ -164,6 +176,11 @@ export function gamesView() {
     categoriesBlock = tonightEmptyState(
       `No games match “${searchQuery.trim()}”.`,
       '<button type="button" class="btn btn--primary" data-action="clear-game-search">Clear search</button>'
+    );
+  } else if (starredOnly) {
+    categoriesBlock = tonightEmptyState(
+      'No starred games yet — tap the star on a game to add it here.',
+      '<button type="button" class="btn btn--primary" data-action="clear-starred-only">Show all games</button>'
     );
   } else if (categoryFilterId) {
     categoriesBlock = tonightEmptyState(
@@ -188,6 +205,7 @@ export function gamesView() {
       ${tonightStatusStrip({ isFiltering: isTonight, choice, count: tonight.getSelection().length })}
 
       ${gamesSearchInput(searchQuery)}
+      ${starredOnlyToggle(starredOnly)}
       ${categoryFilterPicker(categoryFilterId, games.categories)}
 
       ${categoriesBlock}`
