@@ -844,6 +844,103 @@
   stroke-linejoin: round;
 }
 
+/* --- Games free-text search (`gamesSearchInput()` in ui.js) --------------
+   Sits above `.category-filter` on the Games tab: same label/control shape
+   (label above, one full-width control below), but an `<input type="search">`
+   with an inline magnifying-glass icon rather than a `<select>`. Native
+   search-cancel decorations are suppressed below in favour of
+   `.games-search__clear` — one clear affordance that looks and behaves the
+   same in every browser, instead of WebKit's default one only some. */
+
+.games-search {
+  margin-bottom: var(--space-4);
+}
+
+.games-search__label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--fs-100);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-caption);
+}
+
+.games-search__control {
+  position: relative;
+}
+
+.games-search__icon {
+  position: absolute;
+  top: 50%;
+  left: var(--space-3);
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--color-text-muted);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.games-search__input {
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-6) var(--space-2) calc(var(--space-6) + var(--space-1));
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-heading);
+  font-family: inherit;
+  font-size: var(--fs-300);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.games-search__input::placeholder {
+  color: var(--color-text-muted);
+  font-weight: var(--fw-regular);
+}
+
+.games-search__input::-webkit-search-cancel-button,
+.games-search__input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.games-search__clear {
+  position: absolute;
+  top: 50%;
+  right: var(--space-2);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.games-search__clear:hover {
+  background: var(--color-neutral-100);
+  color: var(--color-heading);
+}
+
+.games-search__clear svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
 /* --- Running order (`runningOrder()` in ui.js) ----------------------------
    Tonight's blocks, in the order they run. `.run-item` owns the frame
    (border, radius, shadow, overflow) so the card's <a> and its flag <p>s can

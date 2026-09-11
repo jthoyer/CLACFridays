@@ -1,16 +1,24 @@
 /**
- * gamesFilter.js — the ONE place that owns the Games tab's category filter.
+ * gamesFilter.js — the ONE place that owns the Games tab's category filter
+ * and free-text search.
  *
- * Same shape as tonight.js: a module-singleton, seeded once from
- * localStorage at load, every read/write wrapped in try/catch (Safari
- * Private Mode, a full quota, or a locked-down embed can all throw on
- * storage access — none of that may propagate past this module), and a
- * `games:filterchange` event so the router can repaint without a real
- * navigation. Kept as its own module rather than folded into tonight.js
- * because it is a different concern — narrowing which of the Games tab's
- * own categories are visible, not which events are on tonight's program —
- * and tonight.js's file banner already claims ownership of Tonight-mode
- * storage specifically.
+ * Same shape as tonight.js: a module-singleton, every read/write wrapped in
+ * try/catch (Safari Private Mode, a full quota, or a locked-down embed can
+ * all throw on storage access — none of that may propagate past this
+ * module), and a `games:filterchange` event so the router can repaint
+ * without a real navigation. Kept as its own module rather than folded into
+ * tonight.js because it is a different concern — narrowing which of the
+ * Games tab's own categories/items are visible, not which events are on
+ * tonight's program — and tonight.js's file banner already claims ownership
+ * of Tonight-mode storage specifically.
+ *
+ * The category filter is seeded from localStorage (a standing preference —
+ * "just show me Throwing Games" is worth remembering across visits). The
+ * search query deliberately is NOT persisted: it starts empty on every load,
+ * same as any other site's search box — a leftover query from last session
+ * silently narrowing tonight's list, with no visible reminder beyond the box
+ * itself, would read as a bug ("where did all the games go?"), not a saved
+ * preference.
  */
 
 import { games } from './content.js';
@@ -70,5 +78,20 @@ export function setCategoryFilter(id) {
       // Best-effort — an in-memory clear still happened above.
     }
   }
+  notify();
+}
+
+// In-memory only — see the file banner above for why this is never seeded
+// from, or written to, localStorage.
+let searchQuery = '';
+
+/** The current free-text search query, or '' for "no search". */
+export function getSearchQuery() {
+  return searchQuery;
+}
+
+/** Narrow the Games tab to items matching this text, or pass '' to clear. */
+export function setSearchQuery(value) {
+  searchQuery = typeof value === 'string' ? value : '';
   notify();
 }

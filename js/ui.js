@@ -709,6 +709,54 @@ export function categoryFilterPicker(selectedId, categories) {
 }
 
 /**
+ * Games tab free-text search — narrows every visible category to the items
+ * whose name, summary or gear match, as the coach types (js/gamesFilter.js
+ * owns the state; js/views/games.js does the actual matching).
+ *
+ * `type="search"` for the platform semantics (keyboard "search" affordance,
+ * VoiceOver announces it as a search field), but native cancel/clear
+ * decorations are suppressed in CSS in favour of one clear button that works
+ * the same way in every browser — rendered here only once there is a query
+ * to clear, same conditional-pill pattern as the gear/teach-time pills in
+ * gameListItem() (js/views/games.js).
+ *
+ * `data-action="search-games"` is read on the 'input' event, not 'change'
+ * like every other control here — see interactions.js's bindInteractions()
+ * for why a search box needs live-as-you-type filtering rather than
+ * waiting for blur.
+ *
+ * @param {string} value the current search query, '' for "no search"
+ */
+export function gamesSearchInput(value) {
+  return `
+    <div class="games-search">
+      <label class="games-search__label" for="game-search-input">Search games</label>
+      <div class="games-search__control">
+        <svg class="games-search__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input
+          class="games-search__input"
+          type="search"
+          id="game-search-input"
+          data-action="search-games"
+          placeholder="Search by name…"
+          autocomplete="off"
+          spellcheck="false"
+          value="${esc(value)}">
+        ${
+          value
+            ? `<button type="button" class="games-search__clear" data-action="clear-game-search" aria-label="Clear search">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+              </button>`
+            : ''
+        }
+      </div>
+    </div>`;
+}
+
+/**
  * Tonight's running order — the Events tab's Tonight view once a program is
  * chosen (js/views/events.js). One card per block returned by content.js's
  * getRunningOrder(); see that function for how consecutive slots merge.
