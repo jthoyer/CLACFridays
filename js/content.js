@@ -1518,8 +1518,8 @@ export const games = {
             'A best-of-three showdown where the loser of each round chases the winner ' +
             'over a short sprint.',
           bullets: [
-            'Pair athletes up facing each other on a centre line and play rock, paper, scissors.',
-            'The winner turns and sprints for a safe zone a short distance away; the loser chases and tries to tag them before they get there.',
+            'Pair athletes up facing each other on a centre line, with a safe zone marked 5 metres behind each of them.',
+            'They play rock, paper, scissors; the winner immediately turns and sprints for their safe zone, while the loser chases and tries to tag them before they get there.',
             'Turns a reaction game everyone already knows into a genuine sprint-start rep, disguised as play.'
           ],
           sourcePrefix: 'Adapted from',
@@ -2416,6 +2416,22 @@ export const games = {
             'Pair athletes up. One holds a relay baton (or water bottle) vertically at arm’s length, directly above their partner’s open hand.',
             'They drop the object without warning – the partner must catch it before it hits the grass.',
             'Swap roles after five attempts. Keep the rules minimal: if a game starts to drag, switch to a new one rather than adding more to referee.'
+          ],
+          eventSlugs: []
+        },
+        {
+          name: 'Coach Says (Athletics Edition)',
+          slug: 'coach-says-athletics-edition',
+          gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 4,
+          summary:
+            'A Simon Says variant that teaches track commands and starting positions ' +
+            'through active listening.',
+          bullets: [
+            'Play exactly like Simon Says, but call out athletics commands instead.',
+            '"Coach says ‘on your marks’" (crouch down), "Coach says ‘set’" (hips up) – athletes only move on a command that starts with "Coach says".',
+            'Call "Jump!" on its own with no "Coach says" – anyone who moves does three star jumps, then rejoins.'
           ],
           eventSlugs: []
         }
