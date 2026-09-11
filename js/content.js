@@ -1388,13 +1388,8 @@ export const games = {
    * fields answering the question a helper actually has on the night: which
    * of two games is quicker to explain, and how many kids does it need. No
    * source publishes either figure — every value in this file is the
-   * author's estimate, not a measured one. `estimateNote` is that honesty
-   * disclaimer, rendered once by the Games tab (js/views/games.js) rather
-   * than repeated on every pill, the same "label it, don't guess-dress-as-
-   * fact" standard the video framing above already holds itself to.
+   * author's estimate, not a measured one.
    */
-  estimateNote:
-    'Teach-time and player-count pills are the author’s estimate, not yet timed on a real Friday night.',
   categories: [
     {
       id: 'reaction-start',
@@ -2592,10 +2587,6 @@ export const tonightCopy = {
       `${name} removed from tonight’s events. ${count} event${
         count === 1 ? '' : 's'
       } selected for tonight.`
-  },
-  games: {
-    filteredNote:
-      'Showing games for tonight’s selected events, plus the games with no fixed event.'
   },
   eventDetail: {
     notTonightFlag: 'Not in tonight’s selection.'

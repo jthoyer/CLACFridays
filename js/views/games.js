@@ -1,4 +1,4 @@
-import { games, tonightCopy } from '../content.js';
+import { games } from '../content.js';
 import * as tonight from '../tonight.js';
 import * as gamesFilter from '../gamesFilter.js';
 import {
@@ -177,12 +177,6 @@ export function gamesView() {
       })}
 
       ${tonightStatusStrip({ isFiltering: isTonight, choice, count: tonight.getSelection().length })}
-      ${
-        isTonight
-          ? `<p class="note">${esc(tonightCopy.games.filteredNote)}</p>`
-          : ''
-      }
-      <p class="note">${esc(games.estimateNote)}</p>
 
       ${gamesSearchInput(searchQuery)}
       ${categoryFilterPicker(categoryFilterId, games.categories)}
