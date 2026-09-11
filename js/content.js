@@ -2402,6 +2402,22 @@ export const games = {
           resource: 'article-funetics',
           eventSlugs: [],
           videoResources: [{ key: 'video-fun-nutty-squirrels', prefix: 'Nutty Squirrels', isGameFootage: true }]
+        },
+        {
+          name: 'The Drop Catch',
+          slug: 'the-drop-catch',
+          gear: 'Baton or water bottle',
+          teachTime: '~30 sec',
+          minPlayers: 2,
+          summary:
+            'A partnered reaction game that trains the hand-eye coordination behind ' +
+            'throws and sprint starts.',
+          bullets: [
+            'Pair athletes up. One holds a relay baton (or water bottle) vertically at arm’s length, directly above their partner’s open hand.',
+            'They drop the object without warning – the partner must catch it before it hits the grass.',
+            'Swap roles after five attempts. Keep the rules minimal: if a game starts to drag, switch to a new one rather than adding more to referee.'
+          ],
+          eventSlugs: []
         }
       ]
     }
