@@ -1,9 +1,11 @@
 import { games } from '../content.js';
 import * as tonight from '../tonight.js';
 import * as gamesFilter from '../gamesFilter.js';
+import * as favourites from '../favourites.js';
 import {
   categoryFilterPicker,
   esc,
+  favouriteToggleButton,
   gamesSearchInput,
   pageHeader,
   pairsWithNote,
@@ -21,17 +23,23 @@ import {
  * full-bleed-colour-section language as `.tonight-card` (js/views/tonight.js)
  * and `.fact-list` (js/ui.js's factList()) — a dark header band directly
  * over a lighter body band, clipped to the card's rounded corners by the
- * card's own `overflow: hidden`.
+ * link's own `overflow: hidden`.
  *
  * A category can bundle games for more than one event (e.g. "Jump Games"
  * covers both Long Jump and High Jump — see content.js), so the category
  * heading alone doesn't say which event a given game pairs with;
  * `pairsWithNote()` (js/ui.js) adds that per item, resolved from the game's
  * own `eventSlugs` rather than the category's.
+ *
+ * `favouriteToggleButton()` (ui.js) is rendered as a SIBLING of the `<a>`,
+ * not nested inside it — see that function's doc comment for why — hence
+ * the `<li class="game-list__item">` wrapper: it needs its own class so
+ * components.css can position the toggle absolutely against the whole card,
+ * not just the link.
  */
 function gameListItem(item) {
   return `
-    <li>
+    <li class="game-list__item">
       <a class="game-list__link" href="#/games/${esc(item.slug)}">
         <span class="game-list__strip">
           <span class="game-list__name">${esc(item.name)} <span aria-hidden="true">→</span></span>
@@ -44,6 +52,7 @@ function gameListItem(item) {
           ${pairsWithNote(item.eventSlugs, 'game-list__pairs')}
         </span>
       </a>
+      ${favouriteToggleButton(item, favourites.isFavourite(item.slug))}
     </li>`;
 }
 

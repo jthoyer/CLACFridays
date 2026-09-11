@@ -12,6 +12,7 @@
 
 import * as tonight from './tonight.js';
 import * as gamesFilter from './gamesFilter.js';
+import * as favourites from './favourites.js';
 import { tonightCopy, weeklyProgram, getRunningOrder, games } from './content.js';
 import { openPicker, closePicker, pickerSaved } from './views/tonight.js';
 
@@ -144,6 +145,26 @@ function handleClick(event) {
       wasSelected
         ? tonightCopy.events.toggleOffAnnouncement(name, tonight.getSelection().length)
         : tonightCopy.events.toggleOnAnnouncement(name, tonight.getSelection().length)
+    );
+    return;
+  }
+
+  // Per-card favourite toggle (Games list) — js/favourites.js's
+  // toggleFavourite() flips just this one game's shortlist membership and
+  // returns the new state, so there's no separate "was it on before" read
+  // the way the Tonight toggle above needs (that one has to check BEFORE
+  // toggling; this one can just use the return value).
+  const favouriteBtn = event.target.closest('[data-action="toggle-favourite"]');
+  if (favouriteBtn) {
+    const slug = favouriteBtn.dataset.slug;
+    const name = favouriteBtn.dataset.gameName;
+    const toggleId = favouriteBtn.id;
+
+    const nowFavourited = favourites.toggleFavourite(slug); // synchronously repaints via the router's listener
+
+    focusById(toggleId, () => focusById('page-title', () => {}));
+    announce(
+      nowFavourited ? `${name} added to favourites.` : `${name} removed from favourites.`
     );
     return;
   }

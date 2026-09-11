@@ -516,6 +516,52 @@ export function tonightToggleButton(event, pressed) {
 }
 
 /**
+ * Per-card favourite toggle on the Games list (js/views/games.js) — the
+ * coach's own shortlist, via js/favourites.js's toggleFavourite().
+ *
+ * A star icon-only `<button>` overlaid on the top-right corner of the
+ * card's name strip, positioned by CSS (`.favourite-toggle`). MUST be
+ * rendered as a SIBLING of `.game-list__link`, never nested inside it — a
+ * `<button>` cannot be a descendant of `<a>` (the browser silently
+ * reparents it out) — the same constraint documented on
+ * `tonightToggleButton()` above and on `.event-card__body` in
+ * components.css. `.game-list__strip` reserves extra right padding
+ * (components.css) so a long game name wraps before it ever runs under
+ * this button rather than sitting behind it.
+ *
+ * No visible text label, so SC 2.5.3 (Label in Name) doesn't constrain the
+ * wording the way it does the "Add"/"Added" pill above — `aria-label` just
+ * states the action plainly. `aria-pressed` carries the canonical state;
+ * the star glyph itself flips outline -> filled (not just colour) as the
+ * non-colour signal SC 1.4.1 requires, the same principle as
+ * tonightToggleButton()'s +/✓ glyph swap.
+ *
+ * `id` is slug-derived and stable so interactions.js can re-find and
+ * re-focus this exact button after the outlet repaints post-toggle.
+ *
+ * @param {{slug: string, name: string}} item
+ * @param {boolean} pressed  whether this game is currently favourited
+ */
+export function favouriteToggleButton(item, pressed) {
+  const id = `favourite-toggle-${esc(item.slug)}`;
+  const label = pressed ? 'Remove from favourites' : 'Add to favourites';
+  return `
+    <button
+      type="button"
+      class="favourite-toggle${pressed ? ' favourite-toggle--active' : ''}"
+      id="${id}"
+      data-action="toggle-favourite"
+      data-slug="${esc(item.slug)}"
+      data-game-name="${esc(item.name)}"
+      aria-pressed="${pressed}"
+      aria-label="${label} — ${esc(item.name)}">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+      </svg>
+    </button>`;
+}
+
+/**
  * Full-width "Add to tonight" CTA on the Event Detail page
  * (js/views/eventDetail.js). Controls the SAME per-event Tonight state as
  * tonightToggleButton() above, via the identical `data-action="toggle-tonight"`
