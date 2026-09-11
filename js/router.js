@@ -174,5 +174,11 @@ export function startRouter({ outlet, tabs }) {
   // 'tonight:change' for an unrelated piece of state.
   window.addEventListener('games:filterchange', paint);
 
+  // Same again for the Games tab's per-card favourite toggle
+  // (favourites.js) — yet another independent piece of state (which games
+  // are favourited, not which are visible), so it gets its own event too
+  // rather than overloading 'games:filterchange' for an unrelated concern.
+  window.addEventListener('games:favouritechange', paint);
+
   render();
 }

@@ -1529,10 +1529,11 @@ a.run-card:hover .run-card__name {
 /* --- Games list: link + one-sentence summary ------------------------------
    Each game on the Games list (js/views/games.js) links to its own detail
    page (js/views/gameDetail.js) instead of inlining its full instructions —
-   a bordered-card-plus-chevron pattern of its own (this list has no
-   per-card toggle to make room for). The Events list's `.event-card` now
-   shares this same header-strip-over-body card shape (see above) — see
-   STYLEGUIDE.md's "Games list link + Game Detail page".
+   a bordered-card-plus-chevron pattern of its own, now with a per-card
+   favourite toggle overlaid on it (`.favourite-toggle` below). The Events
+   list's `.event-card` now shares this same header-strip-over-body card
+   shape (see above) — see STYLEGUIDE.md's "Games list link + Game Detail
+   page".
 
    The card's own name is a full-bleed black strip (`.game-list__strip`) —
    white text reversed out of `--color-heading`, the app's darkest/most-
@@ -1549,6 +1550,14 @@ a.run-card:hover .run-card__name {
   list-style: none;
   display: grid;
   gap: var(--space-3);
+}
+
+/* Positioning root for `.favourite-toggle` below, which is a SIBLING of
+   `.game-list__link` rather than a child of it (see favouriteToggleButton()'s
+   doc comment in ui.js) — the toggle is positioned absolutely against this
+   whole card, not just the link. */
+.game-list__item {
+  position: relative;
 }
 
 .game-list__link {
@@ -1572,7 +1581,12 @@ a.run-card:hover .run-card__name {
 
 .game-list__strip {
   display: block;
-  padding: var(--space-3) var(--space-4);
+  /* Extra right padding reserves room for `.favourite-toggle`, overlaid on
+     this strip — (tap-min button width) + (its own inset) on top of the
+     strip's normal right padding, so a long game name wraps before it ever
+     runs under the button rather than sitting behind it. */
+  padding: var(--space-3) calc(var(--space-4) + var(--tap-min) + var(--space-2)) var(--space-3)
+    var(--space-4);
   background: var(--color-heading);
 }
 
@@ -1653,6 +1667,64 @@ a.run-card:hover .run-card__name {
 .game-list__body > .estimate-pill:first-child {
   margin-top: 0;
   margin-left: 0;
+}
+
+/* --- Per-card favourite toggle (`favouriteToggleButton()` in ui.js) ------
+   A star icon-only button overlaid on the top-right corner of each game's
+   name strip (`.game-list__strip`) — positioned against `.game-list__item`
+   (the whole card), not the strip itself, so it stays put even though it's
+   a sibling of `.game-list__link` rather than a child of it. See that
+   function's doc comment for why it has to sit outside the link.
+
+   Off: a plain outlined circle with a hollow (stroke-only) star, same
+   border-interactive/text-muted pairing as the search box's icon. On: the
+   already-measured `--color-warn-text` on `--color-warn-surface-alt` pairing
+   `.badge--video` uses elsewhere (8.10:1) — reused rather than inventing a
+   new colour pair for this one control.
+
+   Pressed state is never colour-only (SC 1.4.1): the star glyph itself
+   switches from hollow (stroke, no fill) to solid (filled) on top of the
+   background/border colour change, the same "shape changes, not just
+   colour" principle as `.tonight-toggle`'s +/✓ glyph swap. Sized at
+   `--tap-min` (44px) like every other primary toggle in this app, not the
+   smaller 32px `.games-search__clear` — a per-card action sitting on
+   scrollable content gets the full WCAG 2.5.5/2.5.8 target, not the reduced
+   footprint that clear button borrows from being inline in a text field. */
+
+.favourite-toggle {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  border: 1.5px solid var(--color-border-interactive);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.favourite-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.favourite-toggle--active {
+  border-color: var(--color-warn-border);
+  background: var(--color-warn-surface-alt);
+  color: var(--color-warn-text);
+}
+
+.favourite-toggle--active svg {
+  fill: currentColor;
 }
 
 /* --- Resource cards (Watch & Learn) -------------------------------------- */
