@@ -1,9 +1,10 @@
-import { games, tonightCopy } from '../content.js';
+import { games } from '../content.js';
 import * as tonight from '../tonight.js';
 import * as gamesFilter from '../gamesFilter.js';
 import {
   categoryFilterPicker,
   esc,
+  gamesSearchInput,
   pageHeader,
   pairsWithNote,
   tonightEmptyState,
@@ -97,9 +98,32 @@ export function gamesView() {
     ? tonightFilteredCategories.filter((cat) => cat.id === categoryFilterId)
     : tonightFilteredCategories;
 
-  const categories = visibleCategories
+  // A third, independent narrowing on top of Tonight-mode's and the category
+  // filter's: free-text search, matched against each item's own name,
+  // summary and gear rather than anything category-level — a category can
+  // stay visible with only some of its games showing, unlike the category
+  // filter above which keeps or drops a category whole. Matched
+  // case-insensitively as a plain substring (no per-word/fuzzy matching) —
+  // predictable over clever, same reasoning as every other filter on this
+  // page.
+  const searchQuery = gamesFilter.getSearchQuery();
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const matchesSearch = (item) => {
+    if (!normalizedQuery) return true;
+    const haystack = [item.name, item.summary, item.gear]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+    return haystack.includes(normalizedQuery);
+  };
+
+  const categoriesWithMatches = visibleCategories
+    .map((cat) => ({ cat, items: cat.items.filter(matchesSearch) }))
+    .filter(({ items }) => items.length > 0);
+
+  const categories = categoriesWithMatches
     .map(
-      (cat) => `
+      ({ cat, items }) => `
         <section
           class="section section--spaced game-category-card game-category-card--${categoryColor(cat.id)}"
           aria-labelledby="cat-${esc(cat.id)}">
@@ -110,20 +134,28 @@ export function gamesView() {
           </div>
           <div class="game-category-card__body">
             <ul class="game-list">
-              ${cat.items.map(gameListItem).join('')}
+              ${items.map(gameListItem).join('')}
             </ul>
           </div>
         </section>`
     )
     .join('');
 
-  // Two distinct empty states, not one generic one: a category filter that
-  // excludes everything has an exact, always-correct fix (clear it), which
-  // "no program/age selected yet" (the pre-existing Tonight-mode case below)
-  // does not — that one's fix is picking events on the Tonight tab instead.
+  // Three distinct empty states, not one generic one — each names the exact,
+  // always-correct fix for what actually emptied the list, checked in order
+  // from most specific/recent action to least: a search with no hits is
+  // fixed by clearing the search, a category with no hits (search aside) is
+  // fixed by showing all categories, and "no program/age selected yet" (the
+  // pre-existing Tonight-mode case) is fixed by picking events on the
+  // Tonight tab instead.
   let categoriesBlock;
-  if (visibleCategories.length) {
+  if (categoriesWithMatches.length) {
     categoriesBlock = categories;
+  } else if (normalizedQuery) {
+    categoriesBlock = tonightEmptyState(
+      `No games match “${searchQuery.trim()}”.`,
+      '<button type="button" class="btn btn--primary" data-action="clear-game-search">Clear search</button>'
+    );
   } else if (categoryFilterId) {
     categoriesBlock = tonightEmptyState(
       'No games in this category match tonight’s selection yet.',
@@ -145,13 +177,8 @@ export function gamesView() {
       })}
 
       ${tonightStatusStrip({ isFiltering: isTonight, choice, count: tonight.getSelection().length })}
-      ${
-        isTonight
-          ? `<p class="note">${esc(tonightCopy.games.filteredNote)}</p>`
-          : ''
-      }
-      <p class="note">${esc(games.estimateNote)}</p>
 
+      ${gamesSearchInput(searchQuery)}
       ${categoryFilterPicker(categoryFilterId, games.categories)}
 
       ${categoriesBlock}`

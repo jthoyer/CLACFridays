@@ -101,6 +101,18 @@ function handleClick(event) {
     return;
   }
 
+  // Games tab search — both the clear (×) button inside the search box
+  // (ui.js's gamesSearchInput(), rendered only once there is a query) and
+  // the "Clear search" empty-state recovery action (js/views/games.js) share
+  // this one action, since they do the exact same thing.
+  const clearSearchBtn = event.target.closest('[data-action="clear-game-search"]');
+  if (clearSearchBtn) {
+    gamesFilter.setSearchQuery(''); // synchronously repaints via the router's listener
+    focusById('game-search-input');
+    announce('Search cleared. Showing all games.');
+    return;
+  }
+
   // Per-card Tonight toggle (Events list). See tonight.js's
   // toggleTonightEvent() for why this deliberately never calls setMode() —
   // mode is pinned to whatever it already was, so this control can never
@@ -215,6 +227,65 @@ function handleChange(event) {
   if (categorySelect) handleGameCategoryChange(categorySelect);
 }
 
+// Debounce for handleGameSearchInput()'s result-count announcement below —
+// module-level because the timer must outlive any single keystroke's call.
+let searchAnnounceTimer = null;
+
+/**
+ * Games tab free-text search (js/ui.js's gamesSearchInput()) — live-as-you-
+ * type filtering, so this fires on 'input', not 'change' (see
+ * bindInteractions() below).
+ *
+ * The repaint this triggers replaces the whole outlet, including this exact
+ * input node, which would otherwise cost the coach their place mid-word
+ * (lost focus, caret reset to the end) on every keystroke — so both are
+ * captured before the repaint and restored after, the same "re-find by id in
+ * the freshly painted DOM" technique every other handler in this file uses
+ * for focus, extended here to selection range because this is the app's
+ * first text input rather than a <select> or checkbox.
+ *
+ * Screen-reader feedback is debounced rather than announced on every
+ * keystroke (which would talk over the coach's own typing) — it reads the
+ * result count straight out of the DOM the repaint just painted rather than
+ * re-deriving games.js's filtering logic here, so the two can never disagree
+ * about what's currently showing.
+ */
+function handleGameSearchInput(input) {
+  const focusId = input.id;
+  const selectionStart = input.selectionStart;
+  const selectionEnd = input.selectionEnd;
+  const query = input.value.trim();
+
+  gamesFilter.setSearchQuery(input.value); // synchronously repaints via the router's listener
+
+  const el = document.getElementById(focusId);
+  if (el) {
+    el.focus({ preventScroll: true });
+    if (typeof el.setSelectionRange === 'function') {
+      try {
+        el.setSelectionRange(selectionStart, selectionEnd);
+      } catch {
+        // Best-effort — focus already landed above even if this throws.
+      }
+    }
+  }
+
+  window.clearTimeout(searchAnnounceTimer);
+  if (!query) {
+    announce('Showing all games.');
+    return;
+  }
+  searchAnnounceTimer = window.setTimeout(() => {
+    const count = document.querySelectorAll('#view .game-list__link').length;
+    announce(`${count} game${count === 1 ? '' : 's'} match “${query}”.`);
+  }, 500);
+}
+
+function handleInput(event) {
+  const searchInput = event.target.closest('[data-action="search-games"]');
+  if (searchInput) handleGameSearchInput(searchInput);
+}
+
 function handleSubmit(event) {
   const form = event.target.closest('[data-tonight-picker]');
   if (!form) return;
@@ -248,4 +319,10 @@ export function bindInteractions(outlet) {
   // 'input' would repaint the outlet mid-interaction on platforms that fire
   // it while the picker is still open.
   outlet.addEventListener('change', handleChange);
+  // 'input', not 'change', for the games search box specifically — the
+  // whole point is narrowing the list as the coach types, not waiting for
+  // blur. See handleGameSearchInput()'s focus/caret restoration for how this
+  // avoids the same mid-interaction repaint problem the comment above warns
+  // about.
+  outlet.addEventListener('input', handleInput);
 }
