@@ -26,9 +26,9 @@ import {
  * over a lighter body band, clipped to the card's rounded corners by the
  * link's own `overflow: hidden`.
  *
- * A category can bundle games for more than one event (e.g. "Jump Games"
- * covers both Long Jump and High Jump — see content.js), so the category
- * heading alone doesn't say which event a given game pairs with;
+ * A category can bundle games for more than one event (e.g. "Any-Throw
+ * Games" covers shot put, discus and turbo javelin — see content.js), so
+ * the category heading alone doesn't say which event a given game pairs with;
  * `pairsWithNote()` (js/ui.js) adds that per item, resolved from the game's
  * own `eventSlugs` rather than the category's.
  *

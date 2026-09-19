@@ -948,8 +948,8 @@ lighter `.game-list__body` band holding the gear pill, one-sentence
 caption) — plain text, not a link, since it sits inside the same `<a>` as
 the rest of the card and an `<a>` cannot legally contain another
 interactive element. This exists because a category can bundle games for
-more than one event (e.g. "Jump Games" covers both Long Jump and High Jump
-— see `content.js`), so the category name alone doesn't say which specific
+more than one event (e.g. "Any-Throw Games" covers shot put, discus and
+turbo javelin — see `content.js`), so the category name alone doesn't say which specific
 event a given game goes with; `pairsWithNote()` resolves the game's own
 item-level `eventSlugs` via `getEvent()` instead, so it can never drift
 from the events list. A game with no linked event (Freeze Tag) renders no

@@ -17,7 +17,7 @@
  * different concerns into one module if merged.
  *
  * The category filter and "starred only" toggle are both seeded from
- * localStorage (standing preferences — "just show me Throwing Games" or
+ * localStorage (standing preferences — "just show me Shot Put Games" or
  * "just show me my starred games" are both worth remembering across
  * visits). The search query deliberately is NOT persisted: it starts empty
  * on every load, same as any other site's search box — a leftover query
