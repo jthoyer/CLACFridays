@@ -34,9 +34,9 @@ export function safeUrl(url) {
  * `getEvent()`, so it can never drift from the events list. Used on both the
  * Games list (`js/views/games.js`) and the Game Detail page
  * (`js/views/gameDetail.js`) — one implementation, since a category can
- * bundle games for several events (e.g. "Jump Games" covers both Long Jump
- * and High Jump) and the category name/kicker alone doesn't say which one a
- * given game goes with. Returns the empty string for a game with no linked
+ * bundle games for several events (e.g. "Any-Throw Games" covers shot put,
+ * discus and turbo javelin) and the category name/kicker alone doesn't say
+ * which one a given game goes with. Returns the empty string for a game with no linked
  * event (e.g. Freeze Tag) — deliberate, not forgotten, same distinction
  * `assertContentLinkage()` already draws elsewhere.
  */
