@@ -159,3 +159,7 @@ and your own centre's program — event offerings vary by centre.
 
 The PDF's QR codes are intentionally not reproduced: they exist so a *printed*
 page can be scanned, and in the app every link is already tappable.
+
+## Claude Code agents and skills
+
+Claude Code agents and skills live in [agent-skills-library](https://github.com/jthoyer/agent-skills-library). This repo keeps no copies: attach that library to a Claude Code session when the work needs its agents.
