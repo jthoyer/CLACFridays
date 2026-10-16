@@ -15,8 +15,8 @@ import { esc, articleLink, bulletList, pageHeader, pairsWithNote, resourceCard }
  *
  * The "Pairs with" note (pairsWithNote(), js/ui.js) resolves the item's own
  * `eventSlugs` rather than the category's — a category can bundle games for
- * more than one event (e.g. "Jump Games"), so `category.name` in the kicker
- * above isn't specific enough on its own.
+ * more than one event (e.g. "Any-Throw Games"), so `category.name` in the
+ * kicker above isn't specific enough on its own.
  *
  * "Watch & Learn" only renders when the item has one or more
  * `videoResources` — a game with none (Baton Down the Line, Freeze Tag)

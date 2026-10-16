@@ -1805,10 +1805,15 @@ export const games = {
       ]
     },
     {
-      id: 'jump',
-      name: 'Jump Games',
+      // Backlog Rank 55 — split from the old combined 'jump' category, which
+      // had grown to 11 items covering two unrelated events. Long jump and
+      // high jump items never overlap (unlike throwing's any-implement
+      // games below), so this split is a clean partition — no item needed
+      // to move to a third bucket.
+      id: 'jump-long-jump',
+      name: 'Long Jump Games',
       kicker: 'Skill Games',
-      eventSlugs: ['long-jump', 'high-jump'],
+      eventSlugs: ['long-jump'],
       items: [
         {
           name: 'Step-and-Stick Ladder',
@@ -1863,54 +1868,6 @@ export const games = {
             'Confirms the take-off foot before any run-up is formalised, avoiding a habit that’s hard to unlearn later.'
           ],
           eventSlugs: ['long-jump']
-        },
-        {
-          name: 'Scissor Steps (no bar)',
-          slug: 'scissor-steps-no-bar',
-          gear: 'High jump mat',
-          teachTime: '~30 sec',
-          minPlayers: 'pairs',
-          summary:
-            'A no-bar, no-pressure drill for grooving the high jump approach angle and ' +
-            'take-off leg.',
-          bullets: [
-            'In pairs, athletes take turns running in at a 30-degree angle and stepping straight up onto the high jump mat.',
-            'No bar, no pressure – just grooving the approach angle and take-off leg while others wait their turn nearby.'
-          ],
-          eventSlugs: ['high-jump'],
-          videoResources: [{ key: 'video-high-jump', prefix: 'High Jump' }]
-        },
-        {
-          name: 'Angle Approach Race',
-          slug: 'angle-approach-race',
-          gear: 'Markers',
-          teachTime: '~30 sec',
-          minPlayers: 2,
-          summary:
-            'A marked-angle running game that grooves the 30–40 degree approach line ' +
-            'before any bar is added.',
-          bullets: [
-            'Lay a marked line on the ground at roughly 30–40 degrees to where the bar would sit.',
-            'Athletes take turns running the line at increasing pace, stepping onto the mat at the end without a bar present.',
-            'Locks in the approach angle early – the single biggest technical building block for a legal scissor jump.'
-          ],
-          eventSlugs: ['high-jump']
-        },
-        {
-          name: 'Kick and Land',
-          slug: 'kick-and-land',
-          gear: null,
-          teachTime: '~30 sec',
-          minPlayers: 2,
-          summary:
-            'A standing drill game that isolates the outside-leg take-off and ' +
-            'inside-leg kick before adding a run-in.',
-          bullets: [
-            'Athletes stand side-on to the mat and practise kicking the inside leg up and over an imaginary bar, landing on the mat.',
-            'The coach gives an instant clap or call the moment the kicking leg is straight – quick feedback on the “bent-knee drive” fault.',
-            'A slow-motion, no-run-in way to bank leg-action reps between turns at the real bar.'
-          ],
-          eventSlugs: ['high-jump']
         },
         {
           // Backlog Rank 50 — Funetics game #3.
@@ -1991,6 +1948,62 @@ export const games = {
           resource: 'article-funetics',
           eventSlugs: ['long-jump'],
           videoResources: [{ key: 'video-fun-speed-bounce', prefix: 'Speed Bounce', isGameFootage: true }]
+        }
+      ]
+    },
+    {
+      id: 'jump-high-jump',
+      name: 'High Jump Games',
+      kicker: 'Skill Games',
+      eventSlugs: ['high-jump'],
+      items: [
+        {
+          name: 'Scissor Steps (no bar)',
+          slug: 'scissor-steps-no-bar',
+          gear: 'High jump mat',
+          teachTime: '~30 sec',
+          minPlayers: 'pairs',
+          summary:
+            'A no-bar, no-pressure drill for grooving the high jump approach angle and ' +
+            'take-off leg.',
+          bullets: [
+            'In pairs, athletes take turns running in at a 30-degree angle and stepping straight up onto the high jump mat.',
+            'No bar, no pressure – just grooving the approach angle and take-off leg while others wait their turn nearby.'
+          ],
+          eventSlugs: ['high-jump'],
+          videoResources: [{ key: 'video-high-jump', prefix: 'High Jump' }]
+        },
+        {
+          name: 'Angle Approach Race',
+          slug: 'angle-approach-race',
+          gear: 'Markers',
+          teachTime: '~30 sec',
+          minPlayers: 2,
+          summary:
+            'A marked-angle running game that grooves the 30–40 degree approach line ' +
+            'before any bar is added.',
+          bullets: [
+            'Lay a marked line on the ground at roughly 30–40 degrees to where the bar would sit.',
+            'Athletes take turns running the line at increasing pace, stepping onto the mat at the end without a bar present.',
+            'Locks in the approach angle early – the single biggest technical building block for a legal scissor jump.'
+          ],
+          eventSlugs: ['high-jump']
+        },
+        {
+          name: 'Kick and Land',
+          slug: 'kick-and-land',
+          gear: null,
+          teachTime: '~30 sec',
+          minPlayers: 2,
+          summary:
+            'A standing drill game that isolates the outside-leg take-off and ' +
+            'inside-leg kick before adding a run-in.',
+          bullets: [
+            'Athletes stand side-on to the mat and practise kicking the inside leg up and over an imaginary bar, landing on the mat.',
+            'The coach gives an instant clap or call the moment the kicking leg is straight – quick feedback on the “bent-knee drive” fault.',
+            'A slow-motion, no-run-in way to bank leg-action reps between turns at the real bar.'
+          ],
+          eventSlugs: ['high-jump']
         },
         {
           // Backlog Rank 50 — Funetics game #4.
@@ -2015,39 +2028,11 @@ export const games = {
       ]
     },
     {
-      id: 'throwing',
-      name: 'Throwing Games',
+      id: 'throwing-shot-put',
+      name: 'Shot Put Games',
       kicker: 'Skill Games',
-      eventSlugs: ['shot-put', 'discus', 'turbo-javelin'],
+      eventSlugs: ['shot-put'],
       items: [
-        {
-          name: 'Target Hoops',
-          slug: 'target-hoops',
-          gear: 'Hoops',
-          teachTime: '~1 min',
-          minPlayers: 2,
-          summary:
-            'A target-accuracy throwing game that rewards control over raw power.',
-          bullets: [
-            'Set out hoops as targets roughly 8–10m from a throwing line.',
-            'In pairs or small groups, athletes take turns trying to land a shot, discus or turbo jav inside a hoop on the full.',
-            'Works for any throwing event and rewards control over raw power – exactly what beginners need most.'
-          ],
-          sourcePrefix: 'Adapted from',
-          resource: 'article-throwing-game',
-          eventSlugs: ['shot-put', 'discus', 'turbo-javelin'],
-          // Mixed list (backlog Rank 51): real footage of this game alongside
-          // the three technique videos it already carried. gameDetailView()
-          // (js/views/gameDetail.js) partitions by `isGameFootage` and
-          // renders each group under its own honesty-framed heading, so the
-          // two kinds never share one clarifier.
-          videoResources: [
-            { key: 'video-fun-target-throw', prefix: 'Target Hoops', isGameFootage: true },
-            { key: 'video-shot-put', prefix: 'Shot Put' },
-            { key: 'video-discus', prefix: 'Discus' },
-            { key: 'video-javelin', prefix: 'Turbo Javelin' }
-          ]
-        },
         {
           name: 'Neck Push Line',
           slug: 'neck-push-line',
@@ -2080,7 +2065,15 @@ export const games = {
             'Rewards good technique at the finish, not just how far the shot travels.'
           ],
           eventSlugs: ['shot-put']
-        },
+        }
+      ]
+    },
+    {
+      id: 'throwing-discus',
+      name: 'Discus Games',
+      kicker: 'Skill Games',
+      eventSlugs: ['discus'],
+      items: [
         {
           name: 'Sandwich Freeze',
           slug: 'sandwich-freeze',
@@ -2113,7 +2106,15 @@ export const games = {
             'Gives athletes an instant, visible signal for good technique instead of relying on distance alone.'
           ],
           eventSlugs: ['discus']
-        },
+        }
+      ]
+    },
+    {
+      id: 'throwing-turbo-javelin',
+      name: 'Turbo Javelin Games',
+      kicker: 'Skill Games',
+      eventSlugs: ['turbo-javelin'],
+      items: [
         {
           name: 'Cricket Arm Check',
           slug: 'cricket-arm-check',
@@ -2146,6 +2147,49 @@ export const games = {
             'Keeps throws safe and single-direction while still making distance progress feel like a game.'
           ],
           eventSlugs: ['turbo-javelin']
+        }
+      ]
+    },
+    {
+      // The three items below work with any throwing implement (shot,
+      // discus or turbo jav), unlike every other throwing item, which is
+      // specific to one. Splitting shot/discus/turbo-jav above left these
+      // three with nowhere single-event to go; duplicating them into all
+      // three would collide on route slug (assertContentLinkage() requires
+      // globally-unique item slugs), so they get their own bucket instead —
+      // the same "any throw" shape Target Hoops always had.
+      id: 'throwing-any-throw',
+      name: 'Any-Throw Games',
+      kicker: 'Skill Games',
+      eventSlugs: ['shot-put', 'discus', 'turbo-javelin'],
+      items: [
+        {
+          name: 'Target Hoops',
+          slug: 'target-hoops',
+          gear: 'Hoops',
+          teachTime: '~1 min',
+          minPlayers: 2,
+          summary:
+            'A target-accuracy throwing game that rewards control over raw power.',
+          bullets: [
+            'Set out hoops as targets roughly 8–10m from a throwing line.',
+            'In pairs or small groups, athletes take turns trying to land a shot, discus or turbo jav inside a hoop on the full.',
+            'Works for any throwing event and rewards control over raw power – exactly what beginners need most.'
+          ],
+          sourcePrefix: 'Adapted from',
+          resource: 'article-throwing-game',
+          eventSlugs: ['shot-put', 'discus', 'turbo-javelin'],
+          // Mixed list (backlog Rank 51): real footage of this game alongside
+          // the three technique videos it already carried. gameDetailView()
+          // (js/views/gameDetail.js) partitions by `isGameFootage` and
+          // renders each group under its own honesty-framed heading, so the
+          // two kinds never share one clarifier.
+          videoResources: [
+            { key: 'video-fun-target-throw', prefix: 'Target Hoops', isGameFootage: true },
+            { key: 'video-shot-put', prefix: 'Shot Put' },
+            { key: 'video-discus', prefix: 'Discus' },
+            { key: 'video-javelin', prefix: 'Turbo Javelin' }
+          ]
         },
         {
           // Backlog Rank 50 — Funetics game #5. Works for any throwing
